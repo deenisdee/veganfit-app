@@ -41,6 +41,13 @@ module.exports = async (req, res) => {
     // Normaliza código
     const normalized = code.trim().toUpperCase();
 
+    
+
+console.log('🔍 Buscando código:', normalized);
+console.log('🔍 Caminho Firestore:', `premium_codes/${normalized}`);
+
+    
+
     // Busca código no Firestore
     const docRef = db.collection('premium_codes').doc(normalized);
     const doc = await docRef.get();
