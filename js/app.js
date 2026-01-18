@@ -280,6 +280,7 @@ let credits = 3;
 let unlockedRecipes = [];
 
 
+
 let isPremium = false;
 let premiumToken = null;
 let premiumExpires = null;
@@ -2686,14 +2687,58 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
 
 
 
-
-
 // ==============================
 // START
 // ==============================
+
+// ✅ VERIFICA PREMIUM AO CARREGAR
+async function initPremium() {
+  try {
+    // Tenta carregar do storage primeiro
+    const premiumStatus = await storage.get('fit_premium');
+    const premiumToken = await storage.get('fit_premium_token');
+    const premiumExpires = await storage.get('fit_premium_expires');
+    
+    // Fallback para localStorage
+    const isPremiumLocal = premiumStatus || localStorage.getItem('fit_premium');
+    const tokenLocal = premiumToken || localStorage.getItem('fit_premium_token');
+    const expiresLocal = premiumExpires || localStorage.getItem('fit_premium_expires');
+    
+    if (isPremiumLocal === 'true' && tokenLocal && expiresLocal) {
+      const expiryDate = parseInt(expiresLocal);
+      
+      // Verifica se não expirou
+      if (Date.now() < expiryDate) {
+        isPremium = true;
+        premiumToken = tokenLocal;
+        premiumExpires = expiryDate;
+        
+        console.log('[PREMIUM] Usuário premium carregado!', {
+          expires: new Date(expiryDate).toISOString()
+        });
+        
+        // Sincroniza UI
+        if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
+          RF.premium.syncUI();
+        }
+      } else {
+        // Expirou - limpa tudo
+        console.log('[PREMIUM] Premium expirado, limpando...');
+        await storage.set('fit_premium', 'false');
+        localStorage.removeItem('fit_premium');
+        localStorage.removeItem('fit_premium_token');
+        localStorage.removeItem('fit_premium_expires');
+      }
+    }
+  } catch (error) {
+    console.error('[PREMIUM] Erro ao verificar premium:', error);
+  }
+}
+
+// Inicia verificação de premium
+initPremium();
+
 loadUserData();
-
-
 
 // ================================
 // RENDERIZA ÍCONES LUCIDE AO CARREGAR
@@ -2711,8 +2756,6 @@ setTimeout(() => {
     lucide.createIcons();
   }
 }, 500);
-
-
 
 
 // ================================
@@ -3363,20 +3406,7 @@ window.addEventListener('DOMContentLoaded', function() {
 // Inicializa Mercado Pago SDK (DECLARA APENAS UMA VEZ!)
 const mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
 
-// Função para validar código via API
-async function validatePremiumCodeAPI(code) {
-  try {
-    const response = await fetch('/api/validate-code', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: code })
-    });
-    return await response.json();
-  } catch (error) {
-    console.error('Erro ao validar código:', error);
-    return { valid: false, error: 'Erro ao validar código' };
-  }
-}
+
 
 // Função para abrir checkout do Mercado Pago
 window.openPremiumCheckout = async function(plan = 'premium-monthly') {
@@ -3422,7 +3452,7 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
 
 
 
-/* // 3. Função para validar código premium via API
+// 3. Função para validar código premium via API
 async function validatePremiumCodeAPI(code) {
   try {
     const response = await fetch('/api/validate-code', {
@@ -3439,4 +3469,3 @@ async function validatePremiumCodeAPI(code) {
     return { valid: false, error: 'Erro ao validar código' };
   }
 }
- */
