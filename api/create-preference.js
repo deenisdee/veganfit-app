@@ -22,8 +22,8 @@ module.exports = async (req, res) => {
     
     const price = prices[plan] || 37;
     const title = plan === 'premium-annual' 
-      ? 'ReceitaFit Premium - Anual' 
-      : 'ReceitaFit Premium - Mensal';
+      ? 'VeganFit Premium - Anual' 
+      : 'VeganFit Premium - Mensal';
 
     const preference = {
       items: [{
@@ -36,11 +36,11 @@ module.exports = async (req, res) => {
         email: email
       },
       back_urls: {
-        success: `https://receitafit-app.vercel.app/sucesso`,
-        failure: `https://receitafit-app.vercel.app/falha`,
-        pending: `https://receitafit-app.vercel.app/pendente`
+        success: `https://veganfit-app.vercel.app/sucesso`,
+        failure: `https://veganfit-app.vercel.app/falha`,
+        pending: `https://veganfit-app.vercel.app/pendente`
       },
-      notification_url: `https://receitafit-app.vercel.app/api/webhook`,
+      notification_url: `https://veganfit-app.vercel.app/api/webhook`,
       auto_return: 'approved',
       external_reference: JSON.stringify({
         plan: plan,
