@@ -5,7 +5,6 @@ console.log('🔍 DEBUG ENV VARS:');
 console.log('FIREBASE_PROJECT_ID:', process.env.FIREBASE_PROJECT_ID);
 console.log('FIREBASE_CLIENT_EMAIL:', process.env.FIREBASE_CLIENT_EMAIL);
 console.log('FIREBASE_PRIVATE_KEY exists:', !!process.env.FIREBASE_PRIVATE_KEY);
-console.log('FIREBASE_PRIVATE_KEY length:', process.env.FIREBASE_PRIVATE_KEY?.length);
 
 // Inicializa Firebase Admin
 if (!admin.apps.length) {
@@ -37,13 +36,19 @@ function generateCode() {
 
 module.exports = async (req, res) => {
   try {
-    const { type, data } = req.body;
+    // LOG COMPLETO DO BODY
+    console.log('📦 Webhook body completo:', JSON.stringify(req.body, null, 2));
+    console.log('📦 Webhook query:', JSON.stringify(req.query, null, 2));
 
-    console.log('Webhook recebido:', { type, data });
+    const { type, data, action, id } = req.body;
+    const paymentId = data?.id || id || req.query.id;
 
-    if (type === 'payment') {
+    console.log('Webhook recebido:', { type, data, action, paymentId });
+
+    // Mercado Pago pode enviar type ou action
+    if ((type === 'payment' || action === 'payment.updated') && paymentId) {
       const paymentResponse = await fetch(
-        `https://api.mercadopago.com/v1/payments/${data.id}`,
+        `https://api.mercadopago.com/v1/payments/${paymentId}`,
         {
           headers: {
             'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`
@@ -53,7 +58,8 @@ module.exports = async (req, res) => {
 
       const payment = await paymentResponse.json();
       
-      console.log('Status do pagamento:', payment.status);
+      console.log('💳 Status do pagamento:', payment.status);
+      console.log('💳 Pagamento completo:', JSON.stringify(payment, null, 2));
 
       if (payment.status === 'approved') {
         const externalRef = JSON.parse(payment.external_reference);
@@ -91,7 +97,7 @@ Válido até: ${expiresAt.toLocaleDateString('pt-BR')}
     res.status(200).json({ received: true });
 
   } catch (error) {
-    console.error('Erro no webhook:', error);
+    console.error('❌ Erro no webhook:', error);
     res.status(500).json({ error: error.message });
   }
 };
