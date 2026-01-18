@@ -1,5 +1,4 @@
 module.exports = async (req, res) => {
-  // Permite CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -10,50 +9,75 @@ module.exports = async (req, res) => {
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
-  } 
- 
+  }
+
   try {
     const { plan, email } = req.body;
-     
-    const prices = {
-      'premium-monthly': 1,
-      'premium-annual': 1
+
+    if (!email || !plan) {
+      return res.status(400).json({ error: 'Email e plano são obrigatórios' });
+    }
+
+    // ✅ PLANOS DISPONÍVEIS
+    const plans = {
+      'monthly': {
+        title: 'VeganFit Premium - Mensal',
+        price: 37.00,
+        days: 30,
+        description: 'Acesso premium por 30 dias'
+      },
+      'quarterly': {
+        title: 'VeganFit Premium - Trimestral',
+        price: 89.00,
+        days: 90,
+        description: 'Acesso premium por 90 dias - Economize 20%'
+      },
+      'annual': {
+        title: 'VeganFit Premium - Anual',
+        price: 297.00,
+        days: 365,
+        description: 'Acesso premium por 1 ano - Economize 33%'
+      }
     };
-    
-    const price = prices[plan] || 37;
-    const title = plan === 'premium-annual' 
-      ? 'VeganFit Premium - Anual' 
-      : 'VeganFit Premium - Mensal';
+
+    const selectedPlan = plans[plan];
+
+    if (!selectedPlan) {
+      return res.status(400).json({ error: 'Plano inválido' });
+    }
 
     const preference = {
-      items: [{
-        title: title,
-        unit_price: price,
-        quantity: 1,
-        currency_id: 'BRL'
-      }],
+      items: [
+        {
+          title: selectedPlan.title,
+          description: selectedPlan.description,
+          quantity: 1,
+          currency_id: 'BRL',
+          unit_price: selectedPlan.price
+        }
+      ],
       payer: {
         email: email
       },
       back_urls: {
-        success: `https://veganfit-app.vercel.app/sucesso`,
-        failure: `https://veganfit-app.vercel.app/falha`,
-        pending: `https://veganfit-app.vercel.app/pendente`
+        success: 'https://veganfit-app.vercel.app',
+        failure: 'https://veganfit-app.vercel.app',
+        pending: 'https://veganfit-app.vercel.app'
       },
-      notification_url: `https://veganfit-app.vercel.app/api/webhook`,
       auto_return: 'approved',
+      notification_url: 'https://veganfit-app.vercel.app/api/webhook',
       external_reference: JSON.stringify({
-        plan: plan,
         email: email,
-        timestamp: Date.now()
+        plan: plan,
+        days: selectedPlan.days
       })
     };
 
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`
+        'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(preference)
     });
@@ -61,7 +85,8 @@ module.exports = async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Erro ao criar preferência');
+      console.error('Erro Mercado Pago:', data);
+      return res.status(500).json({ error: 'Erro ao criar preferência' });
     }
 
     res.status(200).json({
@@ -70,10 +95,7 @@ module.exports = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erro:', error);
-    res.status(500).json({ 
-      error: 'Erro ao processar pagamento',
-      details: error.message 
-    });
+    console.error('Erro ao criar preferência:', error);
+    res.status(500).json({ error: error.message });
   }
 };
