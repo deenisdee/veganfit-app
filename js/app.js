@@ -1854,6 +1854,8 @@ async function redeemPremiumCode(code) {
 
 
 
+
+
 async function activatePremium() {
   const input = document.getElementById('premium-code-input');
   const code = input ? input.value.trim().toUpperCase() : '';
@@ -1864,7 +1866,6 @@ async function activatePremium() {
   }
 
   try {
-    // ✅ CHAMA A API DO MERCADO PAGO
     const response = await fetch('/api/validate-code', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1873,69 +1874,65 @@ async function activatePremium() {
 
     const data = await response.json();
 
-    if (!data.valid) {
+    // ✅ CORRIGIDO: Verifica data.ok ao invés de data.valid
+    if (!data.ok) {
       showNotification('Código Inválido', data.error || 'Código inválido ou expirado');
       return;
     }
 
-    // ✅ DEBUG - MOSTRA O QUE A API RETORNOU
+    // ✅ DEBUG
     console.log('[ACTIVATE] API Response:', {
-      plan: data.plan,
+      token: data.token,
       expiresAt: data.expiresAt,
-      email: data.email
+      expiresInDays: data.expiresInDays
     });
 
-    // ✅ ATIVA PREMIUM COM TOKEN (estado interno seu)
+    // ✅ ATIVA PREMIUM
     isPremium = true;
-    premiumToken = code;
-    premiumExpires = new Date(data.expiresAt).getTime();
+    premiumToken = data.token;
+    premiumExpires = data.expiresAt;
 
-    // ✅ 1) Persiste no storage (seu padrão)
+    // ✅ Persiste no storage
     await storage.set('fit_premium', 'true');
-    await storage.set('fit_premium_token', code);
-    await storage.set('fit_premium_expires', premiumExpires.toString());
+    await storage.set('fit_premium_token', data.token);
+    await storage.set('fit_premium_expires', data.expiresAt.toString());
 
-    // ✅ 2) Também persiste no localStorage (compatibilidade e UI instantânea no iPhone)
+    // ✅ Persiste no localStorage
     try {
       localStorage.setItem('fit_premium', 'true');
-      localStorage.setItem('fit_premium_token', code);
-      localStorage.setItem('fit_premium_expires', premiumExpires.toString());
+      localStorage.setItem('fit_premium_token', data.token);
+      localStorage.setItem('fit_premium_expires', data.expiresAt.toString());
     } catch (e) {
       console.warn('[PREMIUM] localStorage falhou:', e);
     }
 
-    // ✅ 3) Dispara o pipeline oficial de UI (sem reload)
+    // ✅ Sincroniza UI
     if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
       RF.premium.setActive(true);
     } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
       RF.premium.syncUI();
     }
 
-    // ✅ Mantém seu fluxo atual de UI
     updateUI();
 
-    // ✅ Atualiza botões premium (tab bar + menu hambúrguer)
     if (typeof window.updatePremiumButtons === 'function') {
       window.updatePremiumButtons();
     }
 
     _setupPremiumTimers();
 
-    // Calcula dias restantes
-    const daysLeft = Math.ceil((premiumExpires - Date.now()) / (1000 * 60 * 60 * 24));
-
-    // ✅ Fecha o modal ANTES de notificar
+    // ✅ Fecha modal
     if (typeof window.closePremiumModal === 'function') {
       window.closePremiumModal();
     }
 
     showNotification(
       'Premium Ativado! 🎉',
-      `Você tem acesso ilimitado por ${daysLeft} dias!`
+      `Você tem acesso ilimitado por ${data.expiresInDays} dias!`
     );
 
-    console.log('[PREMIUM] Ativado via Mercado Pago', { 
-      expires: new Date(premiumExpires).toISOString() 
+    console.log('[PREMIUM] Ativado!', { 
+      expires: new Date(data.expiresAt).toISOString() 
     });
 
   } catch (e) {
@@ -1947,8 +1944,6 @@ async function activatePremium() {
     }
   }
 }
-
-
 
 
 
@@ -2687,58 +2682,14 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
 
 
 
+
+
 // ==============================
 // START
 // ==============================
-
-// ✅ VERIFICA PREMIUM AO CARREGAR
-async function initPremium() {
-  try {
-    // Tenta carregar do storage primeiro
-    const premiumStatus = await storage.get('fit_premium');
-    const premiumToken = await storage.get('fit_premium_token');
-    const premiumExpires = await storage.get('fit_premium_expires');
-    
-    // Fallback para localStorage
-    const isPremiumLocal = premiumStatus || localStorage.getItem('fit_premium');
-    const tokenLocal = premiumToken || localStorage.getItem('fit_premium_token');
-    const expiresLocal = premiumExpires || localStorage.getItem('fit_premium_expires');
-    
-    if (isPremiumLocal === 'true' && tokenLocal && expiresLocal) {
-      const expiryDate = parseInt(expiresLocal);
-      
-      // Verifica se não expirou
-      if (Date.now() < expiryDate) {
-        isPremium = true;
-        premiumToken = tokenLocal;
-        premiumExpires = expiryDate;
-        
-        console.log('[PREMIUM] Usuário premium carregado!', {
-          expires: new Date(expiryDate).toISOString()
-        });
-        
-        // Sincroniza UI
-        if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
-          RF.premium.syncUI();
-        }
-      } else {
-        // Expirou - limpa tudo
-        console.log('[PREMIUM] Premium expirado, limpando...');
-        await storage.set('fit_premium', 'false');
-        localStorage.removeItem('fit_premium');
-        localStorage.removeItem('fit_premium_token');
-        localStorage.removeItem('fit_premium_expires');
-      }
-    }
-  } catch (error) {
-    console.error('[PREMIUM] Erro ao verificar premium:', error);
-  }
-}
-
-// Inicia verificação de premium
-initPremium();
-
 loadUserData();
+
+
 
 // ================================
 // RENDERIZA ÍCONES LUCIDE AO CARREGAR
@@ -2756,6 +2707,8 @@ setTimeout(() => {
     lucide.createIcons();
   }
 }, 500);
+
+
 
 
 // ================================
