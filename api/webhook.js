@@ -62,15 +62,14 @@ module.exports = async (req, res) => {
       console.log('💳 Pagamento completo:', JSON.stringify(payment, null, 2));
 
       if (payment.status === 'approved') {
-        const externalRef = JSON.parse(payment.external_reference);
-        const email = externalRef.email;
-        const plan = externalRef.plan;
-        
-        const code = generateCode();
-        
-        const expiresAt = plan === 'premium-annual'
-          ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+       const externalRef = JSON.parse(payment.external_reference);
+const email = externalRef.email;
+const plan = externalRef.plan;
+const days = externalRef.days;
+
+const code = generateCode();
+
+const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
         
         // Salva no Firestore
         await db.collection('premium_codes').doc(code).set({
