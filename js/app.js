@@ -3363,7 +3363,7 @@ window.addEventListener('DOMContentLoaded', function() {
 // Inicializa Mercado Pago SDK (DECLARA APENAS UMA VEZ!)
 const mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
 
-// Função para validar código via API
+/* // Função para validar código via API
 async function validatePremiumCodeAPI(code) {
   try {
     const response = await fetch('/api/validate-code', {
@@ -3376,7 +3376,7 @@ async function validatePremiumCodeAPI(code) {
     console.error('Erro ao validar código:', error);
     return { valid: false, error: 'Erro ao validar código' };
   }
-}
+} */
 
 // Função para abrir checkout do Mercado Pago
 window.openPremiumCheckout = async function(plan = 'premium-monthly') {
