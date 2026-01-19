@@ -59,11 +59,11 @@ module.exports = async (req, res) => {
       payer: {
         email: email
       },
-      back_urls: {
-        success: 'https://veganfit-app.vercel.app',
-        failure: 'https://veganfit-app.vercel.app',
-        pending: 'https://veganfit-app.vercel.app'
-      },
+back_urls: {
+  success: 'https://veganfit-app.vercel.app/success.html',
+  failure: 'https://veganfit-app.vercel.app/failure.html',
+  pending: 'https://veganfit-app.vercel.app/pending.html'
+},
       auto_return: 'approved',
       notification_url: 'https://veganfit-app.vercel.app/api/webhook',
       external_reference: JSON.stringify({
