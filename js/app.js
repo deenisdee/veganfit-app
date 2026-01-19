@@ -56,6 +56,40 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+// ===================================
+// OCULTA BOTÃO PREMIUM SE JÁ É PREMIUM
+// ===================================
+
+function hidePremiumButtonIfActive() {
+  const isPremiumStored = localStorage.getItem('fit_premium') === 'true';
+  const premiumExpires = parseInt(localStorage.getItem('fit_premium_expires'));
+  const now = Date.now();
+  
+  // Se é premium e não expirou
+  if (isPremiumStored && premiumExpires && now < premiumExpires) {
+    // Oculta TODOS os botões que abrem o modal premium
+    const buttons = document.querySelectorAll('#premium-btn, [onclick*="openPremiumModal"]');
+    buttons.forEach(btn => {
+      btn.style.display = 'none';
+    });
+    console.log('[PREMIUM] Botões ocultados (usuário premium ativo)');
+  }
+}
+
+// Executa IMEDIATAMENTE
+hidePremiumButtonIfActive();
+
+// Executa quando DOM carregar (garantia)
+document.addEventListener('DOMContentLoaded', hidePremiumButtonIfActive);
+
+
+
+
+
+
+
+
 // TÉCNICAS ANTI-BURLA (DevTools)
 // Dificuldade: ⭐⭐⭐☆☆ (só dev experiente consegue)
 // ============================================
@@ -3637,8 +3671,6 @@ async function selectPlanWithValidation(plan) {
 }
 
 
-
-
 // Ativar trial de 5 dias
 async function activateTrial() {
   try {
@@ -3674,7 +3706,7 @@ async function activateTrial() {
     localStorage.setItem('fit_premium_token', trialCode);
     localStorage.setItem('fit_premium_expires', expiresAt.toString());
     
-    // ✅ DISPARA PIPELINE DE UI (IGUAL AO CÓDIGO)
+    // ✅ DISPARA PIPELINE DE UI
     if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
       RF.premium.setActive(true);
     } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
@@ -3694,8 +3726,12 @@ async function activateTrial() {
       _setupPremiumTimers();
     }
     
-	await new Promise(resolve => setTimeout(resolve, 500));
-	
+    // ✅ AGUARDA 500ms PRA GARANTIR QUE SALVOU
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // ✅ OCULTA BOTÕES PREMIUM
+    hidePremiumButtonIfActive();
+    
     // ✅ FECHA MODAL
     closePremiumModal();
     
@@ -3763,8 +3799,6 @@ async function processPayment(plan) {
 
 
 
-
-
 // Ativar com código
 async function activatePremiumWithCode() {
   const input = document.getElementById('premium-code-input');
@@ -3794,33 +3828,48 @@ async function activatePremiumWithCode() {
 
     console.log('[ACTIVATE] Código validado:', data);
 
-    // Ativa premium
+    // ✅ ATIVA PREMIUM
     isPremium = true;
     premiumToken = data.token;
     premiumExpires = data.expiresAt;
 
+    // ✅ SALVA NO STORAGE
     await storage.set('fit_premium', 'true');
     await storage.set('fit_premium_token', data.token);
     await storage.set('fit_premium_expires', data.expiresAt.toString());
 
+    // ✅ SALVA NO LOCALSTORAGE
     localStorage.setItem('fit_premium', 'true');
     localStorage.setItem('fit_premium_token', data.token);
     localStorage.setItem('fit_premium_expires', data.expiresAt.toString());
 
+    // ✅ DISPARA PIPELINE DE UI
     if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
       RF.premium.setActive(true);
     } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
       RF.premium.syncUI();
     }
 
+    // ✅ ATUALIZA UI
     updateUI();
 
+    // ✅ ATUALIZA BOTÕES PREMIUM
     if (typeof window.updatePremiumButtons === 'function') {
       window.updatePremiumButtons();
     }
 
-    _setupPremiumTimers();
+    // ✅ SETUP TIMERS
+    if (typeof _setupPremiumTimers === 'function') {
+      _setupPremiumTimers();
+    }
 
+    // ✅ AGUARDA 500ms PRA GARANTIR QUE SALVOU
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // ✅ OCULTA BOTÕES PREMIUM
+    hidePremiumButtonIfActive();
+
+    // ✅ FECHA MODAL
     closePremiumModal();
 
     showNotification(
