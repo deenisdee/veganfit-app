@@ -4226,8 +4226,8 @@ font-size:14px;
 
 /* TAB 1: FORMULÁRIO */
 .signup-form {
-  max-width: 450px;
-  margin: 0 auto;
+    max-width: 450px;
+    margin: 0px 0px 20px 173px;
 }
 
 .form-group {
@@ -4522,6 +4522,13 @@ font-size:14px;
 
 /* RESPONSIVO */
 @media (max-width: 768px) {
+	
+	/* TAB 1: FORMULÁRIO */
+.signup-form {
+    max-width: 450px;
+    margin: 0 auto;
+}
+	
   .plans-grid-new {
     grid-template-columns: 1fr;
   }
