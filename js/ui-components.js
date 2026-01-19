@@ -45,6 +45,17 @@
         return isPremiumStored && premiumExpires && now < premiumExpires;
     }
 
+    // ✅ CALCULAR DIAS RESTANTES
+    function getPremiumDaysLeft() {
+        const premiumExpires = parseInt(localStorage.getItem('fit_premium_expires'));
+        if (!premiumExpires) return 0;
+        
+        const now = Date.now();
+        const daysLeft = Math.ceil((premiumExpires - now) / (1000 * 60 * 60 * 24));
+        
+        return daysLeft > 0 ? daysLeft : 0;
+    }
+
     // --------- PLANNER DROPDOWN ---------
     function getPlannerDropdown() {
         let dd = document.querySelector('.planner-dropdown');
@@ -107,6 +118,12 @@
 
     // --------- PREMIUM OPEN ---------
     window.openPremium = function(source) {
+        // ✅ NÃO ABRE SE JÁ É PREMIUM
+        if (isPremiumActive()) {
+            console.log('[PREMIUM] Usuário já é premium, ignorando');
+            return;
+        }
+
         try {
             window.__premium_open_source = source || 'unknown';
         } catch (_) {}
@@ -125,7 +142,9 @@
 	
 	
 	
-	// --------- TAB BAR RENDER ---------
+	
+	
+// --------- TAB BAR RENDER ---------
 function renderTabbar(root) {
     if (!root) return;
     
@@ -140,6 +159,7 @@ function renderTabbar(root) {
 
     // ✅ VERIFICA SE É PREMIUM
     const isPremium = isPremiumActive();
+    const daysLeft = getPremiumDaysLeft();
 
     root.innerHTML = `
         <div class="tab-bar" id="rf-tabbar">
@@ -158,12 +178,10 @@ function renderTabbar(root) {
                 <span class="tab-label">Planner</span>
             </button>
 
-            ${!isPremium ? `
-            <button class="tab-item tab-premium" type="button" aria-label="Premium" data-tab="premium">
+            <button class="tab-item tab-premium ${isPremium ? 'tab-premium-active' : ''}" type="button" aria-label="Premium" data-tab="premium">
                 <i data-lucide="star" class="tab-icon"></i>
-                <span class="tab-label">Premium</span>
+                <span class="tab-label">${isPremium ? `Premium (${daysLeft}D)` : 'Premium'}</span>
             </button>
-            ` : ''}
         </div>
     `;
 
@@ -189,97 +207,107 @@ function renderTabbar(root) {
     }
 
     applyActiveFromStorage();
+
+    
 }
+
+
 
 // --------- HAMBURGER MENU RENDER ---------
-function renderHamburger(root) {
-    if (!root) return;
-    if (root.dataset.mounted === '1') return;
-    root.dataset.mounted = '1';
+    function renderHamburger(root) {
+        if (!root) return;
+        if (root.dataset.mounted === '1') return;
+        root.dataset.mounted = '1';
 
-    // ✅ VERIFICA SE É PREMIUM
-    const isPremium = isPremiumActive();
+        // ✅ VERIFICA SE É PREMIUM
+        const isPremium = isPremiumActive();
+        const daysLeft = getPremiumDaysLeft();
 
-    root.innerHTML = `
-        <div id="hamburger-menu" class="hamburger-menu hidden">
-            <div class="hamburger-overlay" onclick="window.closeHamburgerMenu && window.closeHamburgerMenu()"></div>
-            <div class="hamburger-content">
-                <div class="hamburger-header">
-                    <div class="hamburger-logo">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
-                            <line x1="6" y1="17" x2="18" y2="17"/>
-                        </svg>
-                        <span>Vegan<span style="color: #16a34a;">fit</span><span style="opacity: 0.7;">.App</span></span>
-                    </div>
-                    <button class="hamburger-close tap" onclick="window.closeHamburgerMenu && window.closeHamburgerMenu()" aria-label="Fechar menu">
-                        <i data-lucide="x"></i>
-                    </button>
-                </div>
-                
-                <nav class="hamburger-nav">
-                    <div class="hamburger-section">
-                        <div class="hamburger-section-title">
-                            <i data-lucide="calendar-days"></i>
-                            <span>Planner</span>
+        root.innerHTML = `
+            <div id="hamburger-menu" class="hamburger-menu hidden">
+                <div class="hamburger-overlay" onclick="window.closeHamburgerMenu && window.closeHamburgerMenu()"></div>
+                <div class="hamburger-content">
+                    <div class="hamburger-header">
+                        <div class="hamburger-logo">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+                                <line x1="6" y1="17" x2="18" y2="17"/>
+                            </svg>
+                            <span>Vegan<span style="color: #16a34a;">fit</span><span style="opacity: 0.7;">.App</span></span>
                         </div>
-                        <a href="index.html?tool=calculator" class="hamburger-link hamburger-sublink tap">
-                            <i data-lucide="calculator"></i>
-                            <span>Calculadora de Calorias</span>
-                        </a>
-                        <a href="index.html?tool=shopping" class="hamburger-link hamburger-sublink tap">
-                            <i data-lucide="shopping-cart"></i>
-                            <span>Lista de Compras</span>
-                        </a>
-                        <a href="index.html?tool=planner" class="hamburger-link hamburger-sublink tap">
-                            <i data-lucide="calendar-check"></i>
-                            <span>Planejador Semanal</span>
-                        </a>
+                        <button class="hamburger-close tap" onclick="window.closeHamburgerMenu && window.closeHamburgerMenu()" aria-label="Fechar menu">
+                            <i data-lucide="x"></i>
+                        </button>
                     </div>
                     
-                    <div class="hamburger-divider"></div>
-                    
-                    <a href="quem-somos.html" class="hamburger-link tap">
-                        <i data-lucide="users"></i>
-                        <span>Quem Somos</span>
-                    </a>
-                    
-                    <a href="index.html?tool=faq" class="hamburger-link tap">
-                        <i data-lucide="help-circle"></i>
-                        <span>Ajuda</span>
-                    </a>
-                    
-                    <a href="https://instagram.com/Veganfit.app" target="_blank" rel="noopener noreferrer" class="hamburger-link tap">
-                        <i data-lucide="instagram"></i>
-                        <span>Instagram</span>
-                    </a>
-                    
-                    <div class="hamburger-divider"></div>
-                    
-                    ${!isPremium ? `
-                    <button class="hamburger-premium-btn tap" id="hamburger-premium-btn" onclick="if (!/index\\.html/i.test(location.pathname) && location.pathname !== '/') { window.location.href = 'index.html?open=premium'; } else { window.openPremiumModal && window.openPremiumModal(); window.closeHamburgerMenu && window.closeHamburgerMenu(); }">
-                        <i data-lucide="star"></i>
-                        <span id="hamburger-premium-text">Seja Premium</span>
-                    </button>
-                    ` : ''}
-                </nav>
+                    <nav class="hamburger-nav">
+                        <div class="hamburger-section">
+                            <div class="hamburger-section-title">
+                                <i data-lucide="calendar-days"></i>
+                                <span>Planner</span>
+                            </div>
+                            <a href="index.html?tool=calculator" class="hamburger-link hamburger-sublink tap">
+                                <i data-lucide="calculator"></i>
+                                <span>Calculadora de Calorias</span>
+                            </a>
+                            <a href="index.html?tool=shopping" class="hamburger-link hamburger-sublink tap">
+                                <i data-lucide="shopping-cart"></i>
+                                <span>Lista de Compras</span>
+                            </a>
+                            <a href="index.html?tool=planner" class="hamburger-link hamburger-sublink tap">
+                                <i data-lucide="calendar-check"></i>
+                                <span>Planejador Semanal</span>
+                            </a>
+                        </div>
+                        
+                        <div class="hamburger-divider"></div>
+                        
+                        <a href="quem-somos.html" class="hamburger-link tap">
+                            <i data-lucide="users"></i>
+                            <span>Quem Somos</span>
+                        </a>
+                        
+                        <a href="index.html?tool=faq" class="hamburger-link tap">
+                            <i data-lucide="help-circle"></i>
+                            <span>Ajuda</span>
+                        </a>
+                        
+                        <a href="https://instagram.com/Veganfit.app" target="_blank" rel="noopener noreferrer" class="hamburger-link tap">
+                            <i data-lucide="instagram"></i>
+                            <span>Instagram</span>
+                        </a>
+                        
+                        <div class="hamburger-divider"></div>
+                        
+                        <button class="hamburger-premium-btn tap ${isPremium ? 'hamburger-premium-active' : ''}" id="hamburger-premium-btn" ${isPremium ? 'disabled' : ''} onclick="if (!${isPremium}) { if (!/index\\.html/i.test(location.pathname) && location.pathname !== '/') { window.location.href = 'index.html?open=premium'; } else { window.openPremiumModal && window.openPremiumModal(); window.closeHamburgerMenu && window.closeHamburgerMenu(); } }">
+                            <i data-lucide="star"></i>
+                            <span id="hamburger-premium-text">${isPremium ? `Premium Ativo (${daysLeft}D)` : 'Seja Premium'}</span>
+                        </button>
+                    </nav>
+                </div>
             </div>
-        </div>
-    `;
+        `;
 
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-        window.lucide.createIcons();
-    }
-
-    // Atualiza premium após renderizar
-    setTimeout(() => {
-        if (typeof window.updatePremiumButtons === 'function') {
-            window.updatePremiumButtons();
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
         }
-    }, 200);
-}
 
-// --------- ANEXAÇÃO FORÇADA DE LISTENERS (sempre funciona) ---------
+        // Atualiza premium após renderizar
+        setTimeout(() => {
+            if (typeof window.updatePremiumButtons === 'function') {
+                window.updatePremiumButtons();
+            }
+        }, 200);
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	// --------- ANEXAÇÃO FORÇADA DE LISTENERS (sempre funciona) ---------
 function attachTabbarListeners() {
     const buttons = document.querySelectorAll('.tab-item');
     if (buttons.length === 0) {
@@ -360,7 +388,7 @@ function attachTabbarListeners() {
 
             // 4) Premium
             if (tab === 'premium') {
-                // ✅ VERIFICA SE JÁ É PREMIUM
+                // ✅ NÃO ABRE SE JÁ É PREMIUM
                 if (isPremiumActive()) {
                     console.log('[PREMIUM] Usuário já é premium, ignorando clique');
                     return;
@@ -433,8 +461,9 @@ function mount() {
 
 document.addEventListener('DOMContentLoaded', mount);
 
-// ✅ EXPÕE isPremiumActive GLOBALMENTE
+// ✅ EXPÕE FUNÇÕES GLOBALMENTE
 window.isPremiumActive = isPremiumActive;
+window.getPremiumDaysLeft = getPremiumDaysLeft;
 
 // ✅ FUNÇÃO PARA RECARREGAR COMPONENTES (após ativar premium)
 window.reloadUIComponents = function() {
@@ -464,5 +493,6 @@ window.reloadUIComponents = function() {
 };
 
 })();
+
 
 
