@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { code } = req.body;
+    const { code, email } = req.body;
 
     if (!code || typeof code !== 'string') {
       return res.status(400).json({ 
@@ -38,16 +38,19 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Normaliza código
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Email ausente' 
+      });
+    }
+
+    // Normaliza código e email
     const normalized = code.trim().toUpperCase();
-
+    const normalizedEmail = email.trim().toLowerCase();
     
-
-console.log('🔍 Buscando código:', normalized);
-console.log('🔍 Caminho Firestore:', `premium_codes/${normalized}`);
-
+    console.log('🔍 Validando:', { code: normalized, email: normalizedEmail });
     
-
     // Busca código no Firestore
     const docRef = db.collection('premium_codes').doc(normalized);
     const doc = await docRef.get();
@@ -61,6 +64,26 @@ console.log('🔍 Caminho Firestore:', `premium_codes/${normalized}`);
 
     const subscription = doc.data();
     const expiresAt = subscription.expiresAt.toDate().getTime();
+
+    // ✅ VALIDA SE EMAIL É O MESMO QUE COMPROU
+    if (subscription.email.toLowerCase() !== normalizedEmail) {
+      console.log('❌ Email não corresponde:', {
+        emailCodigo: subscription.email,
+        emailDigitado: normalizedEmail
+      });
+      return res.status(401).json({ 
+        ok: false, 
+        error: 'Este código pertence a outro email' 
+      });
+    }
+
+    // ✅ VALIDA SE JÁ FOI USADO
+    if (subscription.usedBy && subscription.usedBy !== normalizedEmail) {
+      return res.status(401).json({ 
+        ok: false, 
+        error: 'Este código já foi ativado em outra conta' 
+      });
+    }
 
     // Verifica expiração
     if (Date.now() > expiresAt) {
@@ -78,10 +101,19 @@ console.log('🔍 Caminho Firestore:', `premium_codes/${normalized}`);
       });
     }
 
+    // ✅ MARCA CÓDIGO COMO USADO
+    if (!subscription.usedBy) {
+      await docRef.update({
+        usedBy: normalizedEmail,
+        usedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      console.log('✅ Código marcado como usado por:', normalizedEmail);
+    }
+
     // Calcula dias restantes
     const expiresInDays = Math.ceil((expiresAt - Date.now()) / (1000 * 60 * 60 * 24));
 
-    // Gera token (compatível com sistema antigo)
+    // Gera token
     const tokenData = {
       code: normalized,
       activated: Date.now(),
@@ -90,14 +122,12 @@ console.log('🔍 Caminho Firestore:', `premium_codes/${normalized}`);
     
     const token = Buffer.from(JSON.stringify(tokenData)).toString('base64');
 
-    // Log
-    console.log('[REDEEM] Código validado:', {
+    console.log('[VALIDATE] Código validado com sucesso:', {
       code: normalized,
-      expiresInDays,
-      email: subscription.email
+      email: normalizedEmail,
+      expiresInDays
     });
 
-    // Retorna NO MESMO FORMATO do redeem.js
     res.status(200).json({
       ok: true,
       premium: true,
