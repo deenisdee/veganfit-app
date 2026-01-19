@@ -1540,7 +1540,7 @@ body.premium-active #premium-btn {
 }
 
 .modal-content-small .modal-title {
-  font-size: 1.5rem;
+  font-size: 1.rem !important;
   font-weight: 600;
   color: #1f2937;
   margin-bottom: 1rem;
@@ -4279,7 +4279,7 @@ font-size:14px;
 .plans-grid-new {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+  gap: 15px !important;
   margin-bottom: 20px;
 }
 
@@ -4410,6 +4410,7 @@ font-size:14px;
 }
 
 .plan-btn-new {
+	height:50px!important;
   width: 100%;
   padding: 12px;
   border: none;
@@ -4535,4 +4536,63 @@ font-size:14px;
   .tab-label {
     font-size: 11px;
   }
+}
+
+
+
+/* ================================
+   FIX PARA IPHONE - MODAL PREMIUM
+   ================================ */
+
+/* Viewport height fix */
+@supports (-webkit-touch-callout: none) {
+  .modal {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Modal overlay fix */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Modal content fix */
+.modal-content {
+  position: relative;
+  max-height: 90vh;
+  max-height: calc(var(--vh, 1vh) * 90);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.premium-modal-content {
+  max-height: 90vh;
+  max-height: calc(var(--vh, 1vh) * 90);
+}
+
+/* Safe area pra iPhones com notch */
+.modal-header {
+  padding-top: max(16px, env(safe-area-inset-top));
+}
+
+/* Previne zoom no input */
+.form-group input,
+.code-input-new {
+  font-size: 16px !important;
+}
+
+/* Fix de scroll no body quando modal aberto */
+body.modal-open {
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
 }
