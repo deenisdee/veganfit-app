@@ -66,11 +66,14 @@ back_urls: {
 },
       auto_return: 'approved',
       notification_url: 'https://veganfit-app.vercel.app/api/webhook',
-      external_reference: JSON.stringify({
-        email: email,
-        plan: plan,
-        days: selectedPlan.days
-      })
+    
+  external_reference: JSON.stringify({
+  email: email,
+  plan: plan,
+  days: selectedPlan.days,
+  name: req.body.name || 'Não informado',
+  phone: req.body.phone || 'Não informado'
+})
     };
 
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
