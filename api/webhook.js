@@ -62,16 +62,17 @@ module.exports = async (req, res) => {
       console.log('💳 Pagamento completo:', JSON.stringify(payment, null, 2));
 
       if (payment.status === 'approved') {
-       const externalRef = JSON.parse(payment.external_reference);
-const email = externalRef.email;
-const plan = externalRef.plan;
-const days = externalRef.days;
-
-const code = generateCode();
-
-const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+        const externalRef = JSON.parse(payment.external_reference);
+        const email = externalRef.email;
+        const plan = externalRef.plan;
+        const days = externalRef.days;
+        const name = externalRef.name || 'Não informado';
+        const phone = externalRef.phone || 'Não informado';
         
-        // Salva no Firestore
+        const code = generateCode();
+        const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+        
+        // ✅ 1) Salva código no Firestore
         await db.collection('premium_codes').doc(code).set({
           email: email,
           plan: plan,
@@ -81,15 +82,33 @@ const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
           paymentId: payment.id
         });
 
+        // ✅ 2) Salva usuário no Firestore
+        await db.collection('users').doc(email).set({
+          email: email,
+          name: name,
+          phone: phone,
+          plan: plan,
+          code: code,
+          expiresAt: expiresAt,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          status: 'active',
+          paymentId: payment.id
+        }, { merge: true });
+
         console.log(`
 ========================================
 NOVO PAGAMENTO APROVADO!
 Email: ${email}
+Nome: ${name}
+Telefone: ${phone}
 Plano: ${plan}
 Código: ${code}
 Válido até: ${expiresAt.toLocaleDateString('pt-BR')}
 ========================================
         `);
+
+        console.log('✅ Código salvo em premium_codes');
+        console.log('✅ Usuário salvo em users');
       }
     }
 
