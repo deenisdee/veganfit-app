@@ -10,7 +10,29 @@
 
 
 
+// ===================================
+// VERIFICAÇÃO PREMIUM INICIAL (EVITA FLASH)
+// ===================================
 
+(function() {
+  // Verifica IMEDIATAMENTE se é premium (antes de qualquer coisa)
+  const isPremiumStored = localStorage.getItem('fit_premium') === 'true';
+  const premiumExpires = parseInt(localStorage.getItem('fit_premium_expires'));
+  const now = Date.now();
+  
+  // Se é premium e não expirou
+  if (isPremiumStored && premiumExpires && now < premiumExpires) {
+    document.body.classList.add('is-premium');
+    console.log('[INIT] Premium detectado, ocultando botão');
+  } else if (isPremiumStored && (!premiumExpires || now >= premiumExpires)) {
+    // Premium expirado - limpa
+    localStorage.removeItem('fit_premium');
+    localStorage.removeItem('fit_premium_token');
+    localStorage.removeItem('fit_premium_expires');
+    document.body.classList.remove('is-premium');
+    console.log('[INIT] Premium expirado, limpando dados');
+  }
+})();
 
 
 // ===================================
@@ -3696,6 +3718,8 @@ async function activateTrial() {
       _setupPremiumTimers();
     }
     
+	await new Promise(resolve => setTimeout(resolve, 500));
+	
     // ✅ FECHA MODAL
     closePremiumModal();
     
