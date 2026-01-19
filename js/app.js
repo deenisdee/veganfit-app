@@ -3684,7 +3684,9 @@ async function activateTrial() {
   }
 }
 
-// Processar pagamento (Mercado Pago)
+
+
+
 async function processPayment(plan) {
   try {
     const response = await fetch('/api/create-preference', {
@@ -3692,7 +3694,9 @@ async function processPayment(plan) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         plan: plan, 
-        email: userData.email 
+        email: userData.email,
+        name: userData.name,      // ← ADICIONA
+        phone: userData.phone     // ← ADICIONA
       })
     });
 
@@ -3703,7 +3707,7 @@ async function processPayment(plan) {
       window.mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
     }
 
-    // ✅ MARCA QUE ESTÁ AGUARDANDO PAGAMENTO
+    // Marca que está aguardando pagamento
     sessionStorage.setItem('vf_awaiting_payment', 'true');
 
     // Abre checkout
@@ -3712,21 +3716,27 @@ async function processPayment(plan) {
       autoOpen: true
     });
 
-    // ✅ AGUARDA FECHAR POPUP DO MP E AUTO-SWITCH PRA ABA 3
+    // Auto-switch pra aba 3
     setTimeout(() => {
       const isAwaiting = sessionStorage.getItem('vf_awaiting_payment');
       if (isAwaiting === 'true') {
-        switchTab(3); // Vai pra aba de código
+        switchTab(3);
         sessionStorage.removeItem('vf_awaiting_payment');
         showNotification('💳 Pagamento Processado', 'Digite o código que você recebeu por e-mail');
       }
-    }, 3000); // 3 segundos após abrir MP
+    }, 3000);
 
   } catch (error) {
     console.error('Erro ao processar pagamento:', error);
     showNotification('Erro', 'Erro ao processar pagamento. Tente novamente.');
   }
 }
+
+
+
+
+
+
 
 // Ativar com código
 async function activatePremiumWithCode() {
@@ -3830,3 +3840,26 @@ function closePremiumModal() {
   document.body.classList.remove('modal-open');
   document.body.style.overflow = '';
 }
+
+
+
+
+// ===================================
+// MÁSCARA DE TELEFONE
+// ===================================
+
+document.getElementById('user-phone')?.addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
+  
+  if (value.length <= 11) {
+    // Formato: (11) 99999-9999
+    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+    value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+  } else {
+    value = value.substring(0, 11);
+    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+    value = value.replace(/(\d)(\d{4})$/, '$1-$2');
+  }
+  
+  e.target.value = value;
+});
