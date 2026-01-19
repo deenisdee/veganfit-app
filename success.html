@@ -13,7 +13,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      background: #fff);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -22,14 +22,14 @@
     }
 
     .container {
-      background: white;
-      border-radius: 24px;
-      padding: 48px;
-      max-width: 500px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(22, 163, 74, 0.15);
-      animation: fadeInUp 0.5s ease-out;
+    background: white;
+    border-radius: 22px;
+    padding: 48px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgb(158 158 158 / 52%);
+    animation: fadeInUp 0.5s ease-out;
     }
 
     @keyframes fadeInUp {
@@ -143,23 +143,23 @@
       </svg>
     </div>
 
-    <h1>Pagamento Aprovado! 🎉</h1>
+    <h1>Pagamento Aprovado! </h1>
     
     <p>Seu pedido foi processado com <span class="highlight">sucesso</span>!</p>
     
-    <p>Em instantes você receberá um <span class="highlight">código premium</span> no seu e-mail.</p>
+    <p>Em instantes você receberá um <span class="highlight">código premium</span> no seu e-mail.
     
-    <p>Use este código para ativar seu plano VeganFit Premium.</p>
+    Use este código para ativar seu plano</p> <p> <span class="highlight">VeganFit Premium.</span></p>
 
     <div class="loader"></div>
     
     <p class="redirect-text">
-      Redirecionando em <span class="countdown" id="countdown">3</span> segundos...
+      Redirecionando em <span class="countdown" id="countdown">10</span> segundos...
     </p>
   </div>
 
   <script>
-    let seconds = 3;
+    let seconds = 10;
     const countdownEl = document.getElementById('countdown');
     
     const timer = setInterval(() => {
