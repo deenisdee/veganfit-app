@@ -3480,34 +3480,34 @@ async function selectPlan(plan) {
 
 
 // ===================================
-// NOVO SISTEMA PREMIUM - 3 STEPS
+// SISTEMA PREMIUM - ABAS NAVEGÁVEIS
 // ===================================
 
-let currentStep = 1;
 let userData = {
   name: '',
   email: '',
-  phone: ''
+  phone: '',
+  registered: false
 };
 
-// Navegar entre steps
-function goToStep(step) {
-  // Remove active de todos os steps
-  document.querySelectorAll('.premium-step').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.progress-step').forEach(s => s.classList.remove('active'));
+// Trocar de aba (navegação livre)
+function switchTab(tabNumber) {
+  // Remove active de todas as abas
+  document.querySelectorAll('.premium-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.premium-tab-content').forEach(content => content.classList.remove('active'));
   
-  // Ativa step selecionado
-  document.getElementById(`step-${step}`).classList.add('active');
-  document.querySelector(`.progress-step[data-step="${step}"]`).classList.add('active');
+  // Ativa aba selecionada
+  document.querySelector(`.premium-tab-btn:nth-child(${tabNumber})`).classList.add('active');
+  document.getElementById(`tab-${tabNumber}`).classList.add('active');
   
-  currentStep = step;
+  console.log('[TAB] Mudou para aba', tabNumber);
 }
 
-// STEP 1: Formulário de cadastro
-document.getElementById('signup-form')?.addEventListener('submit', async function(e) {
+// Formulário de cadastro
+document.getElementById('signup-form')?.addEventListener('submit', function(e) {
   e.preventDefault();
   
-  // Captura dados do formulário
+  // Captura dados
   userData.name = document.getElementById('user-name').value.trim();
   userData.email = document.getElementById('user-email').value.trim().toLowerCase();
   userData.phone = document.getElementById('user-phone').value.trim();
@@ -3518,26 +3518,68 @@ document.getElementById('signup-form')?.addEventListener('submit', async functio
     return;
   }
   
-  // Valida email
   if (!userData.email.includes('@')) {
     showNotification('Aviso', 'Digite um email válido');
     return;
   }
   
-  console.log('[SIGNUP] Dados capturados:', userData);
+  // Marca como registrado
+  userData.registered = true;
   
-  // Vai pro step 2
-  goToStep(2);
+  // Salva no localStorage (auto-preenchimento futuro)
+  try {
+    localStorage.setItem('vf_user_name', userData.name);
+    localStorage.setItem('vf_user_email', userData.email);
+    localStorage.setItem('vf_user_phone', userData.phone);
+  } catch (e) {
+    console.warn('[STORAGE] Falha ao salvar dados:', e);
+  }
+  
+  console.log('[CADASTRO] Salvo:', userData);
+  
+  showNotification('✅ Cadastro Completo!', 'Agora escolha seu plano');
+  
+  // Vai pra aba de planos
+  switchTab(2);
 });
 
-// STEP 2: Seleção de plano
-async function selectPlanNew(plan) {
+// Auto-preencher formulário se já cadastrou antes
+function autoFillForm() {
+  try {
+    const savedName = localStorage.getItem('vf_user_name');
+    const savedEmail = localStorage.getItem('vf_user_email');
+    const savedPhone = localStorage.getItem('vf_user_phone');
+    
+    if (savedName && savedEmail && savedPhone) {
+      document.getElementById('user-name').value = savedName;
+      document.getElementById('user-email').value = savedEmail;
+      document.getElementById('user-phone').value = savedPhone;
+      
+      userData.name = savedName;
+      userData.email = savedEmail;
+      userData.phone = savedPhone;
+      userData.registered = true;
+      
+      console.log('[AUTO-FILL] Dados carregados do localStorage');
+    }
+  } catch (e) {
+    console.warn('[AUTO-FILL] Erro:', e);
+  }
+}
+
+// Selecionar plano COM VALIDAÇÃO
+async function selectPlanWithValidation(plan) {
+  // ✅ VALIDA SE PREENCHEU CADASTRO
+  if (!userData.registered) {
+    showNotification('⚠️ Cadastro Necessário', 'Complete o cadastro antes de escolher um plano');
+    switchTab(1); // Força voltar pra aba 1
+    return;
+  }
+  
   try {
     if (plan === 'trial') {
-      // ✅ TRIAL DE 5 DIAS GRÁTIS
       await activateTrial();
     } else {
-      // ✅ PLANOS PAGOS (monthly ou annual)
       await processPayment(plan);
     }
   } catch (error) {
@@ -3549,9 +3591,8 @@ async function selectPlanNew(plan) {
 // Ativar trial de 5 dias
 async function activateTrial() {
   try {
-    // Gera código trial
     const trialCode = 'TRIAL-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-    const expiresAt = Date.now() + (5 * 24 * 60 * 60 * 1000); // 5 dias
+    const expiresAt = Date.now() + (5 * 24 * 60 * 60 * 1000);
     
     // Salva usuário no Firestore
     const response = await fetch('/api/create-user', {
@@ -3572,7 +3613,6 @@ async function activateTrial() {
     premiumToken = trialCode;
     premiumExpires = expiresAt;
     
-    // Salva localmente
     await storage.set('fit_premium', 'true');
     await storage.set('fit_premium_token', trialCode);
     await storage.set('fit_premium_expires', expiresAt.toString());
@@ -3581,19 +3621,14 @@ async function activateTrial() {
     localStorage.setItem('fit_premium_token', trialCode);
     localStorage.setItem('fit_premium_expires', expiresAt.toString());
     
-    // Atualiza UI
     updateUI();
     if (typeof window.updatePremiumButtons === 'function') {
       window.updatePremiumButtons();
     }
     
-    // Fecha modal
     closePremiumModal();
     
-    showNotification(
-      '🎉 Trial Ativado!',
-      'Você tem 5 dias de acesso premium grátis!'
-    );
+    showNotification('🎉 Trial Ativado!', 'Você tem 5 dias de acesso premium grátis!');
     
     console.log('[TRIAL] Ativado:', { code: trialCode, expires: new Date(expiresAt) });
     
@@ -3619,8 +3654,11 @@ async function processPayment(plan) {
 
     // Inicializa MP
     if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago(process.env.MP_PUBLIC_KEY || 'APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
+      window.mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
     }
+
+    // ✅ MARCA QUE ESTÁ AGUARDANDO PAGAMENTO
+    sessionStorage.setItem('vf_awaiting_payment', 'true');
 
     // Abre checkout
     mp.checkout({
@@ -3628,26 +3666,29 @@ async function processPayment(plan) {
       autoOpen: true
     });
 
+    // ✅ AGUARDA FECHAR POPUP DO MP E AUTO-SWITCH PRA ABA 3
+    setTimeout(() => {
+      const isAwaiting = sessionStorage.getItem('vf_awaiting_payment');
+      if (isAwaiting === 'true') {
+        switchTab(3); // Vai pra aba de código
+        sessionStorage.removeItem('vf_awaiting_payment');
+        showNotification('💳 Pagamento Processado', 'Digite o código que você recebeu por e-mail');
+      }
+    }, 3000); // 3 segundos após abrir MP
+
   } catch (error) {
     console.error('Erro ao processar pagamento:', error);
     showNotification('Erro', 'Erro ao processar pagamento. Tente novamente.');
   }
 }
 
-// STEP 3: Ativar com código
+// Ativar com código
 async function activatePremiumWithCode() {
   const input = document.getElementById('premium-code-input');
   const code = input ? input.value.trim().toUpperCase() : '';
   
   if (!code) {
     showNotification('Aviso', 'Digite um código válido');
-    return;
-  }
-  
-  // Se não tem dados do usuário, pede
-  if (!userData.email) {
-    showNotification('Aviso', 'Volte ao cadastro para preencher seus dados');
-    goToStep(1);
     return;
   }
 
@@ -3657,7 +3698,7 @@ async function activatePremiumWithCode() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         code: code,
-        email: userData.email 
+        email: userData.email || 'unknown@email.com'
       })
     });
 
@@ -3675,7 +3716,6 @@ async function activatePremiumWithCode() {
     premiumToken = data.token;
     premiumExpires = data.expiresAt;
 
-    // Salva
     await storage.set('fit_premium', 'true');
     await storage.set('fit_premium_token', data.token);
     await storage.set('fit_premium_expires', data.expiresAt.toString());
@@ -3684,7 +3724,6 @@ async function activatePremiumWithCode() {
     localStorage.setItem('fit_premium_token', data.token);
     localStorage.setItem('fit_premium_expires', data.expiresAt.toString());
 
-    // Atualiza UI
     if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
       RF.premium.setActive(true);
     } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
@@ -3716,18 +3755,20 @@ async function activatePremiumWithCode() {
   }
 }
 
-// Reset modal ao abrir
+// Abrir modal
 function openPremiumModal(source) {
   document.getElementById('premium-modal').classList.remove('hidden');
-  goToStep(1); // Sempre começa no step 1
   
-  // Limpa formulário
-  document.getElementById('signup-form')?.reset();
+  // Auto-preenche se já cadastrou antes
+  autoFillForm();
+  
+  // Sempre abre na aba 1
+  switchTab(1);
   
   console.log('[MODAL] Aberto de:', source);
 }
 
+// Fechar modal
 function closePremiumModal() {
   document.getElementById('premium-modal').classList.add('hidden');
-  currentStep = 1;
 }
