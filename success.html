@@ -133,6 +133,40 @@
         font-size: 15px;
       }
     }
+	
+	
+	
+	
+	
+	
+	/* FIX PARA IPHONE */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Safe area para iPhones com notch */
+.container {
+  padding: max(48px, env(safe-area-inset-top) + 24px) 
+           max(48px, env(safe-area-inset-right) + 24px) 
+           max(48px, env(safe-area-inset-bottom) + 24px) 
+           max(48px, env(safe-area-inset-left) + 24px);
+}
+
+/* Ajuste de viewport */
+html {
+  height: -webkit-fill-available;
+}
+
+/* Previne zoom no input (causa desalinhamento) */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+
+
+
   </style>
 </head>
 <body>
@@ -172,5 +206,7 @@
       }
     }, 1000);
   </script>
+  
+  
 </body>
 </html>
