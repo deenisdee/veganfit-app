@@ -4609,7 +4609,7 @@ body.modal-open {
 
 /* Tab bar - botão premium ativo */
 .tab-premium-active {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+  background: #fff !important;
   color: white !important;
   pointer-events: none;
   cursor: default;
