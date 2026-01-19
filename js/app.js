@@ -3801,9 +3801,16 @@ async function activatePremiumWithCode() {
   }
 }
 
+
+
 // Abrir modal
 function openPremiumModal(source) {
-  document.getElementById('premium-modal').classList.remove('hidden');
+  const modal = document.getElementById('premium-modal');
+  modal.classList.remove('hidden');
+  
+  // Previne scroll do body (importante no iOS)
+  document.body.classList.add('modal-open');
+  document.body.style.overflow = 'hidden';
   
   // Auto-preenche se já cadastrou antes
   autoFillForm();
@@ -3816,5 +3823,10 @@ function openPremiumModal(source) {
 
 // Fechar modal
 function closePremiumModal() {
-  document.getElementById('premium-modal').classList.add('hidden');
+  const modal = document.getElementById('premium-modal');
+  modal.classList.add('hidden');
+  
+  // Restaura scroll do body
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
 }
