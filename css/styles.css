@@ -2522,6 +2522,7 @@ body .hamburger-btn,
 
 /* Logo sem hover/efeito */
 .logo, .logo * {
+	    gap: 0rem !important;
   transition: none !important;
   transform: none !important;
   animation: none !important;
