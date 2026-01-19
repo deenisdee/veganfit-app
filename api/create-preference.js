@@ -20,24 +20,24 @@ module.exports = async (req, res) => {
 
     // ✅ PLANOS DISPONÍVEIS
     const plans = {
-      'monthly': {
-        title: 'VeganFit Premium - Mensal',
-        price: 37.00,
-        days: 30,
-        description: 'Acesso premium por 30 dias'
-      },
-      'quarterly': {
-        title: 'VeganFit Premium - Trimestral',
-        price: 89.00,
-        days: 90,
-        description: 'Acesso premium por 90 dias - Economize 20%'
-      },
-      'annual': {
-        title: 'VeganFit Premium - Anual',
-        price: 297.00,
-        days: 365,
-        description: 'Acesso premium por 1 ano - Economize 33%'
-      }
+  'monthly': {
+    title: 'VeganFit Premium - Mensal [TESTE]',
+    price: 1.00,  // ← TESTE
+    days: 30,
+    description: 'Acesso premium por 30 dias'
+  },
+  'quarterly': {
+    title: 'VeganFit Premium - Trimestral [TESTE]',
+    price: 1.00,  // ← TESTE
+    days: 90,
+    description: 'Acesso premium por 90 dias - Economize 20%'
+  },
+  'annual': {
+    title: 'VeganFit Premium - Anual [TESTE]',
+    price: 1.00,  // ← TESTE
+    days: 365,
+    description: 'Acesso premium por 1 ano - Economize 33%'
+  }
     };
 
     const selectedPlan = plans[plan];
