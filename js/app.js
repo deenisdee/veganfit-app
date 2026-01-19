@@ -18,6 +18,52 @@
 
 
 
+
+
+// ===================================
+// DETECÇÃO DE RETORNO DO MERCADO PAGO
+// ===================================
+
+window.addEventListener('DOMContentLoaded', function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const returnType = urlParams.get('return');
+  
+  if (returnType) {
+    // Remove o parâmetro da URL sem recarregar
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+    
+    // Aguarda 500ms pra garantir que tudo carregou
+    setTimeout(() => {
+      if (returnType === 'success') {
+        // Abre modal na aba 3
+        openPremiumModal('mp-success');
+        switchTab(3);
+        showNotification(
+          '✅ Pagamento Aprovado!',
+          'Digite o código que você recebeu por e-mail'
+        );
+      } else if (returnType === 'pending') {
+        showNotification(
+          '⏳ Pagamento Pendente',
+          'Você receberá o código assim que confirmarmos o pagamento'
+        );
+      } else if (returnType === 'failure') {
+        openPremiumModal('mp-failure');
+        switchTab(2); // Volta pra aba de planos
+        showNotification(
+          '❌ Pagamento Não Aprovado',
+          'Tente novamente ou escolha outro método de pagamento'
+        );
+      }
+    }, 500);
+  }
+});
+
+
+
+
+
 (function() {
   'use strict';
   
@@ -123,104 +169,6 @@
  
 
 
-
-
-
-// ===================================
-// DETECÇÃO DE RETORNO DO MERCADO PAGO
-// ===================================
-
-window.addEventListener('DOMContentLoaded', function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const returnType = urlParams.get('return');
-  
-  if (returnType) {
-    // Remove o parâmetro da URL sem recarregar
-    const cleanUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState({}, document.title, cleanUrl);
-    
-    // Aguarda 500ms pra garantir que tudo carregou
-    setTimeout(() => {
-      if (returnType === 'success') {
-        // Abre modal na aba 3
-        openPremiumModal('mp-success');
-        switchTab(3);
-        showNotification(
-          '✅ Pagamento Aprovado!',
-          'Digite o código que você recebeu por e-mail'
-        );
-      } else if (returnType === 'pending') {
-        showNotification(
-          '⏳ Pagamento Pendente',
-          'Você receberá o código assim que confirmarmos o pagamento'
-        );
-      } else if (returnType === 'failure') {
-        openPremiumModal('mp-failure');
-        switchTab(2); // Volta pra aba de planos
-        showNotification(
-          '❌ Pagamento Não Aprovado',
-          'Tente novamente ou escolha outro método de pagamento'
-        );
-      }
-    }, 500);
-  }
-});
-```
-
----
-
-## 🔄 AGORA TESTA O FLUXO COMPLETO:
-
-1. **Salva tudo**
-2. **Commit + Push**
-3. **Aguarda deploy**
-4. **Teste:**
-   - Clica "Ativar Premium"
-   - Preenche cadastro
-   - Escolhe plano
-   - Paga no MP
-   - **Página success.html aparece** ✅
-   - **Conta 3 segundos** ✅
-   - **Volta pro site** ✅
-   - **Modal abre automaticamente na aba 3** ✅
-
----
-
-## 💡 O QUE ACONTECE AGORA:
-
-### **FLUXO DE SUCESSO:**
-```
-[Paga no MP]
-    ↓
-[success.html] 
-"✅ Pagamento Aprovado! Redirecionando..."
-    ↓ (3 segundos)
-[Site] 
-Modal abre automaticamente na Aba 3
-Notificação: "Digite o código que você recebeu"
-```
-
-### **FLUXO DE FALHA:**
-```
-[Falha no MP]
-    ↓
-[failure.html]
-"❌ Ops! Algo deu errado..."
-    ↓ (8 segundos)
-[Site]
-Modal abre na Aba 2 (planos)
-Notificação: "Tente novamente"
-```
-
-### **FLUXO PENDENTE:**
-```
-[Pagamento pendente - PIX/Boleto]
-    ↓
-[pending.html]
-"⏳ Pagamento Pendente..."
-    ↓ (5 segundos)
-[Site]
-Notificação: "Aguardando confirmação"
 
 
 
