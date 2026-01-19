@@ -921,7 +921,7 @@ body.modal-open{ overflow:hidden; height:100vh; }
    ================================ */
 #premium-modal .modal-content{
   padding-right: 1.5rem !important;
-  margin-right: 0 !important;
+  margin-right: 10px !important;
   display: grid;
   gap: 14px;
 }
