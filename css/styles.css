@@ -4116,8 +4116,10 @@ font-size:14px;
 
 
 
+
+
 /* ================================
-   NOVO MODAL PREMIUM - 3 STEPS
+   MODAL PREMIUM - ABAS NAVEGÁVEIS
    ================================ */
 
 .premium-modal-content {
@@ -4127,31 +4129,41 @@ font-size:14px;
   overflow-y: auto;
 }
 
-/* PROGRESS BAR */
-.premium-progress {
+/* TABS NAVEGAÇÃO */
+.premium-tabs-nav {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 30px 0;
+  gap: 12px;
+  margin: 24px 0;
   padding: 0 20px;
 }
 
-.progress-step {
+.premium-tab-btn {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  opacity: 0.4;
+  padding: 16px 12px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
   transition: all 0.3s;
 }
 
-.progress-step.active {
-  opacity: 1;
+.premium-tab-btn:hover {
+  border-color: #16a34a;
+  transform: translateY(-2px);
 }
 
-.progress-circle {
-  width: 40px;
-  height: 40px;
+.premium-tab-btn.active {
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+
+.tab-number {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #e5e7eb;
   color: #6b7280;
@@ -4159,41 +4171,34 @@ font-size:14px;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 14px;
   transition: all 0.3s;
 }
 
-.progress-step.active .progress-circle {
+.premium-tab-btn.active .tab-number {
   background: #16a34a;
   color: white;
-  transform: scale(1.1);
 }
 
-.progress-step span {
+.tab-label {
   font-size: 13px;
-  font-weight: 500;
-  color: #6b7280;
-}
-
-.progress-step.active span {
-  color: #16a34a;
   font-weight: 600;
+  color: #6b7280;
+  transition: all 0.3s;
 }
 
-.progress-line {
-  width: 80px;
-  height: 2px;
-  background: #e5e7eb;
-  margin: 0 10px;
+.premium-tab-btn.active .tab-label {
+  color: #16a34a;
 }
 
-/* STEPS */
-.premium-step {
+/* TAB CONTENT */
+.premium-tab-content {
   display: none;
   animation: fadeIn 0.3s;
+  padding: 0 20px 20px 20px;
 }
 
-.premium-step.active {
+.premium-tab-content.active {
   display: block;
 }
 
@@ -4202,7 +4207,7 @@ font-size:14px;
   to { opacity: 1; transform: translateY(0); }
 }
 
-.step-title {
+.tab-title {
   font-size: 24px;
   font-weight: 700;
   color: #111827;
@@ -4210,14 +4215,14 @@ font-size:14px;
   margin: 20px 0 8px 0;
 }
 
-.step-desc {
+.tab-desc {
   font-size: 15px;
   color: #6b7280;
   text-align: center;
   margin: 0 0 30px 0;
 }
 
-/* STEP 1: FORMULÁRIO */
+/* TAB 1: FORMULÁRIO */
 .signup-form {
   max-width: 450px;
   margin: 0 auto;
@@ -4250,7 +4255,7 @@ font-size:14px;
   box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
 }
 
-.step-btn {
+.tab-btn {
   width: 100%;
   padding: 14px;
   background: #16a34a;
@@ -4264,18 +4269,18 @@ font-size:14px;
   margin-top: 10px;
 }
 
-.step-btn:hover {
+.tab-btn:hover {
   background: #15803d;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
 }
 
-/* STEP 2: PLANOS */
+/* TAB 2: PLANOS */
 .plans-grid-new {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .plan-card-new {
@@ -4451,10 +4456,10 @@ font-size:14px;
   box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
 }
 
-/* STEP 3: CÓDIGO */
+/* TAB 3: CÓDIGO */
 .code-activation {
   max-width: 400px;
-  margin: 0 auto 30px auto;
+  margin: 0 auto 20px auto;
 }
 
 .code-input-new {
@@ -4496,29 +4501,20 @@ font-size:14px;
   box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
 }
 
-/* STEP ACTIONS */
-.step-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 20px;
+.code-help {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 16px;
+  background: #f0fdf4;
+  border-radius: 10px;
+  text-align: center;
 }
 
-.back-btn, .skip-btn {
-  padding: 10px 20px;
-  background: white;
-  color: #6b7280;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.back-btn:hover, .skip-btn:hover {
-  border-color: #16a34a;
-  color: #16a34a;
+.code-help p {
+  margin: 0;
+  font-size: 13px;
+  color: #166534;
+  line-height: 1.5;
 }
 
 /* RESPONSIVO */
@@ -4527,15 +4523,16 @@ font-size:14px;
     grid-template-columns: 1fr;
   }
   
-  .premium-progress {
+  .premium-tabs-nav {
+    gap: 8px;
     padding: 0 10px;
   }
   
-  .progress-line {
-    width: 40px;
+  .premium-tab-btn {
+    padding: 12px 8px;
   }
   
-  .progress-step span {
+  .tab-label {
     font-size: 11px;
   }
 }
