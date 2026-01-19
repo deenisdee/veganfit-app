@@ -3634,6 +3634,9 @@ async function selectPlanWithValidation(plan) {
   }
 }
 
+
+
+
 // Ativar trial de 5 dias
 async function activateTrial() {
   try {
@@ -3654,27 +3657,48 @@ async function activateTrial() {
     
     if (!response.ok) throw new Error('Erro ao criar trial');
     
-    // Ativa premium localmente
+    // ✅ ATIVA PREMIUM LOCALMENTE
     isPremium = true;
     premiumToken = trialCode;
     premiumExpires = expiresAt;
     
+    // ✅ SALVA NO STORAGE
     await storage.set('fit_premium', 'true');
     await storage.set('fit_premium_token', trialCode);
     await storage.set('fit_premium_expires', expiresAt.toString());
     
+    // ✅ SALVA NO LOCALSTORAGE
     localStorage.setItem('fit_premium', 'true');
     localStorage.setItem('fit_premium_token', trialCode);
     localStorage.setItem('fit_premium_expires', expiresAt.toString());
     
+    // ✅ DISPARA PIPELINE DE UI (IGUAL AO CÓDIGO)
+    if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
+      RF.premium.setActive(true);
+    } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
+      RF.premium.syncUI();
+    }
+    
+    // ✅ ATUALIZA UI
     updateUI();
+    
+    // ✅ ATUALIZA BOTÕES PREMIUM
     if (typeof window.updatePremiumButtons === 'function') {
       window.updatePremiumButtons();
     }
     
+    // ✅ SETUP TIMERS
+    if (typeof _setupPremiumTimers === 'function') {
+      _setupPremiumTimers();
+    }
+    
+    // ✅ FECHA MODAL
     closePremiumModal();
     
-    showNotification('🎉 Trial Ativado!', 'Você tem 5 dias de acesso premium grátis!');
+    showNotification(
+      '🎉 Trial Ativado!',
+      'Você tem 5 dias de acesso premium grátis!'
+    );
     
     console.log('[TRIAL] Ativado:', { code: trialCode, expires: new Date(expiresAt) });
     
@@ -3683,7 +3707,6 @@ async function activateTrial() {
     showNotification('Erro', 'Erro ao ativar trial. Tente novamente.');
   }
 }
-
 
 
 
