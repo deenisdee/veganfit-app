@@ -8,13 +8,6 @@
 // ============================================
 
 
-// TÉCNICAS ANTI-BURLA (DevTools)
-// Dificuldade: ⭐⭐⭐☆☆ (só dev experiente consegue)
-// ============================================
-
-// ============================================
-// PROTEÇÃO ANTI-BURLA (3 camadas) - V2
-// ============================================
 
 
 
@@ -63,6 +56,17 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+
+// TÉCNICAS ANTI-BURLA (DevTools)
+// Dificuldade: ⭐⭐⭐☆☆ (só dev experiente consegue)
+// ============================================
+
+// ============================================
+// PROTEÇÃO ANTI-BURLA (3 camadas) - V2
+// ============================================
+
+/* 
 
 (function() {
   'use strict';
@@ -169,7 +173,7 @@ window.addEventListener('DOMContentLoaded', function() {
  
 
 
-
+ */
 
 
 
