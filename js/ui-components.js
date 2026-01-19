@@ -36,6 +36,15 @@
         input.focus();
     }
 
+    // ✅ VERIFICAR SE É PREMIUM
+    function isPremiumActive() {
+        const isPremiumStored = localStorage.getItem('fit_premium') === 'true';
+        const premiumExpires = parseInt(localStorage.getItem('fit_premium_expires'));
+        const now = Date.now();
+        
+        return isPremiumStored && premiumExpires && now < premiumExpires;
+    }
+
     // --------- PLANNER DROPDOWN ---------
     function getPlannerDropdown() {
         let dd = document.querySelector('.planner-dropdown');
@@ -116,9 +125,7 @@
 	
 	
 	
-	
-	
-// --------- TAB BAR RENDER ---------
+	// --------- TAB BAR RENDER ---------
 function renderTabbar(root) {
     if (!root) return;
     
@@ -130,6 +137,9 @@ function renderTabbar(root) {
         root.dataset.mounted = '';
     }
     root.dataset.mounted = '1';
+
+    // ✅ VERIFICA SE É PREMIUM
+    const isPremium = isPremiumActive();
 
     root.innerHTML = `
         <div class="tab-bar" id="rf-tabbar">
@@ -148,10 +158,12 @@ function renderTabbar(root) {
                 <span class="tab-label">Planner</span>
             </button>
 
+            ${!isPremium ? `
             <button class="tab-item tab-premium" type="button" aria-label="Premium" data-tab="premium">
                 <i data-lucide="star" class="tab-icon"></i>
                 <span class="tab-label">Premium</span>
             </button>
+            ` : ''}
         </div>
     `;
 
@@ -177,116 +189,97 @@ function renderTabbar(root) {
     }
 
     applyActiveFromStorage();
-
-    
 }
 
+// --------- HAMBURGER MENU RENDER ---------
+function renderHamburger(root) {
+    if (!root) return;
+    if (root.dataset.mounted === '1') return;
+    root.dataset.mounted = '1';
 
+    // ✅ VERIFICA SE É PREMIUM
+    const isPremium = isPremiumActive();
 
-
-
-
-
-
-
-
-    // --------- HAMBURGER MENU RENDER ---------
-    function renderHamburger(root) {
-        if (!root) return;
-        if (root.dataset.mounted === '1') return;
-        root.dataset.mounted = '1';
-
-        root.innerHTML = `
-            <div id="hamburger-menu" class="hamburger-menu hidden">
-                <div class="hamburger-overlay" onclick="window.closeHamburgerMenu && window.closeHamburgerMenu()"></div>
-                <div class="hamburger-content">
-                    <div class="hamburger-header">
-                        <div class="hamburger-logo">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
-                                <line x1="6" y1="17" x2="18" y2="17"/>
-                            </svg>
-                            <span>Vegan<span style="color: #16a34a;">fit</span><span style="opacity: 0.7;">.App</span></span>
+    root.innerHTML = `
+        <div id="hamburger-menu" class="hamburger-menu hidden">
+            <div class="hamburger-overlay" onclick="window.closeHamburgerMenu && window.closeHamburgerMenu()"></div>
+            <div class="hamburger-content">
+                <div class="hamburger-header">
+                    <div class="hamburger-logo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+                            <line x1="6" y1="17" x2="18" y2="17"/>
+                        </svg>
+                        <span>Vegan<span style="color: #16a34a;">fit</span><span style="opacity: 0.7;">.App</span></span>
+                    </div>
+                    <button class="hamburger-close tap" onclick="window.closeHamburgerMenu && window.closeHamburgerMenu()" aria-label="Fechar menu">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                
+                <nav class="hamburger-nav">
+                    <div class="hamburger-section">
+                        <div class="hamburger-section-title">
+                            <i data-lucide="calendar-days"></i>
+                            <span>Planner</span>
                         </div>
-                        <button class="hamburger-close tap" onclick="window.closeHamburgerMenu && window.closeHamburgerMenu()" aria-label="Fechar menu">
-                            <i data-lucide="x"></i>
-                        </button>
+                        <a href="index.html?tool=calculator" class="hamburger-link hamburger-sublink tap">
+                            <i data-lucide="calculator"></i>
+                            <span>Calculadora de Calorias</span>
+                        </a>
+                        <a href="index.html?tool=shopping" class="hamburger-link hamburger-sublink tap">
+                            <i data-lucide="shopping-cart"></i>
+                            <span>Lista de Compras</span>
+                        </a>
+                        <a href="index.html?tool=planner" class="hamburger-link hamburger-sublink tap">
+                            <i data-lucide="calendar-check"></i>
+                            <span>Planejador Semanal</span>
+                        </a>
                     </div>
                     
-                    <nav class="hamburger-nav">
-                        <div class="hamburger-section">
-                            <div class="hamburger-section-title">
-                                <i data-lucide="calendar-days"></i>
-                                <span>Planner</span>
-                            </div>
-                            <a href="index.html?tool=calculator" class="hamburger-link hamburger-sublink tap">
-                                <i data-lucide="calculator"></i>
-                                <span>Calculadora de Calorias</span>
-                            </a>
-                            <a href="index.html?tool=shopping" class="hamburger-link hamburger-sublink tap">
-                                <i data-lucide="shopping-cart"></i>
-                                <span>Lista de Compras</span>
-                            </a>
-                            <a href="index.html?tool=planner" class="hamburger-link hamburger-sublink tap">
-                                <i data-lucide="calendar-check"></i>
-                                <span>Planejador Semanal</span>
-                            </a>
-                        </div>
-                        
-                        <div class="hamburger-divider"></div>
-                        
-                        <a href="quem-somos.html" class="hamburger-link tap">
-                            <i data-lucide="users"></i>
-                            <span>Quem Somos</span>
-                        </a>
-                        
-                        <a href="index.html?tool=faq" class="hamburger-link tap">
-                            <i data-lucide="help-circle"></i>
-                            <span>Ajuda</span>
-                        </a>
-                        
-                        <a href="https://instagram.com/Veganfit.app" target="_blank" rel="noopener noreferrer" class="hamburger-link tap">
-                            <i data-lucide="instagram"></i>
-                            <span>Instagram</span>
-                        </a>
-                        
-                        <div class="hamburger-divider"></div>
-                        
-						
-						
-						
-                        <button class="hamburger-premium-btn tap" id="hamburger-premium-btn" onclick="if (!/index\.html/i.test(location.pathname) && location.pathname !== '/') { window.location.href = 'index.html?open=premium'; } else { window.openPremiumModal && window.openPremiumModal(); window.closeHamburgerMenu && window.closeHamburgerMenu(); }">
-                            
-							
-							
-							<i data-lucide="star"></i>
-                            <span id="hamburger-premium-text">Seja Premium</span>
-                        </button>
-                    </nav>
-                </div>
+                    <div class="hamburger-divider"></div>
+                    
+                    <a href="quem-somos.html" class="hamburger-link tap">
+                        <i data-lucide="users"></i>
+                        <span>Quem Somos</span>
+                    </a>
+                    
+                    <a href="index.html?tool=faq" class="hamburger-link tap">
+                        <i data-lucide="help-circle"></i>
+                        <span>Ajuda</span>
+                    </a>
+                    
+                    <a href="https://instagram.com/Veganfit.app" target="_blank" rel="noopener noreferrer" class="hamburger-link tap">
+                        <i data-lucide="instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                    
+                    <div class="hamburger-divider"></div>
+                    
+                    ${!isPremium ? `
+                    <button class="hamburger-premium-btn tap" id="hamburger-premium-btn" onclick="if (!/index\\.html/i.test(location.pathname) && location.pathname !== '/') { window.location.href = 'index.html?open=premium'; } else { window.openPremiumModal && window.openPremiumModal(); window.closeHamburgerMenu && window.closeHamburgerMenu(); }">
+                        <i data-lucide="star"></i>
+                        <span id="hamburger-premium-text">Seja Premium</span>
+                    </button>
+                    ` : ''}
+                </nav>
             </div>
-        `;
+        </div>
+    `;
 
-        if (window.lucide && typeof window.lucide.createIcons === 'function') {
-            window.lucide.createIcons();
-        }
-
-        // Atualiza premium após renderizar
-        setTimeout(() => {
-            if (typeof window.updatePremiumButtons === 'function') {
-                window.updatePremiumButtons();
-            }
-        }, 200);
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
     }
-	
-	
-	
-	
-	
-	
-	
-	
-	// --------- ANEXAÇÃO FORÇADA DE LISTENERS (sempre funciona) ---------
+
+    // Atualiza premium após renderizar
+    setTimeout(() => {
+        if (typeof window.updatePremiumButtons === 'function') {
+            window.updatePremiumButtons();
+        }
+    }, 200);
+}
+
+// --------- ANEXAÇÃO FORÇADA DE LISTENERS (sempre funciona) ---------
 function attachTabbarListeners() {
     const buttons = document.querySelectorAll('.tab-item');
     if (buttons.length === 0) {
@@ -340,42 +333,39 @@ function attachTabbarListeners() {
                 return;
             }
 
-
-
-
-
-// 3) Planner
-if (tab === 'planner') {
-    const isIndex = /index\.html/i.test(location.pathname) || location.pathname === '/' || location.pathname === '';
-    
-    if (!isIndex) {
-        window.location.href = 'index.html#rf-planner';
-        return;
-    }
-    
-    // Garante que dropdown existe antes de abrir
-    if (typeof window.openPlannerDropdown === 'function') {
-        window.openPlannerDropdown();
-    } else {
-        // Cria dropdown se não existe
-        getPlannerDropdown();
-        setTimeout(() => {
-            if (typeof window.openPlannerDropdown === 'function') {
-                window.openPlannerDropdown();
+            // 3) Planner
+            if (tab === 'planner') {
+                const isIndex = /index\.html/i.test(location.pathname) || location.pathname === '/' || location.pathname === '';
+                
+                if (!isIndex) {
+                    window.location.href = 'index.html#rf-planner';
+                    return;
+                }
+                
+                // Garante que dropdown existe antes de abrir
+                if (typeof window.openPlannerDropdown === 'function') {
+                    window.openPlannerDropdown();
+                } else {
+                    // Cria dropdown se não existe
+                    getPlannerDropdown();
+                    setTimeout(() => {
+                        if (typeof window.openPlannerDropdown === 'function') {
+                            window.openPlannerDropdown();
+                        }
+                    }, 100);
+                }
+                
+                return;
             }
-        }, 100);
-    }
-    
-    return;
-}
-
-
-
-
-
 
             // 4) Premium
             if (tab === 'premium') {
+                // ✅ VERIFICA SE JÁ É PREMIUM
+                if (isPremiumActive()) {
+                    console.log('[PREMIUM] Usuário já é premium, ignorando clique');
+                    return;
+                }
+                
                 if (!/index\.html/i.test(location.pathname) && location.pathname !== '/') {
                     window.location.href = 'index.html?open=premium';
                     return;
@@ -396,14 +386,9 @@ if (tab === 'planner') {
 
 // Expõe globalmente
 window.attachTabbarListeners = attachTabbarListeners;
-	
-	
-	
-	
-	
-	
 
-  // --------- MOUNT ---------
+
+// --------- MOUNT ---------
 function mount() {
     const tabRoot = document.getElementById('rf-tabbar-root');
     if (tabRoot) {
@@ -448,4 +433,36 @@ function mount() {
 
 document.addEventListener('DOMContentLoaded', mount);
 
+// ✅ EXPÕE isPremiumActive GLOBALMENTE
+window.isPremiumActive = isPremiumActive;
+
+// ✅ FUNÇÃO PARA RECARREGAR COMPONENTES (após ativar premium)
+window.reloadUIComponents = function() {
+    console.log('[UI-COMPONENTS] Recarregando componentes...');
+    
+    // Re-renderiza tab bar
+    const tabRoot = document.getElementById('rf-tabbar-root');
+    if (tabRoot) {
+        tabRoot.dataset.mounted = '';
+        renderTabbar(tabRoot);
+        setTimeout(attachTabbarListeners, 100);
+    }
+    
+    // Re-renderiza hambúrguer
+    const hamRoot = document.getElementById('rf-hamburger-root');
+    if (hamRoot) {
+        hamRoot.dataset.mounted = '';
+        hamRoot.innerHTML = '';
+        renderHamburger(hamRoot);
+    }
+    
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+    }
+    
+    console.log('[UI-COMPONENTS] ✅ Componentes recarregados!');
+};
+
 })();
+
+
