@@ -4598,3 +4598,41 @@ body.modal-open {
   overflow: hidden;
   -webkit-overflow-scrolling: touch;
 }
+
+
+
+
+
+/* ================================
+   BOTÕES PREMIUM ATIVOS (AMARELO)
+   ================================ */
+
+/* Tab bar - botão premium ativo */
+.tab-premium-active {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+  color: white !important;
+  pointer-events: none;
+  cursor: default;
+}
+
+.tab-premium-active .tab-icon {
+  color: white !important;
+}
+
+.tab-premium-active .tab-label {
+  color: white !important;
+  font-weight: 600;
+}
+
+/* Hambúrguer - botão premium ativo */
+.hamburger-premium-active {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+  color: white !important;
+  pointer-events: none;
+  cursor: default;
+  opacity: 0.9;
+}
+
+.hamburger-premium-active i {
+  color: white !important;
+}
