@@ -1008,7 +1008,24 @@ html { scrollbar-gutter: stable; }
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
+  
+    opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
 }
+
+/* Mostra apenas se NÃO for premium */
+body:not(.is-premium) #premium-btn {
+  opacity: 1;
+  visibility: visible;
+}
+
+
+/* Se for premium, garante que fica oculto */
+body.is-premium #premium-btn {
+  display: none !important;
+}
+
 
 /* Ícone estrela para premium */
 .badge.premium svg {
