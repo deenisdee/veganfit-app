@@ -206,7 +206,7 @@ function renderTabbar(root) {
                                 <path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
                                 <line x1="6" y1="17" x2="18" y2="17"/>
                             </svg>
-                            <span>Receita<span style="color: #16a34a;">fit</span><span style="opacity: 0.7;">.App</span></span>
+                            <span>Vegan<span style="color: #16a34a;">fit</span><span style="opacity: 0.7;">.App</span></span>
                         </div>
                         <button class="hamburger-close tap" onclick="window.closeHamburgerMenu && window.closeHamburgerMenu()" aria-label="Fechar menu">
                             <i data-lucide="x"></i>
@@ -245,7 +245,7 @@ function renderTabbar(root) {
                             <span>Ajuda</span>
                         </a>
                         
-                        <a href="https://instagram.com/receitafit.app" target="_blank" rel="noopener noreferrer" class="hamburger-link tap">
+                        <a href="https://instagram.com/Veganfit.app" target="_blank" rel="noopener noreferrer" class="hamburger-link tap">
                             <i data-lucide="instagram"></i>
                             <span>Instagram</span>
                         </a>
