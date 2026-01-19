@@ -315,53 +315,207 @@
                </div>
             </div>
          </div>
-         <!-- PREMIUM MODAL -->
-         <div id="premium-modal" class="modal hidden">
-            <div class="modal-overlay"></div>
-            <div class="modal-content modal-surface" style="max-width: 480px;">
-               <button class="modal-close tap" onclick="closePremiumModal()" aria-label="Fechar">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                     <line x1="18" y1="6" x2="6" y2="18"></line>
-                     <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-               </button>
-               <div class="premium-hero">
-                  <div class="premium-badge-icon" aria-hidden="true">
-                     <svg viewBox="0 0 24 24" fill="currentColor">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                     </svg>
-                  </div>
-                  <h2 class="premium-title">Desbloqueie as melhores receitas</h2>
-                  <p id="modal-message" class="premium-subtitle">Acesso ilimitado a todas as receitas</p>
-               </div>
-               <div id="credits-warning" class="premium-warning hidden">
-                  <p>Seus 3 créditos acabaram</p>
-               </div>
-               <div class="input-group">
-                  <label for="premium-code-input">Já tem um código Premium?</label>
-                  <input type="text" id="premium-code-input" placeholder="Digite seu código (ex: FIT-ABC-123-XYZ)">
-               </div>
-               <div class="modal-actions">
-                  <button id="modal-cancel" class="btn-secondary">Agora não</button>
-                  <button id="modal-activate" class="btn-primary">Ativar Premium</button>
-               </div>
-               <div class="premium-footer">
-                  
-                  <div class="premium-links">
-           
+        
 
 
-		   
-<button onclick="openPremiumCheckout('premium-monthly')" class="btn-premium">
-  💳 Pagar com Mercado Pago - R$ 37/mês
-</button>
-           
+
+<!-- MODAL PREMIUM -->
+<div id="premium-modal" class="modal hidden">
+  <div class="modal-overlay" onclick="closePremiumModal()"></div>
+  
+  <div class="modal-content premium-modal-content">
+    <!-- HEADER -->
+    <div class="modal-header">
+      <h2>🌱 VeganFit Premium</h2>
+      <button class="modal-close" onclick="closePremiumModal()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="premium-progress">
+      <div class="progress-step active" data-step="1">
+        <div class="progress-circle">1</div>
+        <span>Cadastro</span>
+      </div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-step="2">
+        <div class="progress-circle">2</div>
+        <span>Plano</span>
+      </div>
+      <div class="progress-line"></div>
+      <div class="progress-step" data-step="3">
+        <div class="progress-circle">3</div>
+        <span>Código</span>
+      </div>
+    </div>
+
+    <!-- STEP 1: CADASTRO -->
+    <div id="step-1" class="premium-step active">
+      <h3 class="step-title">📝 Faça seu Cadastro</h3>
+      <p class="step-desc">Complete suas informações para continuar</p>
+      
+      <form id="signup-form" class="signup-form">
+        <div class="form-group">
+          <label for="user-name">Nome Completo *</label>
+          <input 
+            type="text" 
+            id="user-name" 
+            name="name"
+            placeholder="Digite seu nome completo"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="user-email">E-mail *</label>
+          <input 
+            type="email" 
+            id="user-email" 
+            name="email"
+            placeholder="seu@email.com"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="user-phone">Telefone/WhatsApp *</label>
+          <input 
+            type="tel" 
+            id="user-phone" 
+            name="phone"
+            placeholder="(11) 99999-9999"
+            required
+          />
+        </div>
+
+        <button type="submit" class="step-btn">
+          Continuar para Planos →
+        </button>
+      </form>
+    </div>
+
+    <!-- STEP 2: PLANOS -->
+    <div id="step-2" class="premium-step">
+      <h3 class="step-title">💳 Escolha seu Plano</h3>
+      <p class="step-desc">Selecione a melhor opção para você</p>
+
+      <div class="plans-grid-new">
+        
+        <!-- PLANO TRIAL -->
+        <div class="plan-card-new">
+          <div class="plan-header-new">
+            <div class="plan-icon">🎁</div>
+            <h4>Grátis por 5 Dias</h4>
+            <p class="plan-subtitle">Teste sem compromisso</p>
+          </div>
+          <div class="plan-price-new">
+            <span class="price-big">R$ 0</span>
+            <span class="price-period-new">por 5 dias</span>
+          </div>
+          <ul class="plan-features-new">
+            <li>✅ Todas as receitas veganas</li>
+            <li>✅ Plano semanal personalizado</li>
+            <li>✅ Lista de compras inteligente</li>
+            <li>⏰ Acesso por 5 dias</li>
+          </ul>
+          <button class="plan-btn-new plan-btn-trial" onclick="selectPlanNew('trial')">
+            PLANO GRÁTIS
+          </button>
+        </div>
+
+        <!-- PLANO MENSAL -->
+        <div class="plan-card-new">
+          <div class="plan-header-new">
+            <div class="plan-icon">💳</div>
+            <h4>Mensal</h4>
+            <p class="plan-subtitle">Sem compromisso</p>
+          </div>
+          <div class="plan-price-new">
+            <span class="price-big">R$ 37</span>
+            <span class="price-period-new">/mês</span>
+          </div>
+          <ul class="plan-features-new">
+            <li>✅ Todas as receitas veganas</li>
+            <li>✅ Plano semanal personalizado</li>
+            <li>✅ Lista de compras inteligente</li>
+            <li>✅ Calculadora de calorias</li>
+            <li>✅ Acesso ilimitado por 30 dias</li>
+          </ul>
+          <button class="plan-btn-new plan-btn-monthly" onclick="selectPlanNew('monthly')">
+            PLANO MENSAL
+          </button>
+        </div>
+
+        <!-- PLANO ANUAL/GOLD -->
+        <div class="plan-card-new plan-card-gold">
+          <div class="plan-badge-new">👑 MELHOR OFERTA</div>
+          <div class="plan-header-new">
+            <div class="plan-icon">👑</div>
+            <h4>Anual Gold</h4>
+            <p class="plan-subtitle">Máxima economia</p>
+          </div>
+          <div class="plan-price-new">
+            <span class="price-big">R$ 297</span>
+            <span class="price-period-new">/ano</span>
+          </div>
+          <div class="plan-savings-new">
+            <span class="savings-text">Economize R$ 147 (33%)</span>
+          </div>
+          <ul class="plan-features-new">
+            <li>✅ Todas as receitas veganas</li>
+            <li>✅ Plano semanal personalizado</li>
+            <li>✅ Lista de compras inteligente</li>
+            <li>✅ Calculadora de calorias</li>
+            <li>✅ Acesso ilimitado por 1 ano</li>
+            <li>🎁 Suporte prioritário</li>
+            <li>🎁 Recursos exclusivos</li>
+          </ul>
+          <button class="plan-btn-new plan-btn-gold" onclick="selectPlanNew('annual')">
+            PLANO ANUAL GOLD
+          </button>
+        </div>
+
+      </div>
+
+      <div class="step-actions">
+        <button class="back-btn" onclick="goToStep(1)">← Voltar</button>
+        <button class="skip-btn" onclick="goToStep(3)">Já tenho código →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: CÓDIGO -->
+    <div id="step-3" class="premium-step">
+      <h3 class="step-title">🎫 Ativar com Código</h3>
+      <p class="step-desc">Digite o código que você recebeu</p>
+
+      <div class="code-activation">
+        <input 
+          type="text" 
+          id="premium-code-input" 
+          placeholder="VFP-XXXX-XXXX-XXXX"
+          maxlength="19"
+          class="code-input-new"
+        />
+        <button class="activate-btn" onclick="activatePremiumWithCode()">
+          ✨ Ativar Premium
+        </button>
+      </div>
+
+      <div class="step-actions">
+        <button class="back-btn" onclick="goToStep(2)">← Voltar aos Planos</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 
-		   </div>
-               </div>
-            </div>
-         </div>
+
+
          <!-- FAQ MODAL -->
          <div id="faq-modal" class="modal hidden">
             <div class="modal-overlay"></div>
