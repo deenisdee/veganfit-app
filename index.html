@@ -318,7 +318,6 @@
         
 
 
-
 <!-- MODAL PREMIUM -->
 <div id="premium-modal" class="modal hidden">
   <div class="modal-overlay" onclick="closePremiumModal()"></div>
@@ -335,28 +334,26 @@
       </button>
     </div>
 
-    <!-- PROGRESS BAR -->
-    <div class="premium-progress">
-      <div class="progress-step active" data-step="1">
-        <div class="progress-circle">1</div>
-        <span>Cadastro</span>
-      </div>
-      <div class="progress-line"></div>
-      <div class="progress-step" data-step="2">
-        <div class="progress-circle">2</div>
-        <span>Plano</span>
-      </div>
-      <div class="progress-line"></div>
-      <div class="progress-step" data-step="3">
-        <div class="progress-circle">3</div>
-        <span>Código</span>
-      </div>
+    <!-- TABS NAVEGÁVEIS -->
+    <div class="premium-tabs-nav">
+      <button class="premium-tab-btn active" onclick="switchTab(1)">
+        <span class="tab-number">1</span>
+        <span class="tab-label">Cadastro</span>
+      </button>
+      <button class="premium-tab-btn" onclick="switchTab(2)">
+        <span class="tab-number">2</span>
+        <span class="tab-label">Planos</span>
+      </button>
+      <button class="premium-tab-btn" onclick="switchTab(3)">
+        <span class="tab-number">3</span>
+        <span class="tab-label">Código</span>
+      </button>
     </div>
 
-    <!-- STEP 1: CADASTRO -->
-    <div id="step-1" class="premium-step active">
-      <h3 class="step-title">📝 Faça seu Cadastro</h3>
-      <p class="step-desc">Complete suas informações para continuar</p>
+    <!-- TAB 1: CADASTRO -->
+    <div id="tab-1" class="premium-tab-content active">
+      <h3 class="tab-title">📝 Faça seu Cadastro</h3>
+      <p class="tab-desc">Complete suas informações para continuar</p>
       
       <form id="signup-form" class="signup-form">
         <div class="form-group">
@@ -392,16 +389,16 @@
           />
         </div>
 
-        <button type="submit" class="step-btn">
-          Continuar para Planos →
+        <button type="submit" class="tab-btn">
+          Salvar e Continuar →
         </button>
       </form>
     </div>
 
-    <!-- STEP 2: PLANOS -->
-    <div id="step-2" class="premium-step">
-      <h3 class="step-title">💳 Escolha seu Plano</h3>
-      <p class="step-desc">Selecione a melhor opção para você</p>
+    <!-- TAB 2: PLANOS -->
+    <div id="tab-2" class="premium-tab-content">
+      <h3 class="tab-title">💳 Escolha seu Plano</h3>
+      <p class="tab-desc">Selecione a melhor opção para você</p>
 
       <div class="plans-grid-new">
         
@@ -422,7 +419,7 @@
             <li>✅ Lista de compras inteligente</li>
             <li>⏰ Acesso por 5 dias</li>
           </ul>
-          <button class="plan-btn-new plan-btn-trial" onclick="selectPlanNew('trial')">
+          <button class="plan-btn-new plan-btn-trial" onclick="selectPlanWithValidation('trial')">
             PLANO GRÁTIS
           </button>
         </div>
@@ -435,7 +432,7 @@
             <p class="plan-subtitle">Sem compromisso</p>
           </div>
           <div class="plan-price-new">
-            <span class="price-big">R$ 37</span>
+            <span class="price-big">R$ 1</span>
             <span class="price-period-new">/mês</span>
           </div>
           <ul class="plan-features-new">
@@ -445,7 +442,7 @@
             <li>✅ Calculadora de calorias</li>
             <li>✅ Acesso ilimitado por 30 dias</li>
           </ul>
-          <button class="plan-btn-new plan-btn-monthly" onclick="selectPlanNew('monthly')">
+          <button class="plan-btn-new plan-btn-monthly" onclick="selectPlanWithValidation('monthly')">
             PLANO MENSAL
           </button>
         </div>
@@ -459,11 +456,11 @@
             <p class="plan-subtitle">Máxima economia</p>
           </div>
           <div class="plan-price-new">
-            <span class="price-big">R$ 297</span>
+            <span class="price-big">R$ 3</span>
             <span class="price-period-new">/ano</span>
           </div>
           <div class="plan-savings-new">
-            <span class="savings-text">Economize R$ 147 (33%)</span>
+            <span class="savings-text">Economize 75% (TESTE)</span>
           </div>
           <ul class="plan-features-new">
             <li>✅ Todas as receitas veganas</li>
@@ -474,23 +471,18 @@
             <li>🎁 Suporte prioritário</li>
             <li>🎁 Recursos exclusivos</li>
           </ul>
-          <button class="plan-btn-new plan-btn-gold" onclick="selectPlanNew('annual')">
+          <button class="plan-btn-new plan-btn-gold" onclick="selectPlanWithValidation('annual')">
             PLANO ANUAL GOLD
           </button>
         </div>
 
       </div>
-
-      <div class="step-actions">
-        <button class="back-btn" onclick="goToStep(1)">← Voltar</button>
-        <button class="skip-btn" onclick="goToStep(3)">Já tenho código →</button>
-      </div>
     </div>
 
-    <!-- STEP 3: CÓDIGO -->
-    <div id="step-3" class="premium-step">
-      <h3 class="step-title">🎫 Ativar com Código</h3>
-      <p class="step-desc">Digite o código que você recebeu</p>
+    <!-- TAB 3: CÓDIGO -->
+    <div id="tab-3" class="premium-tab-content">
+      <h3 class="tab-title">🎫 Ativar com Código</h3>
+      <p class="tab-desc">Digite o código que você recebeu por e-mail</p>
 
       <div class="code-activation">
         <input 
@@ -505,8 +497,8 @@
         </button>
       </div>
 
-      <div class="step-actions">
-        <button class="back-btn" onclick="goToStep(2)">← Voltar aos Planos</button>
+      <div class="code-help">
+        <p>💡 O código foi enviado para o e-mail cadastrado após a confirmação do pagamento.</p>
       </div>
     </div>
 
