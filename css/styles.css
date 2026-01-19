@@ -2830,7 +2830,7 @@ html {
 
   /* 3) Garante que a logo fica central e não empurra */
   #header .logo{
-    margin: 10px 39% 10px !important;
+    margin: 10px 32% 10px !important;
     margin-right: auto !important;
     justify-content: center !important;
     text-align: center !important;
