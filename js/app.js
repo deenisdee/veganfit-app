@@ -544,16 +544,16 @@ async function loadUserData() {
     // Carrega token premium
     const tokenResult = await storage.get('fit_premium_token');
     const expiresResult = await storage.get('fit_premium_expires');
-    
+
     if (tokenResult && tokenResult.value) {
       premiumToken = tokenResult.value;
-      
+
       // ✅ CONVERSÃO CORRETA DO TIMESTAMP
       const expiresStr = expiresResult?.value;
+
       if (expiresStr) {
-        // Garante que é número
         premiumExpires = parseInt(expiresStr, 10);
-        
+
         // ✅ DEBUG - MOSTRA OS VALORES
         console.log('[LOAD] Premium data:', {
           token: premiumToken,
@@ -563,7 +563,7 @@ async function loadUserData() {
           expiresDate: new Date(premiumExpires).toISOString(),
           isExpired: Date.now() > premiumExpires
         });
-        
+
         // ✅ VALIDAÇÃO DE EXPIRAÇÃO
         if (Date.now() > premiumExpires) {
           console.log('[PREMIUM] Token expirado ao carregar');
@@ -580,17 +580,46 @@ async function loadUserData() {
           await storage.set('fit_premium', 'true');
         }
       } else {
-        // Sem data de expiração
+        // ⚠️ Sem data de expiração => NÃO é premium válido. Limpa para não “voltar pro amarelo”.
+        console.log('[PREMIUM] Sem expires ao carregar, limpando estado premium');
+        await storage.set('fit_premium', 'false');
+        await storage.set('fit_premium_token', '');
+        await storage.set('fit_premium_expires', '');
         isPremium = false;
+        premiumToken = null;
+        premiumExpires = null;
       }
+
     } else {
-      // Não tem token - verifica flag antiga
+      // ✅ Não tem token - valida flag antiga + expires (regra correta)
       const premiumResult = await storage.get('fit_premium');
-      if (premiumResult && premiumResult.value === 'true') {
+      const expiresLegacyResult = await storage.get('fit_premium_expires');
+
+      const flag = premiumResult?.value === 'true';
+      const expStr = expiresLegacyResult?.value || '';
+      const expNum = expStr ? parseInt(expStr, 10) : 0;
+
+      const valid = flag && expNum > 0 && Date.now() < expNum;
+
+      if (valid) {
         isPremium = true;
+        premiumExpires = expNum;
+        // premiumToken permanece null aqui (ok)
+      } else {
+        // Limpa qualquer “premium fantasma”
+        isPremium = false;
+        premiumToken = null;
+        premiumExpires = null;
+
+        if (flag) {
+          console.log('[PREMIUM] Flag antiga true mas inválida/expirada. Limpando...');
+        }
+        await storage.set('fit_premium', 'false');
+        await storage.set('fit_premium_expires', '');
+        await storage.set('fit_premium_token', '');
       }
     }
-    
+
     // Se não é premium, carrega créditos
     if (!isPremium) {
       const creditsResult = await storage.get('fit_credits');
@@ -598,29 +627,38 @@ async function loadUserData() {
       if (creditsResult) credits = parseInt(creditsResult.value || '3', 10);
       if (unlockedResult) unlockedRecipes = JSON.parse(unlockedResult.value || '[]');
     }
-    
+
     const shoppingResult = await storage.get('fit_shopping');
     const weekPlanResult = await storage.get('fit_weekplan');
     if (shoppingResult && shoppingResult.value) shoppingList = JSON.parse(shoppingResult.value);
     if (weekPlanResult && weekPlanResult.value) weekPlan = JSON.parse(weekPlanResult.value);
-    
+
   } catch (e) {
     console.error('Erro ao carregar dados:', e);
   }
 
+  // UI / Render
   updateUI();
+  // ✅ Recomendo sincronizar botões premium (tab/hamburger) junto
+  if (typeof updatePremiumButtons === 'function') updatePremiumButtons();
+
   updateShoppingCounter();
   initSliderAndCategories();
   renderRecipes();
-  
-   if (typeof lucide !== 'undefined') {
+
+  if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
 
-  // ✅ SETUP TIMERS DEPOIS DE TUDO
-  _setupPremiumTimers();
-  
+  // ✅ SETUP TIMERS: só se premium ativo e com expires válido
+  if (isPremium && typeof premiumExpires === 'number' && premiumExpires > Date.now()) {
+    _setupPremiumTimers();
+  }
 }
+
+
+
+
 
 
 async function saveUserData() {
@@ -667,7 +705,13 @@ async function saveWeekPlan() {
 // UI (Badge / Premium)
 // ==============================
 function updateUI() {
-  try {
+  try { 
+  
+      // ✅ Guard anti “regra invertida”
+    if (isPremium && !isPremiumValidNow()) {
+      forceFreeCleanup();
+    }
+	
     if (!creditsBadge) return;
 
     if (isPremium) {
@@ -675,11 +719,11 @@ function updateUI() {
       document.body.classList.add('premium-active');
 
       creditsBadge.classList.add('premium');
-     let badgeText = 'Premium';
+
+      let badgeText = 'Premium';
       if (premiumExpires) {
         const daysLeft = Math.ceil((premiumExpires - Date.now()) / (1000 * 60 * 60 * 24));
-       
-        if (daysLeft > 0) { // ← REMOVE O "&& daysLeft <= 30"
+        if (daysLeft > 0) {
           badgeText = `PREMIUM (${daysLeft}D)`;
         }
       }
@@ -691,11 +735,11 @@ function updateUI() {
         <span>${badgeText}</span>
       `;
 
-     if (premiumBtn) {
-  premiumBtn.style.display = 'none';
-  // ✅ Força reflow para aplicar mudança imediatamente
-  premiumBtn.offsetHeight;
-}
+      if (premiumBtn) {
+        premiumBtn.style.display = 'none';
+        // ✅ Força reflow para aplicar mudança imediatamente
+        premiumBtn.offsetHeight;
+      }
 
     } else {
       document.body.classList.add('free-user');
@@ -711,21 +755,26 @@ function updateUI() {
       `;
 
       if (premiumBtn) {
-  premiumBtn.style.display = 'block';
-  // ✅ Força reflow
-  premiumBtn.offsetHeight;
-}
+        premiumBtn.style.display = 'block';
+        // ✅ Força reflow
+        premiumBtn.offsetHeight;
+      }
     }
 
     creditsBadge.classList.add('ready');
+
+    // ✅ Mantém Tab/Hamburger sempre sincronizados com o estado atual
+    if (typeof updatePremiumButtons === 'function') {
+      updatePremiumButtons();
+    }
+
   } catch (error) {
     console.error('Erro em updateUI:', error);
-	
-	
-	// ✅ Atualiza botões premium
-    updatePremiumButtons();
-	
-	
+
+    // ✅ Não deixa UI premium desincronizar mesmo em erro
+    if (typeof updatePremiumButtons === 'function') {
+      updatePremiumButtons();
+    }
   }
 }
 
@@ -2132,6 +2181,11 @@ function updatePremiumButtons() {
 
 
 
+
+
+
+
+
 function _setupPremiumTimers() {
   // Limpa timers anteriores (se existirem)
   _clearPremiumTimers();
@@ -2730,6 +2784,24 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
 
 
 
+
+
+function isPremiumValidNow() {
+  const flag = localStorage.getItem('fit_premium') === 'true';
+  const exp = parseInt(localStorage.getItem('fit_premium_expires') || '0', 10);
+  return flag && exp > 0 && Date.now() < exp;
+}
+
+function forceFreeCleanup() {
+  try {
+    localStorage.setItem('fit_premium', 'false');
+    localStorage.setItem('fit_premium_expires', '');
+    localStorage.setItem('fit_premium_token', '');
+  } catch (_) {}
+  isPremium = false;
+  premiumToken = null;
+  premiumExpires = null;
+}
 
 
 // ==============================
@@ -3867,6 +3939,7 @@ function closePremiumModal() {
   document.body.classList.remove('modal-open');
   document.body.style.overflow = '';
 }
+
 
 
 
