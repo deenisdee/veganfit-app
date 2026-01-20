@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-   <!-- <script defer data-domain="Veganfit.app" src="https://plausible.io/js/script.js"></script> -->
-   </script>
+   
+   
    <head>
       <meta charset="UTF-8" />
       <!-- Meta Tags -->
@@ -114,10 +114,20 @@
                   </a>
                   <div class="search-container">
                      <input type="text" id="search-input" placeholder="Buscar receitas..." class="search-input" />
-                     <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                     
+					 
+					 
+<!-- 					 <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <circle cx="11" cy="11" r="8"></circle>
                         <path d="m21 21-4.35-4.35"></path>
-                     </svg>
+                     </svg> -->
+					 
+					 
+					 
+
+					 
+					 
+					 
                   </div>
                   <div class="header-tools">
                      <button id="calculator-btn" class="tool-btn tool-blue tap" title="Calculadora de Calorias">
@@ -165,9 +175,11 @@
 					 
 					 
 					 
-                     <button id="premium-btn" class="btn-premium tap" onclick="openPremiumModal('header')">
-					  Ativar Premium
-					 </button>
+<button id="premium-btn" class="btn-premium tap"
+        onclick="window.openPremium ? window.openPremium('header') : (window.openPremiumModal && window.openPremiumModal('header'))">
+  Ativar Premium
+</button>
+
   
 
 					 
@@ -218,8 +230,146 @@
             <button class="slider-arrow-new next tap" onclick="changeSlideNew(1)">›</button>
             <div class="slider-dots-new" id="sliderDots"></div>
          </div>
+		 
+		 
+		 
+		 
          <!-- CATEGORIAS -->
          <div class="categories-new">
+		 
+		 
+		 
+		 
+		 
+		 		 
+		 
+
+
+
+<div class="advanced-filters" id="advanced-filters">
+    <!-- Botão toggle -->
+    <button class="filters-toggle" onclick="toggleFilters()">
+        <i data-lucide="sliders-horizontal"></i>
+        <span>Filtros Avançados</span>
+    </button>
+    
+    <!-- Painel de filtros (começa escondido) -->
+    <div class="filters-panel hidden" id="filters-panel">
+        
+        <!-- Tempo de preparo -->
+        <div class="filter-group">
+            <label class="filter-label">
+                <i data-lucide="clock"></i>
+                Tempo máximo: <span id="time-value">60</span> min
+            </label>
+            <input type="range" id="filter-time" min="0" max="120" value="60" 
+                   oninput="updateFilterValue('time', this.value)">
+        </div>
+        
+        <!-- Proteína mínima -->
+        <div class="filter-group">
+            <label class="filter-label">
+                <i data-lucide="dumbbell"></i>
+                Proteína mínima: <span id="protein-value">0</span>g
+            </label>
+            <input type="range" id="filter-protein" min="0" max="50" value="0" step="5"
+                   oninput="updateFilterValue('protein', this.value)">
+        </div>
+        
+        <!-- Calorias -->
+        <div class="filter-group">
+            <label class="filter-label">
+                <i data-lucide="flame"></i>
+                Calorias máx: <span id="calories-value">1000</span> kcal
+            </label>
+            <input type="range" id="filter-calories" min="0" max="1000" value="1000" step="50"
+                   oninput="updateFilterValue('calories', this.value)">
+        </div>
+        
+        <!-- Restrições alimentares -->
+        <div class="filter-group">
+            <label class="filter-label">
+                <i data-lucide="leaf"></i>
+                Restrições Alimentares
+            </label>
+            <div class="filter-checkboxes">
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="filter-vegan" value="vegan" onchange="applyFilters()">
+                    <span><i data-lucide="leaf"></i> Vegano</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="filter-glutenFree" value="glutenFree" onchange="applyFilters()">
+                    <span><i data-lucide="wheat-off"></i> Sem Glúten</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="filter-dairyFree" value="dairyFree" onchange="applyFilters()">
+                    <span><i data-lucide="milk-off"></i> Sem Lactose</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="filter-soyFree" value="soyFree" onchange="applyFilters()">
+                    <span><i data-lucide="bean-off"></i> Sem Soja</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="filter-nutFree" value="nutFree" onchange="applyFilters()">
+                    <span><i data-lucide="nut-off"></i> Sem Nozes</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="filter-lowCarb" value="lowCarb" onchange="applyFilters()">
+                    <span><i data-lucide="zap"></i> Low Carb</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Objetivos -->
+        <div class="filter-group">
+            <label class="filter-label">
+                <i data-lucide="target"></i>
+                Objetivos
+            </label>
+            <div class="filter-checkboxes">
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="obj-ganho-massa" value="ganho-massa" onchange="applyFilters()">
+                    <span><i data-lucide="dumbbell"></i> Ganho de Massa</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="obj-emagrecimento" value="emagrecimento" onchange="applyFilters()">
+                    <span><i data-lucide="flame"></i> Emagrecimento</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="obj-energia" value="energia" onchange="applyFilters()">
+                    <span><i data-lucide="zap"></i> Energia</span>
+                </label>
+                <label class="filter-checkbox">
+                    <input type="checkbox" id="obj-pos-treino" value="pos-treino" onchange="applyFilters()">
+                    <span><i data-lucide="activity"></i> Pós-Treino</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Botões de ação -->
+        <div class="filter-actions">
+            <button class="btn-clear-filters" onclick="clearFilters()">
+                <i data-lucide="x"></i>
+                Limpar Filtros
+            </button>
+            <button class="btn-apply-filters" onclick="applyFilters()">
+                <i data-lucide="check"></i>
+                Aplicar
+            </button>
+        </div>
+        
+    </div>
+</div>
+		
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
             <div class="categories-grid-new" id="categoriesGrid"></div>
          </div>
          <!-- Main Content -->
