@@ -521,46 +521,59 @@ window.closeConfirmCreditModal = function () {
   pendingRecipeId = null;
 };
 
+
+
+
 window.confirmUnlockRecipe = function () {
-  if (!pendingRecipeId) return;
+  try {
+    if (!pendingRecipeId) return;
+    const id = String(pendingRecipeId);
 
-  const id = String(pendingRecipeId);
+    // Fecha modal e destrava scroll
+    if (typeof window.closeConfirmCreditModal === 'function') {
+      window.closeConfirmCreditModal();
+    } else {
+      const modal = document.getElementById('confirm-credit-modal');
+      if (modal) modal.classList.add('hidden');
+      document.body.classList.remove('modal-open');
+      pendingRecipeId = null;
+    }
 
-  // ✅ fecha modal do jeito certo (e destrava scroll)
-  if (typeof window.closeConfirmCreditModal === 'function') {
-    window.closeConfirmCreditModal();
-  } else {
-    // fallback extra
-    const modal = document.getElementById('confirm-credit-modal');
-    if (modal) modal.classList.add('hidden');
+    // Premium abre direto
+    if (isPremium === true) {
+      pendingRecipeId = null;
+      showRecipeDetail(id);
+      return;
+    }
+
+    const c = (typeof getCreditsSafe === 'function') ? getCreditsSafe() : (Number.isFinite(credits) ? credits : 0);
+
+    // Sem créditos => premium
+    if (c <= 0) {
+      pendingRecipeId = null;
+      if (typeof window.openPremium === 'function') window.openPremium('no-credits');
+      else if (typeof window.openPremiumModal === 'function') window.openPremiumModal('no-credits');
+      return;
+    }
+
+    // ✅ Desconta crédito e desbloqueia pra sempre
+    credits = c - 1;
+    if (typeof persistCredits === 'function') persistCredits();
+
+    if (typeof unlockRecipe === 'function') unlockRecipe(id);
+
+    updateUI();
+    renderRecipes();
+
+    pendingRecipeId = null;
+
+    // ✅ Abre a receita
+    showRecipeDetail(id);
+
+  } catch (e) {
+    console.error('[confirmUnlockRecipe] erro:', e);
     document.body.classList.remove('modal-open');
   }
-
-  // Sem créditos => abre premium
-  if (!Number.isFinite(credits) || credits <= 0) {
-    if (typeof window.openPremium === 'function') {
-      window.openPremium('no-credits');
-    } else if (typeof window.openPremiumModal === 'function') {
-      window.openPremiumModal('no-credits');
-    }
-    pendingRecipeId = null;
-    return;
-  }
-
-  // ✅ Consome crédito e desbloqueia (sem duplicar)
-  credits = credits - 1;
-
-  if (!Array.isArray(unlockedRecipes)) unlockedRecipes = [];
-  if (!unlockedRecipes.map(String).includes(id)) unlockedRecipes.push(id);
-
-  saveUserData();
-  updateUI();
-  renderRecipes();
-
-  pendingRecipeId = null;
-
-  // ✅ abre a receita já desbloqueada
-  showRecipeDetail(id);
 };
 
 
@@ -1237,144 +1250,44 @@ function setupRecipeGridClickGuard() {
 // ==============================
 // RENDER RECEITAS
 // ==============================
-function renderRecipes() {
-  if (!recipeGrid || !allRecipes || allRecipes.length === 0) return;
+function viewRecipe(recipeId) {
+  const id = String(recipeId);
 
-  let filtered = allRecipes;
-
-  if (searchTerm) {
-    filtered = allRecipes.filter(recipe => {
-      return (
-        recipe.category === searchTerm ||
-        recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
+  // 1) Premium abre direto
+  if (isPremium === true) {
+    showRecipeDetail(id);
+    return;
   }
 
+  // 2) Se já foi desbloqueada "pra sempre", abre direto
+  if (typeof isRecipeUnlocked === 'function' && isRecipeUnlocked(id)) {
+    showRecipeDetail(id);
+    return;
+  }
+
+  // Créditos atuais (seguro)
   const c = (typeof getCreditsSafe === 'function')
     ? getCreditsSafe()
     : (Number.isFinite(credits) ? credits : 0);
 
-  recipeGrid.innerHTML = filtered.map(recipe => {
-    const id = String(recipe.id);
+  // 3) Créditos > 0 e ainda não desbloqueada => abre POPUP de confirmação
+  if (c > 0) {
+    if (typeof window.openConfirmCreditModal === 'function') {
+      window.openConfirmCreditModal(id);
+    } else {
+      console.warn('[viewRecipe] openConfirmCreditModal não existe.');
+    }
+    return; // ✅ NÃO abre a receita aqui
+  }
 
-    // ✅ Desbloqueada "pra sempre" (free) — corrigido (string/number)
-    const unlockedForever = (Array.isArray(unlockedRecipes) ? unlockedRecipes.map(String) : []).includes(id);
-
-    // ✅ Regras oficiais de UI
-    const isUnlocked = (isPremium === true) || unlockedForever;
-
-    // Cadeado só aparece quando créditos=0 e não está desbloqueada e não é premium
-    const showLock = (typeof shouldShowLock === 'function')
-      ? shouldShowLock(id)
-      : (!isUnlocked && c === 0);
-
-    // CTA verde só aparece quando créditos>0, free e não desbloqueada
-    const showUnlockCTA = (typeof shouldShowUnlockCTA === 'function')
-      ? shouldShowUnlockCTA(id)
-      : (!isUnlocked && c > 0);
-
-    // Botão (badge) — 3 estados:
-    // 1) Premium / Unlocked forever => azul com cadeado aberto ("Ver receita")
-    // 2) Free com créditos > 0 e não desbloqueada => verde ("Desbloquear 1 crédito")
-    // 3) Free com créditos = 0 e não desbloqueada => fica "locked" (sem crédito) e visual de bloqueado
-    const buttonClass =
-      isUnlocked ? 'unlocked' :
-      showUnlockCTA ? 'unlock-cta' :
-      'locked';
-
-    const buttonInner = isUnlocked
-      ? `
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-        </svg>
-        <span class="btn-label">Ver Receita</span>
-      `
-      : showUnlockCTA
-        ? `
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <span class="btn-label btn-label-desktop">Desbloquear <small>(1 crédito)</small></span>
-          <span class="btn-label btn-label-mobile">1 crédito</span>
-        `
-        : `
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <span class="btn-label">Bloqueado</span>
-        `;
-
-    // ✅ data-recipe-id é essencial pro click-guard
-    return `
-      <div class="recipe-card" data-recipe-id="${id}" onclick="viewRecipe(${recipe.id})">
-        <div class="recipe-image-container">
-
-          <img
-            src="${recipe.image}"
-            alt="${recipe.name}"
-            class="recipe-image"
-            loading="lazy"
-            decoding="async"
-            onload="this.classList.add('is-loaded')"
-            onerror="this.onerror=null; this.classList.add('is-loaded'); this.src='https://images.unsplash.com/photo-1490644659350-3f5777c715be?auto=format&fit=crop&w=1200&q=60';"
-          />
-
-          <div class="recipe-category">${recipe.category}</div>
-
-          ${showLock ? `
-            <div class="recipe-overlay">
-              <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </div>
-          ` : ''}
-        </div>
-
-        <div class="recipe-content">
-          <h3 class="recipe-title">${recipe.name}</h3>
-
-          <div class="recipe-meta">
-            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            <span>${recipe.time}min</span>
-
-            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-            </svg>
-            <span>${recipe.servings}</span>
-
-            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-            <span>${recipe.difficulty}</span>
-          </div>
-
-          <div class="recipe-stats">
-            <div class="stat">
-              <div class="stat-value calories">${recipe.calories}</div>
-              <div class="stat-label">calorias</div>
-            </div>
-            <div class="stat">
-              <div class="stat-value protein">${recipe.protein}g</div>
-              <div class="stat-label">proteína</div>
-            </div>
-          </div>
-
-          <button class="recipe-button ${buttonClass}">
-            ${buttonInner}
-          </button>
-        </div>
-      </div>
-    `;
-  }).join('');
+  // 4) Créditos <= 0 => abre Premium
+  if (typeof window.openPremium === 'function') {
+    window.openPremium('no-credits');
+  } else if (typeof window.openPremiumModal === 'function') {
+    window.openPremiumModal('no-credits');
+  } else {
+    console.warn('[viewRecipe] openPremium/openPremiumModal não existe.');
+  }
 }
 
 
