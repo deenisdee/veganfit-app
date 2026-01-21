@@ -483,86 +483,81 @@ let pendingRecipeId = null;
 window.openConfirmCreditModal = function (recipeId) {
   const id = String(recipeId);
 
-  // Busca robusta (id number/string)
   const recipe = Array.isArray(allRecipes)
     ? allRecipes.find(r => String(r.id) === id)
     : null;
 
-  if (!recipe) {
-    console.warn('[openConfirmCreditModal] Receita não encontrada:', id);
-    return;
-  }
+  if (!recipe) return;
 
-  // ✅ Fonte única do "pendente"
   pendingRecipeId = id;
 
-  // Atualiza o modal com informações
   const creditsRemaining = document.getElementById('credits-remaining');
   const recipeNameConfirm = document.getElementById('recipe-name-confirm');
 
   if (creditsRemaining) creditsRemaining.textContent = String(credits);
   if (recipeNameConfirm) recipeNameConfirm.textContent = recipe.name;
 
-  // Abre o modal
   const modal = document.getElementById('confirm-credit-modal');
   if (modal) {
     modal.classList.remove('hidden');
-    document.body.classList.add('modal-open'); // trava scroll (e vamos destravar no close/confirm)
+    document.body.classList.add('modal-open');
   }
 };
+
+
+
+
 
 window.closeConfirmCreditModal = function () {
   const modal = document.getElementById('confirm-credit-modal');
   if (modal) modal.classList.add('hidden');
 
-  // ✅ destrava scroll SEMPRE
   document.body.classList.remove('modal-open');
 
+  // ✅ cancela pendência
   pendingRecipeId = null;
 };
+
+
+
+
+
 
 window.confirmUnlockRecipe = function () {
   if (!pendingRecipeId) return;
 
   const id = String(pendingRecipeId);
 
-  // ✅ fecha modal do jeito certo (e destrava scroll)
-  if (typeof window.closeConfirmCreditModal === 'function') {
-    window.closeConfirmCreditModal();
-  } else {
-    // fallback extra
-    const modal = document.getElementById('confirm-credit-modal');
-    if (modal) modal.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-  }
+  // 2) Caso sim -> DESCONTA O CRÉDITO (primeiro!)
+  const c = (typeof getCreditsSafe === 'function')
+    ? getCreditsSafe()
+    : (Number.isFinite(credits) ? credits : 0);
 
-  // Sem créditos => abre premium
-  if (!Number.isFinite(credits) || credits <= 0) {
-    if (typeof window.openPremium === 'function') {
-      window.openPremium('no-credits');
-    } else if (typeof window.openPremiumModal === 'function') {
-      window.openPremiumModal('no-credits');
+  if (isPremium !== true) {
+    if (c <= 0) {
+      // sem crédito => premium (segurança)
+      window.closeConfirmCreditModal();
+      if (typeof window.openPremium === 'function') window.openPremium('no-credits');
+      else if (typeof window.openPremiumModal === 'function') window.openPremiumModal('no-credits');
+      return;
     }
-    pendingRecipeId = null;
-    return;
+
+    credits = c - 1;
+    if (typeof persistCredits === 'function') persistCredits();
+
+    if (typeof unlockRecipe === 'function') unlockRecipe(id);
   }
 
-  // ✅ Consome crédito e desbloqueia (sem duplicar)
-  credits = credits - 1;
+  // Fecha modal
+  window.closeConfirmCreditModal();
 
-  if (!Array.isArray(unlockedRecipes)) unlockedRecipes = [];
-  if (!unlockedRecipes.map(String).includes(id)) unlockedRecipes.push(id);
-
-  saveUserData();
+  // Atualiza UI e cards
   updateUI();
   renderRecipes();
 
-  pendingRecipeId = null;
-
-  // ✅ abre a receita já desbloqueada
+  // 3) DEPOIS abre a receita
   showRecipeDetail(id);
 };
-
 
 
 
@@ -1312,8 +1307,14 @@ function renderRecipes() {
 
         // ✅ data-recipe-id é essencial pro click-guard
         return `
-      <div class="recipe-card" data-recipe-id="${id}" onclick="viewRecipe(${recipe.id})">
-        <div class="recipe-image-container">
+     
+
+
+	 /* <div class="recipe-card" data-recipe-id="${id}" onclick="viewRecipe(${recipe.id})"> */
+       <div class="recipe-card" data-recipe-id="${id}">
+
+
+	   <div class="recipe-image-container">
 
           <img
             src="${recipe.image}"
@@ -4276,7 +4277,6 @@ function setupRecipeGridClickGuard() {
   const grid = document.getElementById('recipe-grid');
   if (!grid) return;
 
-  // Evita duplicar listener em hot reload / chamadas repetidas
   if (grid.dataset.clickGuardAttached === '1') return;
   grid.dataset.clickGuardAttached = '1';
 
@@ -4284,50 +4284,43 @@ function setupRecipeGridClickGuard() {
     const card = e.target.closest('[data-recipe-id]');
     if (!card) return;
 
-    const recipeId = card.getAttribute('data-recipe-id');
-    if (!recipeId) return;
+    // ✅ impede qualquer outro onclick/bubbling de abrir receita
+    e.preventDefault();
+    e.stopPropagation();
 
-    // ✅ Regra central
-    if (canAccessRecipe(recipeId)) {
-      // Abre receita (usa função que já existe no seu app)
-      if (typeof openRecipeDetail === 'function') {
-        openRecipeDetail(recipeId);
-      } else if (typeof showRecipeDetail === 'function') {
-        showRecipeDetail(recipeId);
-      } else if (typeof openRecipe === 'function') {
-        openRecipe(recipeId);
-      } else {
-        console.warn('Nenhuma função de abrir receita encontrada (openRecipeDetail/showRecipeDetail/openRecipe).');
-      }
+    const id = String(card.getAttribute('data-recipe-id') || '');
+    if (!id) return;
+
+    // Premium: abre direto
+    if (isPremium === true) {
+      showRecipeDetail(id);
       return;
     }
 
-    // ❌ Não pode acessar
-    const hasCredits = (Number.isFinite(credits) ? credits : 0) > 0;
+    // Se já desbloqueou "pra sempre": abre direto
+    if (typeof isRecipeUnlocked === 'function' && isRecipeUnlocked(id)) {
+      showRecipeDetail(id);
+      return;
+    }
 
-    if (hasCredits) {
-      // Abre modal de confirmação de crédito (o seu já existe)
-      // Precisamos guardar o recipeId para o confirmUnlockRecipe()
-      window.__pendingUnlockRecipeId = recipeId;
+    // Créditos atuais
+    const c = (typeof getCreditsSafe === 'function')
+      ? getCreditsSafe()
+      : (Number.isFinite(credits) ? credits : 0);
 
-      const nameEl = card.querySelector('[data-recipe-name]');
-      const recipeName = nameEl ? nameEl.textContent.trim() : 'esta receita';
-
-      const remainingEl = document.getElementById('credits-remaining');
-      const nameConfirmEl = document.getElementById('recipe-name-confirm');
-
-      if (remainingEl) remainingEl.textContent = String(credits);
-      if (nameConfirmEl) nameConfirmEl.textContent = recipeName;
-
-      const modal = document.getElementById('confirm-credit-modal');
-      if (modal) modal.classList.remove('hidden');
-    } else {
-      // Sem créditos: abre premium
-      if (typeof window.openPremium === 'function') {
-        window.openPremium('no-credits');
-      } else if (typeof window.openPremiumModal === 'function') {
-        window.openPremiumModal('no-credits');
+    // 1) Clico na receita e créditos > 0 -> abre popup de confirmação
+    if (c > 0) {
+      if (typeof window.openConfirmCreditModal === 'function') {
+        window.openConfirmCreditModal(id);
       }
+      return; // ✅ NÃO abre receita aqui
+    }
+
+    // 6) Clico na receita e créditos <= 0 -> abre premium
+    if (typeof window.openPremium === 'function') {
+      window.openPremium('no-credits');
+    } else if (typeof window.openPremiumModal === 'function') {
+      window.openPremiumModal('no-credits');
     }
   });
 }
