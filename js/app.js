@@ -521,59 +521,46 @@ window.closeConfirmCreditModal = function () {
   pendingRecipeId = null;
 };
 
-
-
-
 window.confirmUnlockRecipe = function () {
-  try {
-    if (!pendingRecipeId) return;
-    const id = String(pendingRecipeId);
+  if (!pendingRecipeId) return;
 
-    // Fecha modal e destrava scroll
-    if (typeof window.closeConfirmCreditModal === 'function') {
-      window.closeConfirmCreditModal();
-    } else {
-      const modal = document.getElementById('confirm-credit-modal');
-      if (modal) modal.classList.add('hidden');
-      document.body.classList.remove('modal-open');
-      pendingRecipeId = null;
-    }
+  const id = String(pendingRecipeId);
 
-    // Premium abre direto
-    if (isPremium === true) {
-      pendingRecipeId = null;
-      showRecipeDetail(id);
-      return;
-    }
-
-    const c = (typeof getCreditsSafe === 'function') ? getCreditsSafe() : (Number.isFinite(credits) ? credits : 0);
-
-    // Sem créditos => premium
-    if (c <= 0) {
-      pendingRecipeId = null;
-      if (typeof window.openPremium === 'function') window.openPremium('no-credits');
-      else if (typeof window.openPremiumModal === 'function') window.openPremiumModal('no-credits');
-      return;
-    }
-
-    // ✅ Desconta crédito e desbloqueia pra sempre
-    credits = c - 1;
-    if (typeof persistCredits === 'function') persistCredits();
-
-    if (typeof unlockRecipe === 'function') unlockRecipe(id);
-
-    updateUI();
-    renderRecipes();
-
-    pendingRecipeId = null;
-
-    // ✅ Abre a receita
-    showRecipeDetail(id);
-
-  } catch (e) {
-    console.error('[confirmUnlockRecipe] erro:', e);
+  // ✅ fecha modal do jeito certo (e destrava scroll)
+  if (typeof window.closeConfirmCreditModal === 'function') {
+    window.closeConfirmCreditModal();
+  } else {
+    // fallback extra
+    const modal = document.getElementById('confirm-credit-modal');
+    if (modal) modal.classList.add('hidden');
     document.body.classList.remove('modal-open');
   }
+
+  // Sem créditos => abre premium
+  if (!Number.isFinite(credits) || credits <= 0) {
+    if (typeof window.openPremium === 'function') {
+      window.openPremium('no-credits');
+    } else if (typeof window.openPremiumModal === 'function') {
+      window.openPremiumModal('no-credits');
+    }
+    pendingRecipeId = null;
+    return;
+  }
+
+  // ✅ Consome crédito e desbloqueia (sem duplicar)
+  credits = credits - 1;
+
+  if (!Array.isArray(unlockedRecipes)) unlockedRecipes = [];
+  if (!unlockedRecipes.map(String).includes(id)) unlockedRecipes.push(id);
+
+  saveUserData();
+  updateUI();
+  renderRecipes();
+
+  pendingRecipeId = null;
+
+  // ✅ abre a receita já desbloqueada
+  showRecipeDetail(id);
 };
 
 
