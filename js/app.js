@@ -522,22 +522,41 @@ window.closeConfirmCreditModal = function () {
 
 
 
-
-function confirmUnlockRecipe() {
+window.confirmUnlockRecipe = function () {
   if (!pendingRecipeId) return;
 
-  unlockRecipe(pendingRecipeId);   // salva como desbloqueada pra sempre
-  credits = Math.max(0, credits - 1);
-  localStorage.setItem('fit_credits', credits);
+  const id = String(pendingRecipeId);
 
-  closeConfirmCreditModal();
+  // 2) Caso sim -> DESCONTA O CRÉDITO (primeiro!)
+  const c = (typeof getCreditsSafe === 'function')
+    ? getCreditsSafe()
+    : (Number.isFinite(credits) ? credits : 0);
 
-  // 🔑 AGORA SIM abre a receita
-  renderRecipeDetail(pendingRecipeId);
+  if (isPremium !== true) {
+    if (c <= 0) {
+      // sem crédito => premium (segurança)
+      window.closeConfirmCreditModal();
+      if (typeof window.openPremium === 'function') window.openPremium('no-credits');
+      else if (typeof window.openPremiumModal === 'function') window.openPremiumModal('no-credits');
+      return;
+    }
 
-  pendingRecipeId = null;
-}
+    credits = c - 1;
+    if (typeof persistCredits === 'function') persistCredits();
 
+    if (typeof unlockRecipe === 'function') unlockRecipe(id);
+  }
+
+  // Fecha modal
+  window.closeConfirmCreditModal();
+
+  // Atualiza UI e cards
+  updateUI();
+  renderRecipes();
+
+  // 3) DEPOIS abre a receita
+  requestOpenRecipe(id);
+};
 
 
 
