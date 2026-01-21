@@ -527,34 +527,50 @@ window.confirmUnlockRecipe = function () {
 
   const id = String(pendingRecipeId);
 
-  // 2) Caso sim -> DESCONTA O CRÉDITO (primeiro!)
+  // 1) Créditos atuais
   const c = (typeof getCreditsSafe === 'function')
     ? getCreditsSafe()
     : (Number.isFinite(credits) ? credits : 0);
 
+  // 2) Caso sim -> DESCONTA O CRÉDITO (primeiro!)
   if (isPremium !== true) {
     if (c <= 0) {
-      // sem crédito => premium (segurança)
-      window.closeConfirmCreditModal();
+      // segurança: sem crédito => premium
+      if (typeof window.closeConfirmCreditModal === 'function') {
+        window.closeConfirmCreditModal();
+      }
       if (typeof window.openPremium === 'function') window.openPremium('no-credits');
       else if (typeof window.openPremiumModal === 'function') window.openPremiumModal('no-credits');
       return;
     }
 
     credits = c - 1;
-    if (typeof persistCredits === 'function') persistCredits();
 
+    // persistência do seu projeto
+    if (typeof persistCredits === 'function') persistCredits();
+    else localStorage.setItem('fit_credits', String(credits));
+
+    // desbloqueia pra sempre
     if (typeof unlockRecipe === 'function') unlockRecipe(id);
   }
 
-  // Fecha modal
-  window.closeConfirmCreditModal();
+  // 3) Fecha modal (e destrava scroll) — sempre
+  if (typeof window.closeConfirmCreditModal === 'function') {
+    window.closeConfirmCreditModal();
+  } else {
+    const modal = document.getElementById('confirm-credit-modal');
+    if (modal) modal.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+  }
 
-  // Atualiza UI e cards
-  updateUI();
-  renderRecipes();
+  // ✅ Importante: limpa a pendência ANTES de abrir (evita efeitos colaterais)
+  pendingRecipeId = null;
 
-  // 3) DEPOIS abre a receita
+  // 4) Atualiza UI/cards (recomendado manter)
+  try { updateUI(); } catch (_) {}
+  try { renderRecipes(); } catch (_) {}
+
+  // 5) DEPOIS abre a receita pelo PORTEIRO (mais robusto)
   requestOpenRecipe(id);
 };
 
