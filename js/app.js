@@ -1310,7 +1310,7 @@ function renderRecipes() {
      
 
 
-	 /* <div class="recipe-card" data-recipe-id="${id}" onclick="viewRecipe(${recipe.id})"> */
+	
        <div class="recipe-card" data-recipe-id="${id}">
 
 
