@@ -523,41 +523,20 @@ window.closeConfirmCreditModal = function () {
 
 
 
-window.confirmUnlockRecipe = function () {
+function confirmUnlockRecipe() {
   if (!pendingRecipeId) return;
 
-  const id = String(pendingRecipeId);
+  unlockRecipe(pendingRecipeId);   // salva como desbloqueada pra sempre
+  credits = Math.max(0, credits - 1);
+  localStorage.setItem('fit_credits', credits);
 
-  // 2) Caso sim -> DESCONTA O CRÉDITO (primeiro!)
-  const c = (typeof getCreditsSafe === 'function')
-    ? getCreditsSafe()
-    : (Number.isFinite(credits) ? credits : 0);
+  closeConfirmCreditModal();
 
-  if (isPremium !== true) {
-    if (c <= 0) {
-      // sem crédito => premium (segurança)
-      window.closeConfirmCreditModal();
-      if (typeof window.openPremium === 'function') window.openPremium('no-credits');
-      else if (typeof window.openPremiumModal === 'function') window.openPremiumModal('no-credits');
-      return;
-    }
+  // 🔑 AGORA SIM abre a receita
+  renderRecipeDetail(pendingRecipeId);
 
-    credits = c - 1;
-    if (typeof persistCredits === 'function') persistCredits();
-
-    if (typeof unlockRecipe === 'function') unlockRecipe(id);
-  }
-
-  // Fecha modal
-  window.closeConfirmCreditModal();
-
-  // Atualiza UI e cards
-  updateUI();
-  renderRecipes();
-
-  // 3) DEPOIS abre a receita
-  requestOpenRecipe(id);
-};
+  pendingRecipeId = null;
+}
 
 
 
@@ -1156,39 +1135,39 @@ function shouldShowUnlockCTA(recipeId) {
 
 
 
-
-
-
 function requestOpenRecipe(recipeId) {
   const id = String(recipeId);
 
+  // Premium abre direto
   if (isPremium === true) {
     renderRecipeDetail(id);
     return;
   }
 
+  // Já desbloqueada pra sempre
   if (typeof isRecipeUnlocked === 'function' && isRecipeUnlocked(id)) {
     renderRecipeDetail(id);
     return;
   }
 
+  // Créditos atuais
   const c = (typeof getCreditsSafe === 'function')
     ? getCreditsSafe()
     : (Number.isFinite(credits) ? credits : 0);
 
+  // Tem créditos → pede confirmação
   if (c > 0) {
-    if (typeof window.openConfirmCreditModal === 'function') {
-      window.openConfirmCreditModal(id);
-    }
+    window.openConfirmCreditModal?.(id);
     return;
   }
 
-  if (typeof window.openPremium === 'function') {
-    window.openPremium('no-credits');
-  } else if (typeof window.openPremiumModal === 'function') {
-    window.openPremiumModal('no-credits');
-  }
+  // Sem créditos → Premium
+  window.openPremium?.('no-credits')
+    || window.openPremiumModal?.('no-credits');
 }
+
+
+
 
 
 
@@ -1476,16 +1455,13 @@ function viewRecipe(recipeId) {
 // ==============================
 
 
-function requestOpenRecipe(recipeId) {
+function renderRecipeDetail(recipeId) {
    const id = String(recipeId);
   const recipe = allRecipes.find(r => String(r.id) === id);
   if (!recipe) return;
 
-
   currentRecipe = recipe;
   const heroImage = recipe.images?.hero || recipe.image;
-
-
   
 
  recipeDetail.innerHTML = `
