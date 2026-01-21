@@ -556,7 +556,7 @@ window.confirmUnlockRecipe = function () {
   renderRecipes();
 
   // 3) DEPOIS abre a receita
-  showRecipeDetail(id);
+  requestOpenRecipe(id);
 };
 
 
@@ -1159,44 +1159,34 @@ function shouldShowUnlockCTA(recipeId) {
 
 
 
-
 function requestOpenRecipe(recipeId) {
   const id = String(recipeId);
 
-  // Premium: abre direto
   if (isPremium === true) {
-    showRecipeDetail(id);
+    renderRecipeDetail(id);
     return;
   }
 
-  // Já desbloqueada "pra sempre": abre direto
   if (typeof isRecipeUnlocked === 'function' && isRecipeUnlocked(id)) {
-    showRecipeDetail(id);
+    renderRecipeDetail(id);
     return;
   }
 
-  // Créditos atuais
   const c = (typeof getCreditsSafe === 'function')
     ? getCreditsSafe()
     : (Number.isFinite(credits) ? credits : 0);
 
-  // Créditos > 0: pede confirmação (não abre direto)
   if (c > 0) {
     if (typeof window.openConfirmCreditModal === 'function') {
       window.openConfirmCreditModal(id);
-    } else {
-      console.warn('[requestOpenRecipe] openConfirmCreditModal não existe.');
     }
     return;
   }
 
-  // Créditos <= 0: abre premium
   if (typeof window.openPremium === 'function') {
     window.openPremium('no-credits');
   } else if (typeof window.openPremiumModal === 'function') {
     window.openPremiumModal('no-credits');
-  } else {
-    console.warn('[requestOpenRecipe] openPremium/openPremiumModal não existe.');
   }
 }
 
@@ -1442,13 +1432,13 @@ function viewRecipe(recipeId) {
 
   // 1) Premium abre direto
   if (isPremium === true) {
-    showRecipeDetail(id);
+    requestOpenRecipe(id);
     return;
   }
 
   // 2) Se já foi desbloqueada "pra sempre", abre direto
   if (typeof isRecipeUnlocked === 'function' && isRecipeUnlocked(id)) {
-    showRecipeDetail(id);
+    requestOpenRecipe(id);
     return;
   }
 
@@ -1486,7 +1476,7 @@ function viewRecipe(recipeId) {
 // ==============================
 
 
-function showRecipeDetail(recipeId) {
+function requestOpenRecipe(recipeId) {
    const id = String(recipeId);
   const recipe = allRecipes.find(r => String(r.id) === id);
   if (!recipe) return;
@@ -3712,8 +3702,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // tenta abrir detalhe usando função existente
     card.addEventListener('click', () => {
-      if (typeof window.showRecipeDetail === 'function') {
-        window.showRecipeDetail(recipe.id);
+      if (typeof window.requestOpenRecipe === 'function') {
+        window.requestOpenRecipe(recipe.id);
       }
     });
 
@@ -4346,13 +4336,13 @@ function setupRecipeGridClickGuard() {
 
     // Premium: abre direto
     if (isPremium === true) {
-      showRecipeDetail(id);
+      requestOpenRecipe(id);
       return;
     }
 
     // Se já desbloqueou "pra sempre": abre direto
     if (typeof isRecipeUnlocked === 'function' && isRecipeUnlocked(id)) {
-      showRecipeDetail(id);
+      requestOpenRecipe(id);
       return;
     }
 
