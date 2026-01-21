@@ -1383,33 +1383,49 @@ function renderRecipes() {
 
 
 
-window.viewRecipe = function(recipeId) {
-  haptic(10);
-  
-  // ✅ NOVO: Se não tem créditos E não é premium → abre premium modal DIRETO
-  if (!isPremium && credits === 0 && !unlockedRecipes.includes(recipeId)) {
-    if (modalMessage) {
-      modalMessage.textContent = 'Seus créditos acabaram. Ative o Premium para acesso ilimitado.';
-    }
-    const warning = document.getElementById('credits-warning');
-    if (warning) warning.classList.remove('hidden');
-    
-    openModal(premiumModal);
-    return; // Para aqui, não continua
-  }
-  
-  // ✅ Verifica expiração premium
-  if (isPremium && premiumExpires && Date.now() > premiumExpires) {
-    console.log('[PREMIUM] Expirou ao tentar abrir receita');
-    _handlePremiumExpiration();
+function viewRecipe(recipeId) {
+  const id = String(recipeId);
+
+  // 1) Premium abre direto
+  if (isPremium === true) {
+    showRecipeDetail(id);
     return;
   }
-  
-  // ✅ Consome crédito OU verifica premium (SÓ chega aqui se credits > 0)
-  if (!ensureRecipeAccess(recipeId)) return;
-  
-  showRecipeDetail(recipeId);
-};
+
+  // 2) Se já foi desbloqueada "pra sempre", abre direto
+  if (typeof isRecipeUnlocked === 'function' && isRecipeUnlocked(id)) {
+    showRecipeDetail(id);
+    return;
+  }
+
+  // Créditos atuais (seguro)
+  const c = (typeof getCreditsSafe === 'function')
+    ? getCreditsSafe()
+    : (Number.isFinite(credits) ? credits : 0);
+
+  // 3) Créditos > 0 e ainda não desbloqueada => abre POPUP de confirmação
+  if (c > 0) {
+    if (typeof window.openConfirmCreditModal === 'function') {
+      window.openConfirmCreditModal(id);
+    } else {
+      console.warn('[viewRecipe] openConfirmCreditModal não existe.');
+    }
+    return; // ✅ NÃO abre a receita aqui
+  }
+
+  // 4) Créditos <= 0 => abre Premium
+  if (typeof window.openPremium === 'function') {
+    window.openPremium('no-credits');
+  } else if (typeof window.openPremiumModal === 'function') {
+    window.openPremiumModal('no-credits');
+  } else {
+    console.warn('[viewRecipe] openPremium/openPremiumModal não existe.');
+  }
+}
+
+
+
+
 
 // ==============================
 // DETALHE DA RECEITA
