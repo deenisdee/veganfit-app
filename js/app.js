@@ -1118,7 +1118,6 @@ function canAccessRecipe(recipeId) {
 
 
 
-
 // ================================
 // UI/REGRA OFICIAL — Lock & CTA
 // ================================
@@ -1157,6 +1156,60 @@ function shouldShowUnlockCTA(recipeId) {
 
 
 
+
+
+
+
+function requestOpenRecipe(recipeId) {
+  const id = String(recipeId);
+
+  // Premium: abre direto
+  if (isPremium === true) {
+    showRecipeDetail(id);
+    return;
+  }
+
+  // Já desbloqueada "pra sempre": abre direto
+  if (typeof isRecipeUnlocked === 'function' && isRecipeUnlocked(id)) {
+    showRecipeDetail(id);
+    return;
+  }
+
+  // Créditos atuais
+  const c = (typeof getCreditsSafe === 'function')
+    ? getCreditsSafe()
+    : (Number.isFinite(credits) ? credits : 0);
+
+  // Créditos > 0: pede confirmação (não abre direto)
+  if (c > 0) {
+    if (typeof window.openConfirmCreditModal === 'function') {
+      window.openConfirmCreditModal(id);
+    } else {
+      console.warn('[requestOpenRecipe] openConfirmCreditModal não existe.');
+    }
+    return;
+  }
+
+  // Créditos <= 0: abre premium
+  if (typeof window.openPremium === 'function') {
+    window.openPremium('no-credits');
+  } else if (typeof window.openPremiumModal === 'function') {
+    window.openPremiumModal('no-credits');
+  } else {
+    console.warn('[requestOpenRecipe] openPremium/openPremiumModal não existe.');
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 // ================================
 // SETUP RECEITAS
 // ================================
@@ -1180,7 +1233,7 @@ function setupRecipeGridClickGuard() {
 
     // ✅ Se pode acessar, abre direto
     if (canAccessRecipe(id)) {
-      showRecipeDetail(id);
+      requestOpenRecipe(id);
       return;
     }
 
