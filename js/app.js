@@ -1238,70 +1238,71 @@ function setupRecipeGridClickGuard() {
 // RENDER RECEITAS
 // ==============================
 
+
 function renderRecipes() {
-  if (!recipeGrid || !allRecipes || allRecipes.length === 0) return;
+    if (!recipeGrid || !allRecipes || allRecipes.length === 0) return;
 
-  let filtered = allRecipes;
+    let filtered = allRecipes;
 
-  if (searchTerm) {
-    filtered = allRecipes.filter(recipe => {
-      return (
-        recipe.category === searchTerm ||
-        recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
-  }
+    if (searchTerm) {
+        filtered = allRecipes.filter(recipe => {
+            return (
+                recipe.category === searchTerm ||
+                recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+    }
 
-  const c = (typeof getCreditsSafe === 'function')
-    ? getCreditsSafe()
-    : (Number.isFinite(credits) ? credits : 0);
+    const c = (typeof getCreditsSafe === 'function') ?
+        getCreditsSafe() :
+        (Number.isFinite(credits) ? credits : 0);
 
-  recipeGrid.innerHTML = filtered.map(recipe => {
-    const id = String(recipe.id);
+    recipeGrid.innerHTML = filtered.map(recipe => {
+        const id = String(recipe.id);
 
-    // ✅ Desbloqueada "pra sempre" (free) — corrigido (string/number)
-    const unlockedForever = (Array.isArray(unlockedRecipes) ? unlockedRecipes.map(String) : []).includes(id);
+        // ✅ Desbloqueada "pra sempre" (free) — corrigido (string/number)
+        const unlockedForever = (Array.isArray(unlockedRecipes) ? unlockedRecipes.map(String) : []).includes(id);
 
-    // ✅ Regras oficiais de UI
-    const isUnlocked = (isPremium === true) || unlockedForever;
+        // ✅ Regras oficiais de UI
+        const isUnlocked = (isPremium === true) || unlockedForever;
 
-    // Cadeado só aparece quando créditos=0 e não está desbloqueada e não é premium
-    const showLock = (typeof shouldShowLock === 'function')
-      ? shouldShowLock(id)
-      : (!isUnlocked && c === 0);
+        // Cadeado só aparece quando créditos=0 e não está desbloqueada e não é premium
+        const showLock = (typeof shouldShowLock === 'function') ?
+            shouldShowLock(id) :
+            (!isUnlocked && c === 0);
 
-    // CTA verde só aparece quando créditos>0, free e não desbloqueada
-    const showUnlockCTA = (typeof shouldShowUnlockCTA === 'function')
-      ? shouldShowUnlockCTA(id)
-      : (!isUnlocked && c > 0);
+        // CTA verde só aparece quando créditos>0, free e não desbloqueada
+        const showUnlockCTA = (typeof shouldShowUnlockCTA === 'function') ?
+            shouldShowUnlockCTA(id) :
+            (!isUnlocked && c > 0);
 
-    // Botão (badge) — 3 estados:
-    // 1) Premium / Unlocked forever => azul com cadeado aberto ("Ver receita")
-    // 2) Free com créditos > 0 e não desbloqueada => verde ("Desbloquear 1 crédito")
-    // 3) Free com créditos = 0 e não desbloqueada => fica "locked" (sem crédito) e visual de bloqueado
-    const buttonClass =
-      isUnlocked ? 'unlocked' :
-      showUnlockCTA ? 'unlock-cta' :
-      'locked';
+        // Botão (badge) — 3 estados:
+        // 1) Premium / Unlocked forever => azul com cadeado aberto ("Ver receita")
+        // 2) Free com créditos > 0 e não desbloqueada => verde ("Desbloquear 1 crédito")
+        // 3) Free com créditos = 0 e não desbloqueada => fica "locked" (sem crédito) e visual de bloqueado
+        const buttonClass =
+            isUnlocked ? 'unlocked' :
+            showUnlockCTA ? 'unlock-cta' :
+            'locked';
 
-    const buttonInner = isUnlocked
-      ? `
+        const buttonInner = isUnlocked ?
+            `
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
           <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
         </svg>
         <span class="btn-label">Ver Receita</span>
-      `
-      : showUnlockCTA
-        ? `
+      ` :
+            showUnlockCTA ?
+            `
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
           <span class="btn-label btn-label-desktop">Desbloquear <small>(1 crédito)</small></span>
           <span class="btn-label btn-label-mobile">1 crédito</span>
-        `
-        : `
+        ` :
+            `
           <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
@@ -1309,8 +1310,8 @@ function renderRecipes() {
           <span class="btn-label">Bloqueado</span>
         `;
 
-    // ✅ data-recipe-id é essencial pro click-guard
-    return `
+        // ✅ data-recipe-id é essencial pro click-guard
+        return `
       <div class="recipe-card" data-recipe-id="${id}" onclick="viewRecipe(${recipe.id})">
         <div class="recipe-image-container">
 
@@ -1375,9 +1376,8 @@ function renderRecipes() {
         </div>
       </div>
     `;
-  }).join('');
+    }).join('');
 }
-
 
 
 
