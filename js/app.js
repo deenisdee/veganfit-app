@@ -475,56 +475,92 @@ function ensureRecipeAccess(recipeId) {
 // ================================
 // MODAL DE CONFIRMAÇÃO DE CRÉDITO
 // ================================
+// ================================
+// MODAL DE CONFIRMAÇÃO DE CRÉDITO
+// ================================
 let pendingRecipeId = null;
 
-window.openConfirmCreditModal = function(recipeId) {
-  const recipe = allRecipes.find(r => r.id === recipeId);
-  if (!recipe) return;
-  
-  pendingRecipeId = recipeId;
-  
+window.openConfirmCreditModal = function (recipeId) {
+  const id = String(recipeId);
+
+  // Busca robusta (id number/string)
+  const recipe = Array.isArray(allRecipes)
+    ? allRecipes.find(r => String(r.id) === id)
+    : null;
+
+  if (!recipe) {
+    console.warn('[openConfirmCreditModal] Receita não encontrada:', id);
+    return;
+  }
+
+  // ✅ Fonte única do "pendente"
+  pendingRecipeId = id;
+
   // Atualiza o modal com informações
   const creditsRemaining = document.getElementById('credits-remaining');
   const recipeNameConfirm = document.getElementById('recipe-name-confirm');
-  
-  if (creditsRemaining) creditsRemaining.textContent = credits;
+
+  if (creditsRemaining) creditsRemaining.textContent = String(credits);
   if (recipeNameConfirm) recipeNameConfirm.textContent = recipe.name;
-  
+
   // Abre o modal
   const modal = document.getElementById('confirm-credit-modal');
   if (modal) {
     modal.classList.remove('hidden');
-    document.body.classList.add('modal-open');
+    document.body.classList.add('modal-open'); // trava scroll (e vamos destravar no close/confirm)
   }
 };
 
-window.closeConfirmCreditModal = function() {
+window.closeConfirmCreditModal = function () {
   const modal = document.getElementById('confirm-credit-modal');
-  if (modal) {
-    modal.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-  }
+  if (modal) modal.classList.add('hidden');
+
+  // ✅ destrava scroll SEMPRE
+  document.body.classList.remove('modal-open');
+
   pendingRecipeId = null;
 };
 
-window.confirmUnlockRecipe = function() {
+window.confirmUnlockRecipe = function () {
   if (!pendingRecipeId) return;
-  
-  // ✅ Salva o ID ANTES de fechar o modal
-  const recipeToOpen = pendingRecipeId;
-  
-  // Gasta o crédito e desbloqueia
-  if (credits > 0) {
-    credits--;
-    unlockedRecipes.push(recipeToOpen);
-    saveUserData();
-    updateUI();
-    renderRecipes();
-    
-    // Fecha modal e abre receita
-    closeConfirmCreditModal();
-    showRecipeDetail(recipeToOpen);
+
+  const id = String(pendingRecipeId);
+
+  // ✅ fecha modal do jeito certo (e destrava scroll)
+  if (typeof window.closeConfirmCreditModal === 'function') {
+    window.closeConfirmCreditModal();
+  } else {
+    // fallback extra
+    const modal = document.getElementById('confirm-credit-modal');
+    if (modal) modal.classList.add('hidden');
+    document.body.classList.remove('modal-open');
   }
+
+  // Sem créditos => abre premium
+  if (!Number.isFinite(credits) || credits <= 0) {
+    if (typeof window.openPremium === 'function') {
+      window.openPremium('no-credits');
+    } else if (typeof window.openPremiumModal === 'function') {
+      window.openPremiumModal('no-credits');
+    }
+    pendingRecipeId = null;
+    return;
+  }
+
+  // ✅ Consome crédito e desbloqueia (sem duplicar)
+  credits = credits - 1;
+
+  if (!Array.isArray(unlockedRecipes)) unlockedRecipes = [];
+  if (!unlockedRecipes.map(String).includes(id)) unlockedRecipes.push(id);
+
+  saveUserData();
+  updateUI();
+  renderRecipes();
+
+  pendingRecipeId = null;
+
+  // ✅ abre a receita já desbloqueada
+  showRecipeDetail(id);
 };
 
 
@@ -536,11 +572,19 @@ window.confirmUnlockRecipe = function() {
 
 
 
+
 // ==============================
-// INIT
+// INIT - NÃO MEXER
 // ==============================
 async function loadUserData() {
   try {
+    // ✅ Guard central: se a flag estiver "true" mas expirado/inválido, limpa ANTES de qualquer coisa
+    if (localStorage.getItem('fit_premium') === 'true' && typeof isPremiumValidNow === 'function' && !isPremiumValidNow()) {
+      if (typeof clearPremiumState === 'function') {
+        clearPremiumState();
+      }
+    }
+
     // Carrega token premium
     const tokenResult = await storage.get('fit_premium_token');
     const expiresResult = await storage.get('fit_premium_expires');
@@ -550,8 +594,8 @@ async function loadUserData() {
 
       // ✅ CONVERSÃO CORRETA DO TIMESTAMP
       const expiresStr = expiresResult?.value;
-
       if (expiresStr) {
+        // Garante que é número
         premiumExpires = parseInt(expiresStr, 10);
 
         // ✅ DEBUG - MOSTRA OS VALORES
@@ -567,12 +611,24 @@ async function loadUserData() {
         // ✅ VALIDAÇÃO DE EXPIRAÇÃO
         if (Date.now() > premiumExpires) {
           console.log('[PREMIUM] Token expirado ao carregar');
-          await storage.set('fit_premium', 'false');
-          await storage.set('fit_premium_token', '');
-          await storage.set('fit_premium_expires', '');
-          isPremium = false;
-          premiumToken = null;
-          premiumExpires = null;
+
+          // ✅ Preferência: limpeza central
+          if (typeof clearPremiumState === 'function') {
+            clearPremiumState();
+            // também limpa no storage (Capacitor) para manter tudo alinhado
+            await storage.set('fit_premium', 'false');
+            await storage.set('fit_premium_token', '');
+            await storage.set('fit_premium_expires', '');
+          } else {
+            // fallback: mantém seu comportamento original
+            await storage.set('fit_premium', 'false');
+            await storage.set('fit_premium_token', '');
+            await storage.set('fit_premium_expires', '');
+            isPremium = false;
+            premiumToken = null;
+            premiumExpires = null;
+          }
+
         } else {
           // Token válido
           console.log('[PREMIUM] Token válido!');
@@ -580,40 +636,29 @@ async function loadUserData() {
           await storage.set('fit_premium', 'true');
         }
       } else {
-        // ⚠️ Sem data de expiração => NÃO é premium válido. Limpa para não “voltar pro amarelo”.
-        console.log('[PREMIUM] Sem expires ao carregar, limpando estado premium');
-        await storage.set('fit_premium', 'false');
-        await storage.set('fit_premium_token', '');
-        await storage.set('fit_premium_expires', '');
+        // Sem data de expiração
         isPremium = false;
-        premiumToken = null;
-        premiumExpires = null;
       }
 
     } else {
-      // ✅ Não tem token - valida flag antiga + expires (regra correta)
+      // Não tem token - valida flag antiga + expires (não ativa só por "true")
       const premiumResult = await storage.get('fit_premium');
       const expiresLegacyResult = await storage.get('fit_premium_expires');
 
       const flag = premiumResult?.value === 'true';
       const expStr = expiresLegacyResult?.value || '';
       const expNum = expStr ? parseInt(expStr, 10) : 0;
-
       const valid = flag && expNum > 0 && Date.now() < expNum;
 
       if (valid) {
         isPremium = true;
         premiumExpires = expNum;
-        // premiumToken permanece null aqui (ok)
       } else {
         // Limpa qualquer “premium fantasma”
         isPremium = false;
         premiumToken = null;
         premiumExpires = null;
 
-        if (flag) {
-          console.log('[PREMIUM] Flag antiga true mas inválida/expirada. Limpando...');
-        }
         await storage.set('fit_premium', 'false');
         await storage.set('fit_premium_expires', '');
         await storage.set('fit_premium_token', '');
@@ -637,24 +682,26 @@ async function loadUserData() {
     console.error('Erro ao carregar dados:', e);
   }
 
-  // UI / Render
   updateUI();
-  // ✅ Recomendo sincronizar botões premium (tab/hamburger) junto
   if (typeof updatePremiumButtons === 'function') updatePremiumButtons();
 
   updateShoppingCounter();
   initSliderAndCategories();
   renderRecipes();
 
+  // ✅ Guard do clique precisa vir depois do renderRecipes()
+  setupRecipeGridClickGuard();
+
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
   }
 
-  // ✅ SETUP TIMERS: só se premium ativo e com expires válido
+  // ✅ Timers: só se premium ativo e com expires válido
   if (isPremium && typeof premiumExpires === 'number' && premiumExpires > Date.now()) {
     _setupPremiumTimers();
   }
 }
+
 
 
 
@@ -1022,6 +1069,171 @@ function getIconFromIngredientName(name) {
 
 
 
+
+
+
+// ================================
+// ACCESS CORE — créditos + desbloqueios
+// ================================
+
+function getUnlockedSet() {
+  // unlockedRecipes pode existir globalmente; garantimos um Set
+  if (!Array.isArray(unlockedRecipes)) unlockedRecipes = [];
+  return new Set(unlockedRecipes);
+}
+
+function persistUnlocked() {
+  try {
+    localStorage.setItem('fit_unlocked', JSON.stringify(unlockedRecipes || []));
+  } catch (_) {}
+}
+
+function persistCredits() {
+  try {
+    localStorage.setItem('fit_credits', String(credits ?? 3));
+  } catch (_) {}
+}
+
+function isRecipeUnlocked(recipeId) {
+  const s = getUnlockedSet();
+  return s.has(String(recipeId));
+}
+
+function unlockRecipe(recipeId) {
+  const id = String(recipeId);
+  if (!Array.isArray(unlockedRecipes)) unlockedRecipes = [];
+  if (!unlockedRecipes.includes(id)) {
+    unlockedRecipes.push(id);
+    persistUnlocked();
+  }
+}
+
+
+function canAccessRecipe(recipeId) {
+  // Premium: acesso total
+  if (isPremium === true) return true;
+
+  // Free: acesso se já foi desbloqueada
+  if (isRecipeUnlocked(recipeId)) return true;
+
+  // Free: acesso se ainda tem créditos (a confirmação vai consumir)
+  return (Number.isFinite(credits) ? credits : 0) > 0;
+}
+
+
+
+
+
+// ================================
+// UI/REGRA OFICIAL — Lock & CTA
+// ================================
+
+function getCreditsSafe() {
+  return Number.isFinite(credits) ? credits : 0;
+}
+
+// Cadeado (somente quando créditos = 0 e não está desbloqueada)
+function shouldShowLock(recipeId) {
+  if (isPremium === true) return false;
+
+  const c = getCreditsSafe();
+
+  // Enquanto tem créditos, NUNCA mostra cadeado
+  if (c > 0) return false;
+
+  // Créditos zerados: mostra cadeado em tudo, exceto desbloqueadas
+  return !isRecipeUnlocked(recipeId);
+}
+
+// CTA Verde "Desbloquear com 1 crédito" (somente quando:
+// - free
+// - ainda não desbloqueada
+// - créditos > 0)
+function shouldShowUnlockCTA(recipeId) {
+  if (isPremium === true) return false;
+  if (isRecipeUnlocked(recipeId)) return false;
+
+  const c = getCreditsSafe();
+  return c > 0;
+}
+
+
+
+
+
+
+// ================================
+// SETUP RECEITAS
+// ================================
+
+function setupRecipeGridClickGuard() {
+  const grid = document.getElementById('recipe-grid');
+  if (!grid) return;
+
+  // Evita duplicar listener se loadUserData/render rodarem mais de uma vez
+  if (grid.dataset.clickGuardAttached === '1') return;
+  grid.dataset.clickGuardAttached = '1';
+
+  grid.addEventListener('click', function (e) {
+    const card = e.target.closest('[data-recipe-id]');
+    if (!card) return;
+
+    const recipeId = card.getAttribute('data-recipe-id');
+    if (!recipeId) return;
+
+    const id = String(recipeId);
+
+    // ✅ Se pode acessar, abre direto
+    if (canAccessRecipe(id)) {
+      showRecipeDetail(id);
+      return;
+    }
+
+    // ❌ Não pode acessar
+    const hasCredits = (Number.isFinite(credits) ? credits : 0) > 0;
+
+    if (hasCredits) {
+      // ✅ Use sua função existente de abrir o modal (UI)
+      // Guardamos o id para o confirmUnlockRecipe() usar depois
+      window.__pendingUnlockRecipeId = id;
+
+      if (typeof window.openConfirmCreditModal === 'function') {
+        window.openConfirmCreditModal(id);
+      } else {
+        // Fallback (caso a função não exista por algum motivo)
+        const remainingEl = document.getElementById('credits-remaining');
+        const nameConfirmEl = document.getElementById('recipe-name-confirm');
+
+        let recipeName = 'esta receita';
+        const nameEl = card.querySelector('[data-recipe-name]');
+        if (nameEl && nameEl.textContent) {
+          recipeName = nameEl.textContent.trim();
+        } else if (Array.isArray(allRecipes)) {
+          const r = allRecipes.find(x => String(x.id) === id);
+          if (r?.name) recipeName = r.name;
+        }
+
+        if (remainingEl) remainingEl.textContent = String(credits);
+        if (nameConfirmEl) nameConfirmEl.textContent = recipeName;
+
+        const modal = document.getElementById('confirm-credit-modal');
+        if (modal) modal.classList.remove('hidden');
+      }
+    } else {
+      // Sem créditos: abre premium
+      if (typeof window.openPremium === 'function') {
+        window.openPremium('no-credits');
+      } else if (typeof window.openPremiumModal === 'function') {
+        window.openPremiumModal('no-credits');
+      }
+    }
+  });
+}
+
+
+
+
+
 // ==============================
 // RENDER RECEITAS
 // ==============================
@@ -1039,12 +1251,66 @@ function renderRecipes() {
     });
   }
 
-  recipeGrid.innerHTML = filtered.map(recipe => {
-    const isUnlocked = isPremium || unlockedRecipes.includes(recipe.id);
-    const showLock = !isUnlocked && credits === 0;
+  const c = (typeof getCreditsSafe === 'function')
+    ? getCreditsSafe()
+    : (Number.isFinite(credits) ? credits : 0);
 
+  recipeGrid.innerHTML = filtered.map(recipe => {
+    const id = String(recipe.id);
+
+    // ✅ Desbloqueada "pra sempre" (free) — corrigido (string/number)
+    const unlockedForever = (Array.isArray(unlockedRecipes) ? unlockedRecipes.map(String) : []).includes(id);
+
+    // ✅ Regras oficiais de UI
+    const isUnlocked = (isPremium === true) || unlockedForever;
+
+    // Cadeado só aparece quando créditos=0 e não está desbloqueada e não é premium
+    const showLock = (typeof shouldShowLock === 'function')
+      ? shouldShowLock(id)
+      : (!isUnlocked && c === 0);
+
+    // CTA verde só aparece quando créditos>0, free e não desbloqueada
+    const showUnlockCTA = (typeof shouldShowUnlockCTA === 'function')
+      ? shouldShowUnlockCTA(id)
+      : (!isUnlocked && c > 0);
+
+    // Botão (badge) — 3 estados:
+    // 1) Premium / Unlocked forever => azul com cadeado aberto ("Ver receita")
+    // 2) Free com créditos > 0 e não desbloqueada => verde ("Desbloquear 1 crédito")
+    // 3) Free com créditos = 0 e não desbloqueada => fica "locked" (sem crédito) e visual de bloqueado
+    const buttonClass =
+      isUnlocked ? 'unlocked' :
+      showUnlockCTA ? 'unlock-cta' :
+      'locked';
+
+    const buttonInner = isUnlocked
+      ? `
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+        </svg>
+        <span class="btn-label">Ver Receita</span>
+      `
+      : showUnlockCTA
+        ? `
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span class="btn-label btn-label-desktop">Desbloquear <small>(1 crédito)</small></span>
+          <span class="btn-label btn-label-mobile">1 crédito</span>
+        `
+        : `
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span class="btn-label">Bloqueado</span>
+        `;
+
+    // ✅ data-recipe-id é essencial pro click-guard
     return `
-      <div class="recipe-card" onclick="viewRecipe(${recipe.id})">
+      <div class="recipe-card" data-recipe-id="${id}" onclick="viewRecipe(${recipe.id})">
         <div class="recipe-image-container">
 
           <img
@@ -1102,21 +1368,8 @@ function renderRecipes() {
             </div>
           </div>
 
-          <button class="recipe-button ${isUnlocked ? 'unlocked' : 'locked'}">
-            ${isUnlocked ? `
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-              </svg>
-              <span class="btn-label">Ver Receita</span>
-            ` : `
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              <span class="btn-label btn-label-desktop">Desbloquear <small>(1 crédito)</small></span>
-              <span class="btn-label btn-label-mobile">1 crédito</span>
-            `}
+          <button class="recipe-button ${buttonClass}">
+            ${buttonInner}
           </button>
         </div>
       </div>
@@ -1167,8 +1420,10 @@ window.viewRecipe = function(recipeId) {
 
 
 function showRecipeDetail(recipeId) {
-  const recipe = allRecipes.find(r => r.id === recipeId);
+   const id = String(recipeId);
+  const recipe = allRecipes.find(r => String(r.id) === id);
   if (!recipe) return;
+
 
   currentRecipe = recipe;
   const heroImage = recipe.images?.hero || recipe.image;
@@ -2804,6 +3059,39 @@ function forceFreeCleanup() {
 }
 
 
+
+
+
+
+// ================================
+// Premium Core (fonte única)
+// ================================
+function getPremiumExpiresFromStorage() {
+  const exp = parseInt(localStorage.getItem('fit_premium_expires') || '0', 10);
+  return Number.isFinite(exp) ? exp : 0;
+}
+
+// Alias de compatibilidade (opcional, recomendado)
+const getPremiumExpires = getPremiumExpiresFromStorage;
+
+function isPremiumValidNow() {
+  const flag = localStorage.getItem('fit_premium') === 'true';
+  const exp = getPremiumExpiresFromStorage();
+  return flag && exp > 0 && Date.now() < exp;
+}
+
+function clearPremiumState() {
+  localStorage.setItem('fit_premium', 'false');
+  localStorage.setItem('fit_premium_expires', '');
+  localStorage.setItem('fit_premium_token', '');
+  isPremium = false;
+  premiumToken = null;
+  premiumExpires = null;
+}
+
+
+
+
 // ==============================
 // START
 // ==============================
@@ -3962,3 +4250,71 @@ document.getElementById('user-phone')?.addEventListener('input', function(e) {
   
   e.target.value = value;
 });
+
+
+
+
+
+// ===================================
+// LISTENER - CARD
+// ===================================
+
+function setupRecipeGridClickGuard() {
+  const grid = document.getElementById('recipe-grid');
+  if (!grid) return;
+
+  // Evita duplicar listener em hot reload / chamadas repetidas
+  if (grid.dataset.clickGuardAttached === '1') return;
+  grid.dataset.clickGuardAttached = '1';
+
+  grid.addEventListener('click', function (e) {
+    const card = e.target.closest('[data-recipe-id]');
+    if (!card) return;
+
+    const recipeId = card.getAttribute('data-recipe-id');
+    if (!recipeId) return;
+
+    // ✅ Regra central
+    if (canAccessRecipe(recipeId)) {
+      // Abre receita (usa função que já existe no seu app)
+      if (typeof openRecipeDetail === 'function') {
+        openRecipeDetail(recipeId);
+      } else if (typeof showRecipeDetail === 'function') {
+        showRecipeDetail(recipeId);
+      } else if (typeof openRecipe === 'function') {
+        openRecipe(recipeId);
+      } else {
+        console.warn('Nenhuma função de abrir receita encontrada (openRecipeDetail/showRecipeDetail/openRecipe).');
+      }
+      return;
+    }
+
+    // ❌ Não pode acessar
+    const hasCredits = (Number.isFinite(credits) ? credits : 0) > 0;
+
+    if (hasCredits) {
+      // Abre modal de confirmação de crédito (o seu já existe)
+      // Precisamos guardar o recipeId para o confirmUnlockRecipe()
+      window.__pendingUnlockRecipeId = recipeId;
+
+      const nameEl = card.querySelector('[data-recipe-name]');
+      const recipeName = nameEl ? nameEl.textContent.trim() : 'esta receita';
+
+      const remainingEl = document.getElementById('credits-remaining');
+      const nameConfirmEl = document.getElementById('recipe-name-confirm');
+
+      if (remainingEl) remainingEl.textContent = String(credits);
+      if (nameConfirmEl) nameConfirmEl.textContent = recipeName;
+
+      const modal = document.getElementById('confirm-credit-modal');
+      if (modal) modal.classList.remove('hidden');
+    } else {
+      // Sem créditos: abre premium
+      if (typeof window.openPremium === 'function') {
+        window.openPremium('no-credits');
+      } else if (typeof window.openPremiumModal === 'function') {
+        window.openPremiumModal('no-credits');
+      }
+    }
+  });
+}
