@@ -1074,6 +1074,32 @@ function initSliderAndCategories() {
 
 
 
+// ✅ Clique no slide -> mesma regra do grid (créditos/premium)
+if (!sliderTrack.dataset.clickBound) {
+  sliderTrack.dataset.clickBound = '1';
+
+  sliderTrack.addEventListener('click', function (e) {
+    const slide = e.target.closest('[data-recipe-id]');
+    if (!slide) return;
+
+    const id = slide.getAttribute('data-recipe-id');
+    if (!id) return;
+
+    // chama o PORTEIRO
+    if (typeof requestOpenRecipe === 'function') {
+      requestOpenRecipe(String(id));
+    } else if (typeof window.openConfirmCreditModal === 'function') {
+      // fallback (não ideal): abre modal de crédito
+      window.openConfirmCreditModal(String(id));
+    } else {
+      console.warn('[slider] requestOpenRecipe/openConfirmCreditModal não encontrados');
+    }
+  }, true);
+}
+
+
+
+
   sliderDots.innerHTML = featuredRecipes.map((_, idx) => `
   <button class="slider-dot-new ${idx === 0 ? 'active' : ''}" type="button" aria-label="Ir para slide ${idx + 1}"></button>
 `).join('');
