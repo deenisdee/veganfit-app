@@ -322,19 +322,26 @@ a { color:inherit; text-decoration:none; }
   font-weight:600;
   z-index:2;
 }
-.recipe-overlay{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,.4);
-  display:flex; align-items:center; justify-content:center;
+
+
+/* ícone branco limpo e proporcional */
+.recipe-overlay .lock-icon {
+  width: 46px;
+  height: 46px;
+  stroke: #ffffff;
+  opacity: 0.95;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25));
+}   
+
+
+.recipe-overlay { 
+  z-index: 2; 
 }
-.lock-icon{ width:3rem; 
-height:3rem; 
-stroke:#fff; 
-stroke-width:2;
-z-index:2 !important;
+.recipe-image { 
+  position: relative; 
+  z-index: 1; 
+}
 
-
- }
 
 .recipe-content{ padding:1.2rem; }
 .recipe-title{ font-size:1.25rem; font-weight:600; color:#1f2937; margin-bottom:.75rem; }
@@ -4856,7 +4863,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* Base do skeleton (cinza perceptível) */
 .rf-skeleton {
-  background-color: #e6e7eb; /* cinza base mais escuro que o padrão */
+  background-color: #000; /* cinza base mais escuro que o padrão */
 }
 
 /* Faixa diagonal de destaque */
@@ -4937,4 +4944,91 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .recipe-button.premium-cta .icon {
   stroke: currentColor;
+}
+
+
+
+
+/* ================================
+   FIX: Skeleton visível (por cima)
+   ================================ */
+
+/* o container da imagem vira "referência" de posicionamento */
+.recipe-image-container{
+  position: relative;
+  overflow: hidden;
+}
+
+/* skeleton cobre a área da imagem */
+.rf-skeleton{
+  position: absolute;
+  inset: 0;
+  z-index: 3;        /* acima da imagem */
+  border-radius: 18px; /* ajuste se seu card tiver outro radius */
+  pointer-events: none;
+}
+
+/* imagem fica abaixo do skeleton enquanto carrega */
+.recipe-image{
+  position: relative;
+  z-index: 1;
+}
+
+/* quando a imagem carregou, escondemos o skeleton */
+.recipe-image.is-loaded ~ .rf-skeleton{
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+
+
+
+/* ================================
+   Skeleton (visível e por cima)
+   ================================ */
+.recipe-image-container{
+  position: relative;
+  overflow: hidden;
+}
+
+.rf-skeleton{
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background-color: #e6e7eb; /* base cinza */
+  pointer-events: none;
+}
+
+/* shimmer diagonal */
+.rf-skeleton::after{
+  content:"";
+  position:absolute;
+  inset:-70%;
+  transform: rotate(18deg);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.25) 40%,
+    rgba(255,255,255,0.85) 50%,
+    rgba(255,255,255,0.25) 60%,
+    rgba(255,255,255,0) 100%
+  );
+  animation: rfShimmerGray 1.4s linear infinite;
+}
+
+@keyframes rfShimmerGray{
+  0% { transform: translateX(-45%) rotate(18deg); }
+  100% { transform: translateX(45%) rotate(18deg); }
+}
+
+/* some quando a imagem carregou */
+.recipe-image.is-loaded ~ .rf-skeleton{
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+
+/* imagem abaixo */
+.recipe-image{
+  position: relative;
+  z-index: 1;
 }
