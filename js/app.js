@@ -4339,7 +4339,7 @@ function setupRecipeGridClickGuard() {
       requestOpenRecipe(id);
       return;
     }
-
+ 
     // Créditos atuais
     const c = (typeof getCreditsSafe === 'function')
       ? getCreditsSafe()
