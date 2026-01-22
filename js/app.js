@@ -1333,7 +1333,7 @@ function renderRecipes() {
       <div class="recipe-card" data-recipe-id="${recipe.id}">
         <div class="recipe-image-container">
 
-          <img
+          <src
             src="${imgUrl}"
             alt="${recipe.name}"
             class="recipe-image"
@@ -1420,6 +1420,12 @@ function renderRecipes() {
   }).join('');
 }
 
+// ⚠️ TESTE VISUAL — remover depois
+setTimeout(() => {
+  document.querySelectorAll('.recipe-image[data-src]').forEach(img => {
+    img.src = img.dataset.src;
+  });
+}, 1200); // 1.2s de atraso
 
 
 
@@ -4339,7 +4345,7 @@ function setupRecipeGridClickGuard() {
       requestOpenRecipe(id);
       return;
     }
- 
+
     // Créditos atuais
     const c = (typeof getCreditsSafe === 'function')
       ? getCreditsSafe()
