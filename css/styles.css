@@ -5040,3 +5040,9 @@ input[type="range"]::-moz-range-thumb:hover {
 #sliderTrack {
   touch-action: pan-y;
 }
+
+
+/* iOS: permite scroll vertical sem matar tap no slider */
+#sliderTrack, .slider-track-new {
+  touch-action: pan-y;
+}
