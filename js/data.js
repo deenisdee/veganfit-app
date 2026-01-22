@@ -39,7 +39,7 @@ const RECIPES = [
         'Oleaginosas'
     ],
     
-    image: 'https://images.unsplash.com/photo-1768134459263-',
+    image: 'https://url-que-nao-existe.jpg',
     
     // 👇 NOVA ESTRUTURA DE INGREDIENTES COM ÍCONES
     ingredients: [
