@@ -521,7 +521,6 @@ window.closeConfirmCreditModal = function () {
 
 
 
-
 window.confirmUnlockRecipe = function () {
   if (!pendingRecipeId) return;
 
@@ -569,6 +568,13 @@ window.confirmUnlockRecipe = function () {
   // 4) Atualiza UI/cards (recomendado manter)
   try { updateUI(); } catch (_) {}
   try { renderRecipes(); } catch (_) {}
+
+  // ✅ 4.5) PREFETCH HERO (antes de abrir a receita)
+  try {
+    if (typeof _rfPrefetchImage === 'function' && typeof _rfGetRecipeHeroUrlById === 'function') {
+      _rfPrefetchImage(_rfGetRecipeHeroUrlById(id));
+    }
+  } catch (_) {}
 
   // 5) DEPOIS abre a receita pelo PORTEIRO (mais robusto)
   requestOpenRecipe(id);
@@ -697,6 +703,7 @@ async function loadUserData() {
   updateShoppingCounter();
   initSliderAndCategories();
   renderRecipes();
+  setupRecipeHeroPrefetch();
 
   // ✅ Guard do clique precisa vir depois do renderRecipes()
   setupRecipeGridClickGuard();
@@ -803,11 +810,8 @@ function updateUI() {
 
       creditsBadge.classList.remove('premium');
       creditsBadge.innerHTML = `
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-          <circle cx="12" cy="12" r="3"></circle>
-        </svg>
-        <span id="credits-text">${credits} Créditos</span>
+        
+        <span id="credits-text">&nbsp &nbsp &nbsp${credits} Créditos</span>
       `;
 
       if (premiumBtn) {
@@ -1205,6 +1209,74 @@ function requestOpenRecipe(recipeId) {
 
 
 
+
+
+
+// ================================
+// PREFETCH HERO IMAGES (anti-lag)
+// ================================
+const _rfPrefetchCache = new Set();
+
+function _rfPrefetchImage(url) {
+  if (!url || typeof url !== 'string') return;
+  if (_rfPrefetchCache.has(url)) return;
+
+  _rfPrefetchCache.add(url);
+
+  try {
+    const img = new Image();
+    img.decoding = 'async';
+    img.loading = 'eager';
+    img.src = url;
+  } catch (e) {
+    // falha silenciosa (prefetch nunca pode quebrar nada)
+  }
+}
+
+function _rfGetRecipeHeroUrlById(recipeId) {
+  const id = String(recipeId);
+  const recipe = (Array.isArray(allRecipes) ? allRecipes : []).find(r => String(r.id) === id);
+  if (!recipe) return null;
+
+  // hero > image
+  return recipe.images?.hero || recipe.image || null;
+}
+
+function setupRecipeHeroPrefetch() {
+  if (!recipeGrid) return;
+
+  // evita duplicar listener
+  if (recipeGrid.dataset.heroPrefetchAttached === '1') return;
+  recipeGrid.dataset.heroPrefetchAttached = '1';
+
+  function prefetchFromTarget(target) {
+    const card = target.closest?.('[data-recipe-id]');
+    if (!card) return;
+
+    const id = card.getAttribute('data-recipe-id');
+    if (!id) return;
+
+    const heroUrl = _rfGetRecipeHeroUrlById(id);
+    if (!heroUrl) return;
+
+    _rfPrefetchImage(heroUrl);
+  }
+
+  // desktop
+  recipeGrid.addEventListener('pointerenter', (e) => {
+    prefetchFromTarget(e.target);
+  }, true);
+
+  // mobile: antes do click
+  recipeGrid.addEventListener('touchstart', (e) => {
+    prefetchFromTarget(e.target);
+  }, { passive: true });
+
+  // teclado/acessibilidade
+  recipeGrid.addEventListener('focusin', (e) => {
+    prefetchFromTarget(e.target);
+  });
+}
 
 
 
