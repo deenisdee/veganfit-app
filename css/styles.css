@@ -5032,3 +5032,11 @@ input[type="range"]::-moz-range-thumb:hover {
   position: relative;
   z-index: 1;
 }
+
+
+
+/* iOS: melhora gesto de swipe sem matar o tap */
+.slider-track-new,
+#sliderTrack {
+  touch-action: pan-y;
+}
