@@ -4926,3 +4926,15 @@ input[type="range"]::-moz-range-thumb:hover {
   position: relative;
   z-index: 1;
 }
+
+
+
+.recipe-button.premium-cta {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #111827;
+  font-weight: 800;
+}
+
+.recipe-button.premium-cta .icon {
+  stroke: currentColor;
+}
