@@ -1078,23 +1078,71 @@ function initSliderAndCategories() {
 if (!sliderTrack.dataset.clickBound) {
   sliderTrack.dataset.clickBound = '1';
 
-  sliderTrack.addEventListener('click', function (e) {
-    const slide = e.target.closest('[data-recipe-id]');
+ // ✅ Tap mobile (iPhone) -> mesma regra do grid (créditos/premium)
+if (!sliderTrack.dataset.tapBound) {
+  sliderTrack.dataset.tapBound = '1';
+
+  let startX = 0;
+  let startY = 0;
+  let moved = false;
+
+  const MOVE_THRESHOLD = 12; // px: separa tap de drag
+
+  function openFromEventTarget(target) {
+    const slide = target.closest?.('[data-recipe-id]');
     if (!slide) return;
 
     const id = slide.getAttribute('data-recipe-id');
     if (!id) return;
 
-    // chama o PORTEIRO
     if (typeof requestOpenRecipe === 'function') {
       requestOpenRecipe(String(id));
     } else if (typeof window.openConfirmCreditModal === 'function') {
-      // fallback (não ideal): abre modal de crédito
       window.openConfirmCreditModal(String(id));
     } else {
       console.warn('[slider] requestOpenRecipe/openConfirmCreditModal não encontrados');
     }
-  }, true);
+  }
+
+  // iPhone: preferir pointer events
+  sliderTrack.addEventListener('pointerdown', function (e) {
+    startX = e.clientX;
+    startY = e.clientY;
+    moved = false;
+  }, { passive: true });
+
+  sliderTrack.addEventListener('pointermove', function (e) {
+    const dx = Math.abs(e.clientX - startX);
+    const dy = Math.abs(e.clientY - startY);
+    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) moved = true;
+  }, { passive: true });
+
+  sliderTrack.addEventListener('pointerup', function (e) {
+    if (moved) return; // foi arrasto
+    openFromEventTarget(e.target);
+  }, { passive: true });
+
+  // fallback para iOS antigo / casos raros
+  sliderTrack.addEventListener('touchstart', function (e) {
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+    startX = t.clientX;
+    startY = t.clientY;
+    moved = false;
+  }, { passive: true });
+
+  sliderTrack.addEventListener('touchmove', function (e) {
+    const t = e.touches && e.touches[0];
+    if (!t) return;
+    const dx = Math.abs(t.clientX - startX);
+    const dy = Math.abs(t.clientY - startY);
+    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) moved = true;
+  }, { passive: true });
+
+  sliderTrack.addEventListener('touchend', function (e) {
+    if (moved) return;
+    openFromEventTarget(e.target);
+  }, { passive: true });
 }
 
 
