@@ -1290,91 +1290,51 @@ function setupRecipeGridClickGuard() {
 // RENDER RECEITAS
 // ==============================
 
-
 function renderRecipes() {
-    if (!recipeGrid || !allRecipes || allRecipes.length === 0) return;
+  if (!recipeGrid || !allRecipes || allRecipes.length === 0) return;
 
-    let filtered = allRecipes;
+  let filtered = allRecipes;
 
-    if (searchTerm) {
-        filtered = allRecipes.filter(recipe => {
-            return (
-                recipe.category === searchTerm ||
-                recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        });
+  if (searchTerm) {
+    filtered = allRecipes.filter(recipe => {
+      return (
+        recipe.category === searchTerm ||
+        recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+  }
+
+  // Pequena otimização: tenta pedir imagem menor quando for Unsplash
+  function optimizeImageUrl(url) {
+    if (!url || typeof url !== 'string') return url;
+
+    // Unsplash costuma aceitar params auto=format&fit=crop&w=...
+    if (url.includes('images.unsplash.com')) {
+      const hasQuery = url.includes('?');
+      const base = url.split('?')[0];
+      const params = new URLSearchParams(hasQuery ? (url.split('?')[1] || '') : '');
+      if (!params.get('auto')) params.set('auto', 'format');
+      if (!params.get('fit')) params.set('fit', 'crop');
+      if (!params.get('w')) params.set('w', '900');       // bom p/ grid (ajuste depois)
+      if (!params.get('q')) params.set('q', '70');        // qualidade equilibrada
+      return `${base}?${params.toString()}`;
     }
 
-    const c = (typeof getCreditsSafe === 'function') ?
-        getCreditsSafe() :
-        (Number.isFinite(credits) ? credits : 0);
+    return url;
+  }
 
-    recipeGrid.innerHTML = filtered.map(recipe => {
-        const id = String(recipe.id);
+  recipeGrid.innerHTML = filtered.map(recipe => {
+    const isUnlocked = isPremium || unlockedRecipes.includes(recipe.id);
+    const showLock = !isUnlocked && credits === 0;
 
-        // ✅ Desbloqueada "pra sempre" (free) — corrigido (string/number)
-        const unlockedForever = (Array.isArray(unlockedRecipes) ? unlockedRecipes.map(String) : []).includes(id);
+    const imgUrl = optimizeImageUrl(recipe.image);
 
-        // ✅ Regras oficiais de UI
-        const isUnlocked = (isPremium === true) || unlockedForever;
-
-        // Cadeado só aparece quando créditos=0 e não está desbloqueada e não é premium
-        const showLock = (typeof shouldShowLock === 'function') ?
-            shouldShowLock(id) :
-            (!isUnlocked && c === 0);
-
-        // CTA verde só aparece quando créditos>0, free e não desbloqueada
-        const showUnlockCTA = (typeof shouldShowUnlockCTA === 'function') ?
-            shouldShowUnlockCTA(id) :
-            (!isUnlocked && c > 0);
-
-        // Botão (badge) — 3 estados:
-        // 1) Premium / Unlocked forever => azul com cadeado aberto ("Ver receita")
-        // 2) Free com créditos > 0 e não desbloqueada => verde ("Desbloquear 1 crédito")
-        // 3) Free com créditos = 0 e não desbloqueada => fica "locked" (sem crédito) e visual de bloqueado
-        const buttonClass =
-            isUnlocked ? 'unlocked' :
-            showUnlockCTA ? 'unlock-cta' :
-            'locked';
-
-        const buttonInner = isUnlocked ?
-            `
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-        </svg>
-        <span class="btn-label">Ver Receita</span>
-      ` :
-            showUnlockCTA ?
-            `
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <span class="btn-label btn-label-desktop">Desbloquear <small>(1 crédito)</small></span>
-          <span class="btn-label btn-label-mobile">1 crédito</span>
-        ` :
-            `
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-          <span class="btn-label">Bloqueado</span>
-        `;
-
-        // ✅ data-recipe-id é essencial pro click-guard
-        return `
-     
-
-
-	
-       <div class="recipe-card" data-recipe-id="${id}">
-
-
-	   <div class="recipe-image-container">
+    return `
+      <div class="recipe-card" data-recipe-id="${recipe.id}">
+        <div class="recipe-image-container">
 
           <img
-            src="${recipe.image}"
+            src="${imgUrl}"
             alt="${recipe.name}"
             class="recipe-image"
             loading="lazy"
@@ -1382,6 +1342,16 @@ function renderRecipes() {
             onload="this.classList.add('is-loaded')"
             onerror="this.onerror=null; this.classList.add('is-loaded'); this.src='https://images.unsplash.com/photo-1490644659350-3f5777c715be?auto=format&fit=crop&w=1200&q=60';"
           />
+
+          <!-- Skeleton + spinner (some quando a img ganha is-loaded) -->
+          <div class="rf-skeleton" aria-hidden="true">
+            <div class="rf-skeleton-spinner" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a7.97 7.97 0 0 0 .1-1 7.97 7.97 0 0 0-.1-1l2-1.5-2-3.5-2.3.7a8 8 0 0 0-1.7-1L13 2h-4l-.4 2.7a8 8 0 0 0-1.7 1L4.6 5.9 2.6 9.4l2 1.5a7.97 7.97 0 0 0-.1 1 7.97 7.97 0 0 0 .1 1l-2 1.5 2 3.5 2.3-.7a8 8 0 0 0 1.7 1L9 22h4l.4-2.7a8 8 0 0 0 1.7-1l2.3.7 2-3.5-2-1.5z"></path>
+              </svg>
+            </div>
+          </div>
 
           <div class="recipe-category">${recipe.category}</div>
 
@@ -1428,13 +1398,26 @@ function renderRecipes() {
             </div>
           </div>
 
-          <button class="recipe-button ${buttonClass}">
-            ${buttonInner}
+          <button class="recipe-button ${isUnlocked ? 'unlocked' : 'locked'}" type="button">
+            ${isUnlocked ? `
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+              </svg>
+              <span class="btn-label">Ver Receita</span>
+            ` : `
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span class="btn-label btn-label-desktop">Desbloquear <small>(1 crédito)</small></span>
+              <span class="btn-label btn-label-mobile">1 crédito</span>
+            `}
           </button>
         </div>
       </div>
     `;
-    }).join('');
+  }).join('');
 }
 
 
