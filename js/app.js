@@ -1291,7 +1291,7 @@ function setupRecipeGridClickGuard() {
 // ==============================
 
 function renderRecipes() {
-  if (!recipeGrid || !allRecipes || allRecipes.length === 0) return;
+  if (!recipeGrid || !Array.isArray(allRecipes) || allRecipes.length === 0) return;
 
   let filtered = allRecipes;
 
@@ -1304,46 +1304,29 @@ function renderRecipes() {
     });
   }
 
-  // Pequena otimização: tenta pedir imagem menor quando for Unsplash
-  function optimizeImageUrl(url) {
-    if (!url || typeof url !== 'string') return url;
-
-    // Unsplash costuma aceitar params auto=format&fit=crop&w=...
-    if (url.includes('images.unsplash.com')) {
-      const hasQuery = url.includes('?');
-      const base = url.split('?')[0];
-      const params = new URLSearchParams(hasQuery ? (url.split('?')[1] || '') : '');
-      if (!params.get('auto')) params.set('auto', 'format');
-      if (!params.get('fit')) params.set('fit', 'crop');
-      if (!params.get('w')) params.set('w', '900');       // bom p/ grid (ajuste depois)
-      if (!params.get('q')) params.set('q', '70');        // qualidade equilibrada
-      return `${base}?${params.toString()}`;
-    }
-
-    return url;
-  }
+  const safeCredits = Number.isFinite(credits) ? credits : 0;
+  const noCredits = (!isPremium && safeCredits <= 0);
 
   recipeGrid.innerHTML = filtered.map(recipe => {
-    const isUnlocked = isPremium || unlockedRecipes.includes(recipe.id);
-    const showLock = !isUnlocked && credits === 0;
-	
-	const id = String(recipe.id);
-    const isUnlocked = isPremium || unlockedRecipes.includes(recipe.id);
-    const noCredits = (!isPremium && Number.isFinite(credits) && credits <= 0);
+    const id = String(recipe.id);
+
+    // 🔑 regra de acesso
+    const isUnlocked =
+      isPremium === true ||
+      (Array.isArray(unlockedRecipes) && unlockedRecipes.includes(id));
+
+    // 🔒 só mostra cadeado quando NÃO está desbloqueada E não há créditos
     const showLock = (!isUnlocked && noCredits);
 
-// botão premium aparece quando não tem créditos e a receita NÃO está desbloqueada
-const showPremiumCTA = (!isUnlocked && noCredits);
-
-
-    const imgUrl = optimizeImageUrl(recipe.image);
+    // ⭐ CTA premium só quando não desbloqueada e sem créditos
+    const showPremiumCTA = (!isUnlocked && noCredits);
 
     return `
-      <div class="recipe-card" data-recipe-id="${recipe.id}">
+      <div class="recipe-card" data-recipe-id="${id}">
         <div class="recipe-image-container">
 
           <img
-            src="${imgUrl}"
+            src="${recipe.image}"
             alt="${recipe.name}"
             class="recipe-image"
             loading="lazy"
@@ -1352,29 +1335,20 @@ const showPremiumCTA = (!isUnlocked && noCredits);
             onerror="this.onerror=null; this.classList.add('is-loaded'); this.src='https://images.unsplash.com/photo-1490644659350-3f5777c715be?auto=format&fit=crop&w=1200&q=60';"
           />
 
-          <!-- Skeleton + spinner (some quando a img ganha is-loaded) -->
-          <div class="rf-skeleton" aria-hidden="true">
-            <div class="rf-skeleton-spinner" aria-hidden="true">
-		  
-		  
-		  
-  
-		  
-		  
-			  
-            </div>
-          </div>
-
           <div class="recipe-category">${recipe.category}</div>
 
-          ${showLock ? `
-            <div class="recipe-overlay">
-              <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </div>
-          ` : ''}
+          ${
+            showLock
+              ? `
+                <div class="recipe-overlay">
+                  <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+              `
+              : ''
+          }
         </div>
 
         <div class="recipe-content">
@@ -1410,28 +1384,44 @@ const showPremiumCTA = (!isUnlocked && noCredits);
             </div>
           </div>
 
-
-
-          <button class="recipe-button ${isUnlocked ? 'unlocked' : 'locked'}" type="button">
-            ${isUnlocked ? `
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-              </svg>
-              <span class="btn-label">Ver Receita</span>
-            ` : `
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              <span class="btn-label btn-label-desktop">Desbloquear <small>(1 crédito)</small></span>
-              <span class="btn-label btn-label-mobile">1 crédito</span>
-            `}
+          <button
+            type="button"
+            class="recipe-button ${
+              isUnlocked
+                ? 'unlocked'
+                : (showPremiumCTA ? 'premium-cta' : 'locked')
+            }"
+          >
+            ${
+              isUnlocked
+                ? `
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+                  </svg>
+                  <span class="btn-label">Ver Receita</span>
+                `
+                : (
+                  showPremiumCTA
+                    ? `
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                      </svg>
+                      <span class="btn-label">Ativar Premium</span>
+                    `
+                    : `
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                      <span class="btn-label btn-label-desktop">
+                        Desbloquear <small>(1 crédito)</small>
+                      </span>
+                      <span class="btn-label btn-label-mobile">1 crédito</span>
+                    `
+                )
+            }
           </button>
-		  
-		  
-		  
-		  
         </div>
       </div>
     `;
