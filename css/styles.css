@@ -4897,7 +4897,7 @@ input[type="range"]::-moz-range-thumb:hover {
   width: 30px;
   height: 30px;
   transform: translate(-50%, -50%);
-  opacity: 0.85;
+  opacity: 0.35;
   display: grid;
   place-items: center;
   pointer-events: none;
