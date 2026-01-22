@@ -1498,7 +1498,7 @@ function renderRecipes() {
                       <span class="btn-label btn-label-desktop">
                         Desbloquear 
                       </span>
-                      <span class="btn-label btn-label-mobile">1 crédito</span>
+                     
                     `
                 )
             }
