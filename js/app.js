@@ -1335,7 +1335,13 @@ function renderRecipes() {
             onerror="this.onerror=null; this.classList.add('is-loaded'); this.src='https://images.unsplash.com/photo-1490644659350-3f5777c715be?auto=format&fit=crop&w=1200&q=60';"
           />
 
-          <div class="recipe-category">${recipe.category}</div>
+
+  <!-- ✅ Skeleton visível até a imagem carregar -->
+  <div class="rf-skeleton" aria-hidden="true"></div>
+          
+		  
+		  
+		  <div class="recipe-category">${recipe.category}</div>
 
           ${
             showLock
