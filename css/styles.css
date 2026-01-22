@@ -4930,9 +4930,9 @@ input[type="range"]::-moz-range-thumb:hover {
 
 
 .recipe-button.premium-cta {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  color: #111827;
-  font-weight: 800;
+    background: #3b82f6;
+    color: #fff;
+    font-weight: 600;
 }
 
 .recipe-button.premium-cta .icon {
