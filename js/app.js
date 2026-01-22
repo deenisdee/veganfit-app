@@ -11,6 +11,7 @@
 
 
 
+
 // ===================================
 // DETECÇÃO DE RETORNO DO MERCADO PAGO
 // ===================================
@@ -363,34 +364,119 @@ function heroSliderPrev() {
 
 
 
+
+
 // ============================================
-// Premium – estado único + sync de UI (Header/Tab/Hamb)
+// Premium – estado único (com validade) + sync de UI (Header/Tab/Hamb)
 // ============================================
 window.RF = window.RF || {};
 
+/**
+ * syncPremiumFromCore
+ * --------------------------------------------------
+ * Sincroniza o estado Premium de forma consistente:
+ * - Se existir isPremiumValidNow(), ela é a verdade (flag + expiração)
+ * - Mantém isPremium alinhado com a validade real
+ * - Atualiza a UI do Premium (header/tab/hamb) via RF.premium.syncUI()
+ *
+ * Use depois de:
+ * - loadUserData()
+ * - activatePremium()
+ * - clearPremiumState()/forceFreeCleanup()
+ */
+function syncPremiumFromCore() {
+  try {
+    const valid = (typeof isPremiumValidNow === 'function')
+      ? isPremiumValidNow()
+      : (localStorage.getItem('fit_premium') === 'true');
+
+    // Alinha variáveis globais
+    isPremium = valid === true;
+
+    // Se expirou/inválido, garante limpeza mínima (evita UI “presa” em Premium)
+    if (!isPremium) {
+      premiumToken = null;
+      premiumExpires = null;
+    } else {
+      // Se você tiver expires em storage, mantém no core para badge/timers
+      if (typeof getPremiumExpiresFromStorage === 'function') {
+        const exp = getPremiumExpiresFromStorage();
+        if (exp && Number.isFinite(exp)) premiumExpires = exp;
+      }
+    }
+
+    // Sincroniza UI Premium (Header/Tab/Hamb)
+    if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
+      RF.premium.syncUI();
+    }
+  } catch (e) {
+    console.warn('[syncPremiumFromCore] Falha ao sincronizar:', e);
+  }
+}
+
 RF.premium = {
+  /**
+   * isActive
+   * --------------------------------------------------
+   * Retorna TRUE apenas se Premium estiver realmente válido.
+   * Se existir isPremiumValidNow(), ela manda.
+   */
   isActive: function () {
-    return localStorage.getItem('fit_premium') === 'true';
+    try {
+      if (typeof isPremiumValidNow === 'function') return isPremiumValidNow();
+      return localStorage.getItem('fit_premium') === 'true';
+    } catch (_) {
+      return false;
+    }
   },
 
-  // opcional: se você já usa token/prazo, depois a gente liga aqui
-  // isValid: function () { ... }
-
+  /**
+   * setActive
+   * --------------------------------------------------
+   * Mantém compatibilidade com chamadas existentes.
+   * - Ao DESATIVAR: limpa flag + token + expires (fonte única)
+   * - Ao ATIVAR: apenas marca flag true (pressupõe que token/exp já foram setados no fluxo normal)
+   */
   setActive: function (active) {
-    localStorage.setItem('fit_premium', active ? 'true' : 'false');
-    RF.premium.syncUI();
+    try {
+      if (!active) {
+        // Preferência: limpeza central (zera flag, token e expiração + variáveis)
+        if (typeof clearPremiumState === 'function') {
+          clearPremiumState();
+        } else {
+          localStorage.setItem('fit_premium', 'false');
+          localStorage.setItem('fit_premium_expires', '');
+          localStorage.setItem('fit_premium_token', '');
+          isPremium = false;
+          premiumToken = null;
+          premiumExpires = null;
+        }
+      } else {
+        // Mantém comportamento atual: marca flag true
+        // (token/expiração devem ser definidos pelo activatePremium/loadUserData)
+        localStorage.setItem('fit_premium', 'true');
+      }
+    } catch (_) {}
+
+    // Sempre sincroniza depois
+    syncPremiumFromCore();
   },
 
+  /**
+   * syncUI
+   * --------------------------------------------------
+   * Sincroniza UI (Header/Tab/Hamb) com base na validade real do Premium.
+   */
   syncUI: function () {
     const active = RF.premium.isActive();
 
     // 1) Classe no body
     document.body.classList.toggle('premium-active', active);
 
-    // 2) Header: botão "Ativar Premium" (verde)
+    // 2) Header: botão "Ativar Premium"
     const headerBtn = document.getElementById('premium-btn');
 
-    // 2.1) Header: badge amarelo (se existir)
+    // 2.1) Badge premium (se existir)
     const premiumBadge =
       document.getElementById('premium-badge') ||
       document.querySelector('.premium-badge') ||
@@ -433,7 +519,7 @@ RF.premium = {
     });
 
     // 5) HOME: botão "Como funciona o Premium" + card do tour
-    const tourBtn  = document.getElementById('open-tour-btn');
+    const tourBtn = document.getElementById('open-tour-btn');
     const tourCard = document.getElementById('tour-card');
 
     if (tourBtn) {
@@ -464,9 +550,6 @@ RF.premium = {
 
 // Atalho opcional
 window.rfSyncPremiumUI = RF.premium.syncUI;
-
-// Sync inicial (sem reload)
-RF.premium.syncUI();
 
 
 
@@ -771,141 +854,112 @@ window.confirmUnlockRecipe = function () {
 
 
 
-
-
-
-
-// ==============================
-// INIT - NÃO MEXER
-// ==============================
+// loadUserData()
+// - Carrega do storage: créditos, receitas liberadas e estado premium (token/expiração)
+// - Tem um “guard” no começo que limpa premium inválido antes de qualquer UI renderizar
 async function loadUserData() {
   try {
-    // ✅ Guard central: se a flag estiver "true" mas expirado/inválido, limpa ANTES de qualquer coisa
-    if (localStorage.getItem('fit_premium') === 'true' && typeof isPremiumValidNow === 'function' && !isPremiumValidNow()) {
+    // ✅ 0) Guard: se alguém deixou fit_premium = true mas expirou, limpa ANTES de qualquer coisa
+    const flaggedAsPremium =
+      (window.RF && RF.premium && typeof RF.premium.isActive === 'function')
+        ? RF.premium.isActive()
+        : (localStorage.getItem('fit_premium') === 'true');
+
+    if (flaggedAsPremium && typeof isPremiumValidNow === 'function' && !isPremiumValidNow()) {
       if (typeof clearPremiumState === 'function') {
         clearPremiumState();
+      } else {
+        // fallback mínimo
+        localStorage.setItem('fit_premium', 'false');
+        localStorage.setItem('fit_premium_token', '');
+        localStorage.setItem('fit_premium_expires', '');
       }
     }
 
-    // Carrega token premium
+    // ✅ 1) Carrega token/expiração (se existir)
     const tokenResult = await storage.get('fit_premium_token');
     const expiresResult = await storage.get('fit_premium_expires');
 
-    if (tokenResult && tokenResult.value) {
-      premiumToken = tokenResult.value;
+    premiumToken = (tokenResult && tokenResult.value) ? tokenResult.value : null;
 
-      // ✅ CONVERSÃO CORRETA DO TIMESTAMP
-      const expiresStr = expiresResult?.value;
-      if (expiresStr) {
-        // Garante que é número
-        premiumExpires = parseInt(expiresStr, 10);
+    const expiresStr = (expiresResult && expiresResult.value) ? String(expiresResult.value) : '';
+    premiumExpires = expiresStr ? parseInt(expiresStr, 10) : null;
+    if (!Number.isFinite(premiumExpires)) premiumExpires = null;
 
-        // ✅ DEBUG - MOSTRA OS VALORES
-        console.log('[LOAD] Premium data:', {
-          token: premiumToken,
-          expiresStr: expiresStr,
-          expiresNum: premiumExpires,
-          now: Date.now(),
-          expiresDate: new Date(premiumExpires).toISOString(),
-          isExpired: Date.now() > premiumExpires
-        });
-
-        // ✅ VALIDAÇÃO DE EXPIRAÇÃO
-        if (Date.now() > premiumExpires) {
-          console.log('[PREMIUM] Token expirado ao carregar');
-
-          // ✅ Preferência: limpeza central
-          if (typeof clearPremiumState === 'function') {
-            clearPremiumState();
-            // também limpa no storage (Capacitor) para manter tudo alinhado
-            await storage.set('fit_premium', 'false');
-            await storage.set('fit_premium_token', '');
-            await storage.set('fit_premium_expires', '');
-          } else {
-            // fallback: mantém seu comportamento original
-            await storage.set('fit_premium', 'false');
-            await storage.set('fit_premium_token', '');
-            await storage.set('fit_premium_expires', '');
-            isPremium = false;
-            premiumToken = null;
-            premiumExpires = null;
-          }
-
-        } else {
-          // Token válido
-          console.log('[PREMIUM] Token válido!');
-          isPremium = true;
-          await storage.set('fit_premium', 'true');
-        }
-      } else {
-        // Sem data de expiração
-        isPremium = false;
-      }
-
+    // ✅ 2) Decide Premium de forma consistente (fonte única)
+    // Se existir validação por tempo/token, ela manda
+    if (typeof isPremiumValidNow === 'function') {
+      isPremium = !!isPremiumValidNow();
+      localStorage.setItem('fit_premium', isPremium ? 'true' : 'false');
     } else {
-      // Não tem token - valida flag antiga + expires (não ativa só por "true")
-      const premiumResult = await storage.get('fit_premium');
-      const expiresLegacyResult = await storage.get('fit_premium_expires');
-
-      const flag = premiumResult?.value === 'true';
-      const expStr = expiresLegacyResult?.value || '';
-      const expNum = expStr ? parseInt(expStr, 10) : 0;
-      const valid = flag && expNum > 0 && Date.now() < expNum;
-
-      if (valid) {
-        isPremium = true;
-        premiumExpires = expNum;
-      } else {
-        // Limpa qualquer “premium fantasma”
-        isPremium = false;
-        premiumToken = null;
-        premiumExpires = null;
-
-        await storage.set('fit_premium', 'false');
-        await storage.set('fit_premium_expires', '');
-        await storage.set('fit_premium_token', '');
-      }
+      // fallback: usa a flag
+      isPremium = (localStorage.getItem('fit_premium') === 'true');
     }
 
-    // Se não é premium, carrega créditos
+    // ✅ 3) Se não é premium, carrega créditos e desbloqueadas
     if (!isPremium) {
       const creditsResult = await storage.get('fit_credits');
       const unlockedResult = await storage.get('fit_unlocked');
-      if (creditsResult) credits = parseInt(creditsResult.value || '3', 10);
-      if (unlockedResult) unlockedRecipes = JSON.parse(unlockedResult.value || '[]');
+
+      const c = creditsResult && creditsResult.value ? parseInt(creditsResult.value, 10) : 3;
+      credits = Number.isFinite(c) ? c : 3;
+
+      const rawUnlocked = unlockedResult && unlockedResult.value ? unlockedResult.value : '[]';
+      try {
+        unlockedRecipes = JSON.parse(rawUnlocked) || [];
+      } catch (_) {
+        unlockedRecipes = [];
+      }
     }
 
+    // ✅ 4) Shopping list e Week plan (vale pra free e premium)
     const shoppingResult = await storage.get('fit_shopping');
+    if (shoppingResult && shoppingResult.value) {
+      try { shoppingList = JSON.parse(shoppingResult.value) || []; } catch (_) { shoppingList = []; }
+    }
+
     const weekPlanResult = await storage.get('fit_weekplan');
-    if (shoppingResult && shoppingResult.value) shoppingList = JSON.parse(shoppingResult.value);
-    if (weekPlanResult && weekPlanResult.value) weekPlan = JSON.parse(weekPlanResult.value);
+    if (weekPlanResult && weekPlanResult.value) {
+      try { weekPlan = JSON.parse(weekPlanResult.value) || {}; } catch (_) { weekPlan = {}; }
+    }
 
-  } catch (e) {
-    console.error('Erro ao carregar dados:', e);
+  } catch (error) {
+    console.error('Erro ao carregar dados do usuário:', error);
   }
 
-  updateUI();
-  if (typeof updatePremiumButtons === 'function') updatePremiumButtons();
+  // ✅ 5) Render/Sync (fora do try para sempre rodar mesmo se um storage falhar)
+  try { updateUI(); } catch (_) {}
+  try { if (typeof updatePremiumButtons === 'function') updatePremiumButtons(); } catch (_) {}
 
-  updateShoppingCounter();
-  initSliderAndCategories();
-  renderRecipes();
-  setupRecipeHeroPrefetch();
+  try { updateShoppingCounter(); } catch (_) {}
+  try { initSliderAndCategories(); } catch (_) {}
+  try { renderRecipes(); } catch (_) {}
+  try { setupRecipeHeroPrefetch(); } catch (_) {}
+  try { setupRecipeGridClickGuard(); } catch (_) {}
 
-  // ✅ Guard do clique precisa vir depois do renderRecipes()
-  setupRecipeGridClickGuard();
+  // ✅ 6) Agora sim: sincroniza Premium “do core/validade” no lugar certo
+  try {
+    if (typeof syncPremiumFromCore === 'function') {
+      syncPremiumFromCore();
+    } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
+      RF.premium.syncUI();
+    }
+  } catch (_) {}
 
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons();
-  }
+  // ✅ 7) Timers de expiração (se existirem no seu fluxo)
+  try {
+    if (typeof _setupPremiumTimers === 'function' && isPremium && premiumExpires && premiumExpires > Date.now()) {
+      _setupPremiumTimers();
+    }
+  } catch (_) {}
 
-  // ✅ Timers: só se premium ativo e com expires válido
-  if (isPremium && typeof premiumExpires === 'number' && premiumExpires > Date.now()) {
-    _setupPremiumTimers();
-  }
+  // ✅ 8) Lucide (ícones)
+  try {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  } catch (_) {}
 }
-
-
 
 
 
@@ -1475,40 +1529,102 @@ function shouldShowUnlockCTA(recipeId) {
 
 
 
-
-
-
-function requestOpenRecipe(recipeId) {
+/**
+ * decideRecipeOpenAction
+ * --------------------------------------------------
+ * FUNÇÃO CENTRAL (JUÍZ FINAL)
+ * Responsável por decidir O QUE FAZER quando o usuário
+ * tenta abrir uma receita.
+ *
+ * ❗ Esta função NÃO abre modal, NÃO navega e NÃO mexe na UI.
+ * Ela APENAS decide a ação correta com base no estado atual.
+ *
+ * Retornos possíveis:
+ * - { action: 'open', id }            → abre a receita direto
+ * - { action: 'confirm-credit', id }  → pede confirmação de uso de crédito
+ * - { action: 'premium', id }         → direciona para o Premium
+ *
+ * 🔒 Fonte única de verdade para:
+ * - Grid de receitas
+ * - Slider
+ * - Botões
+ * - Retorno de navegação
+ */
+ 
+function decideRecipeOpenAction(recipeId) {
   const id = String(recipeId);
 
-  // Premium abre direto
+  // 1️⃣ Premium: acesso total, sempre abre direto
   if (isPremium === true) {
-    renderRecipeDetail(id);
-    return;
+    return { action: 'open', id };
   }
 
-  // Já desbloqueada pra sempre
+  // 2️⃣ Receita já desbloqueada anteriormente (free)
   if (typeof isRecipeUnlocked === 'function' && isRecipeUnlocked(id)) {
-    renderRecipeDetail(id);
-    return;
+    return { action: 'open', id };
   }
 
-  // Créditos atuais
+  // 3️⃣ Usuário free com créditos disponíveis
   const c = (typeof getCreditsSafe === 'function')
     ? getCreditsSafe()
     : (Number.isFinite(credits) ? credits : 0);
 
-  // Tem créditos → pede confirmação
   if (c > 0) {
-    window.openConfirmCreditModal?.(id);
-    return;
+    return { action: 'confirm-credit', id };
   }
 
-  // Sem créditos → Premium
-  window.openPremium?.('no-credits')
-    || window.openPremiumModal?.('no-credits');
+  // 4️⃣ Usuário free sem créditos → Premium
+  return { action: 'premium', id };
 }
 
+
+
+
+
+/**
+ * requestOpenRecipe
+ * --------------------------------------------------
+ * FUNÇÃO EXECUTORA
+ * Responsável por executar a ação decidida pelo
+ * "juiz" decideRecipeOpenAction().
+ *
+ * ❗ Esta função NÃO decide regra de acesso.
+ * Ela apenas executa:
+ * - abrir receita
+ * - abrir modal de confirmação de crédito
+ * - abrir modal Premium
+ */
+function requestOpenRecipe(recipeId) {
+  const decision = decideRecipeOpenAction(recipeId);
+
+  if (!decision || !decision.action) return;
+
+  switch (decision.action) {
+    case 'open':
+      // ✅ Abre o detalhe da receita
+      renderRecipeDetail(decision.id);
+      break;
+
+    case 'confirm-credit':
+      // ✅ Abre modal de confirmação de uso de crédito
+      if (typeof window.openConfirmCreditModal === 'function') {
+        window.openConfirmCreditModal(decision.id);
+      }
+      break;
+
+    case 'premium':
+      // ✅ Direciona para o Premium
+      if (typeof window.openPremium === 'function') {
+        window.openPremium('no-credits');
+      } else if (typeof window.openPremiumModal === 'function') {
+        window.openPremiumModal('no-credits');
+      }
+      break;
+
+    default:
+      console.warn('[requestOpenRecipe] Ação desconhecida:', decision);
+  }
+}
 
 
 
@@ -1589,16 +1705,26 @@ function setupRecipeHeroPrefetch() {
 
 
 
-
-// ================================
-// SETUP RECEITAS
-// ================================
-
+/**
+ * setupRecipeGridClickGuard
+ * --------------------------------------------------
+ * RESPONSABILIDADE ÚNICA:
+ * Capturar o clique em um card de receita no grid
+ * e delegar 100% da lógica para requestOpenRecipe().
+ *
+ * ❗ Esta função NÃO decide:
+ * - premium
+ * - créditos
+ * - desbloqueio
+ * - modais
+ *
+ * Ela apenas identifica o recipeId e encaminha.
+ */
 function setupRecipeGridClickGuard() {
   const grid = document.getElementById('recipe-grid');
   if (!grid) return;
 
-  // Evita duplicar listener se loadUserData/render rodarem mais de uma vez
+  // Evita duplicar listener se renderRecipes/loadUserData rodarem mais de uma vez
   if (grid.dataset.clickGuardAttached === '1') return;
   grid.dataset.clickGuardAttached = '1';
 
@@ -1609,54 +1735,15 @@ function setupRecipeGridClickGuard() {
     const recipeId = card.getAttribute('data-recipe-id');
     if (!recipeId) return;
 
-    const id = String(recipeId);
-
-    // ✅ Se pode acessar, abre direto
-    if (canAccessRecipe(id)) {
-      requestOpenRecipe(id);
-      return;
-    }
-
-    // ❌ Não pode acessar
-    const hasCredits = (Number.isFinite(credits) ? credits : 0) > 0;
-
-    if (hasCredits) {
-      // ✅ Use sua função existente de abrir o modal (UI)
-      // Guardamos o id para o confirmUnlockRecipe() usar depois
-      window.__pendingUnlockRecipeId = id;
-
-      if (typeof window.openConfirmCreditModal === 'function') {
-        window.openConfirmCreditModal(id);
-      } else {
-        // Fallback (caso a função não exista por algum motivo)
-        const remainingEl = document.getElementById('credits-remaining');
-        const nameConfirmEl = document.getElementById('recipe-name-confirm');
-
-        let recipeName = 'esta receita';
-        const nameEl = card.querySelector('[data-recipe-name]');
-        if (nameEl && nameEl.textContent) {
-          recipeName = nameEl.textContent.trim();
-        } else if (Array.isArray(allRecipes)) {
-          const r = allRecipes.find(x => String(x.id) === id);
-          if (r?.name) recipeName = r.name;
-        }
-
-        if (remainingEl) remainingEl.textContent = String(credits);
-        if (nameConfirmEl) nameConfirmEl.textContent = recipeName;
-
-        const modal = document.getElementById('confirm-credit-modal');
-        if (modal) modal.classList.remove('hidden');
-      }
+    // 🔑 ÚNICO ponto de entrada para abrir receita
+    if (typeof requestOpenRecipe === 'function') {
+      requestOpenRecipe(String(recipeId));
     } else {
-      // Sem créditos: abre premium
-      if (typeof window.openPremium === 'function') {
-        window.openPremium('no-credits');
-      } else if (typeof window.openPremiumModal === 'function') {
-        window.openPremiumModal('no-credits');
-      }
+      console.warn('[setupRecipeGridClickGuard] requestOpenRecipe não encontrado.');
     }
   });
 }
+
 
 
 
@@ -1855,6 +1942,36 @@ function viewRecipe(recipeId) {
   } else {
     console.warn('[viewRecipe] openPremium/openPremiumModal não existe.');
   }
+}
+
+
+
+
+/**
+ * viewRecipe
+ * --------------------------------------------------
+ * FUNÇÃO LEGADA / COMPATIBILIDADE
+ * Alguns trechos antigos do HTML (ou componentes) podem chamar viewRecipe().
+ *
+ * A partir de agora, ela NÃO decide mais nada:
+ * ela delega 100% para o "porteiro" requestOpenRecipe(),
+ * que executa a decisão central (premium / unlocked / crédito / premium modal).
+ */
+function viewRecipe(recipeId) {
+  const id = String(recipeId);
+
+  if (typeof requestOpenRecipe === 'function') {
+    requestOpenRecipe(id);
+    return;
+  }
+
+  // Fallback extremo (não ideal, mas evita tela quebrada se algo estiver fora de ordem)
+  if (typeof renderRecipeDetail === 'function') {
+    renderRecipeDetail(id);
+    return;
+  }
+
+  console.warn('[viewRecipe] requestOpenRecipe/renderRecipeDetail não encontrados.');
 }
 
 
@@ -2807,37 +2924,61 @@ async function _handlePremiumExpiration() {
 
 
 
-
-
-// ================================
-// ATUALIZA BOTÕES PREMIUM (TAB BAR + MENU HAMBÚRGUER)
-// ================================
+// updatePremiumButtons()
+// - Mantém o “amarelo/estado Premium” nos botões (TabBar + Hambúrguer)
+// - Agora prioriza o estado único (RF.premium / isPremiumValidNow) e só usa variáveis antigas como fallback
 function updatePremiumButtons() {
   const tabPremiumBtn = document.querySelector('.tab-premium');
   const tabPremiumLabel = tabPremiumBtn?.querySelector('.tab-label');
-  
+
   const hamburgerPremiumBtn = document.querySelector('.hamburger-premium-btn');
   const hamburgerPremiumText = hamburgerPremiumBtn?.querySelector('span');
-  
-  if (isPremium && premiumExpires) {
-    const daysLeft = Math.ceil((premiumExpires - Date.now()) / (1000 * 60 * 60 * 24));
-    
+
+  // 1) Fonte única (quando existir)
+  let active = false;
+
+  // Se você tiver validação por expiração/token, ela manda
+  if (typeof isPremiumValidNow === 'function') {
+    active = !!isPremiumValidNow();
+  } else if (window.RF && RF.premium && typeof RF.premium.isActive === 'function') {
+    active = !!RF.premium.isActive();
+  } else {
+    // fallback antigo (não ideal, mas evita quebrar)
+    active = !!isPremium;
+  }
+
+  // 2) Prazo (se existir): usa premiumExpires (memória) ou fit_premium_expires (storage)
+  let expiresMs = null;
+  if (typeof premiumExpires === 'number' && Number.isFinite(premiumExpires)) {
+    expiresMs = premiumExpires;
+  } else {
+    const raw = localStorage.getItem('fit_premium_expires');
+    const parsed = raw ? Number(raw) : NaN;
+    if (Number.isFinite(parsed)) expiresMs = parsed;
+  }
+
+  // 3) UI: “amarelo” quando premium ativo
+  if (active) {
+    const daysLeft = expiresMs
+      ? Math.max(0, Math.ceil((expiresMs - Date.now()) / (1000 * 60 * 60 * 24)))
+      : null;
+
     // ✅ TAB BAR - Fica amarelo
-    if (tabPremiumBtn) {
-      tabPremiumBtn.classList.add('has-premium');
-    }
-    if (tabPremiumLabel) {
-      tabPremiumLabel.textContent = 'Premium';
-    }
-    
-    // ✅ MENU HAMBÚRGUER - Fica amarelo + mostra dias
+    if (tabPremiumBtn) tabPremiumBtn.classList.add('has-premium');
+    if (tabPremiumLabel) tabPremiumLabel.textContent = 'Premium';
+
+    // ✅ MENU HAMBÚRGUER - Fica amarelo + mostra dias (se tiver)
     if (hamburgerPremiumBtn) {
       hamburgerPremiumBtn.classList.add('has-premium');
       hamburgerPremiumBtn.style.cursor = 'default';
       hamburgerPremiumBtn.style.opacity = '1';
-      
+
       // SÓ desabilita se estiver na index
-      const isIndex = /index\.html/i.test(location.pathname) || location.pathname === '/' || location.pathname === '';
+      const isIndex =
+        /index\.html/i.test(location.pathname) ||
+        location.pathname === '/' ||
+        location.pathname === '';
+
       if (isIndex) {
         hamburgerPremiumBtn.disabled = true;
         hamburgerPremiumBtn.onclick = null;
@@ -2846,19 +2987,16 @@ function updatePremiumButtons() {
         // Mantém o onclick original do HTML
       }
     }
+
     if (hamburgerPremiumText) {
-      hamburgerPremiumText.textContent = `Premium (${daysLeft}D)`;
+      hamburgerPremiumText.textContent =
+        daysLeft === null ? 'Premium' : `Premium (${daysLeft}D)`;
     }
-    
   } else {
     // ❌ SEM PREMIUM - Volta ao normal
-    if (tabPremiumBtn) {
-      tabPremiumBtn.classList.remove('has-premium');
-    }
-    if (tabPremiumLabel) {
-      tabPremiumLabel.textContent = 'Premium';
-    }
-    
+    if (tabPremiumBtn) tabPremiumBtn.classList.remove('has-premium');
+    if (tabPremiumLabel) tabPremiumLabel.textContent = 'Premium';
+
     if (hamburgerPremiumBtn) {
       hamburgerPremiumBtn.classList.remove('has-premium');
       hamburgerPremiumBtn.disabled = false;
@@ -2866,18 +3004,20 @@ function updatePremiumButtons() {
       hamburgerPremiumBtn.style.opacity = '';
       // Mantém o onclick original do HTML
     }
-    if (hamburgerPremiumText) {
-      hamburgerPremiumText.textContent = 'Seja Premium';
-    }
+
+    if (hamburgerPremiumText) hamburgerPremiumText.textContent = 'Seja Premium';
   }
-  
+
+  // 4) Mantém sync geral (body/header/tour) se existir
+  if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
+    RF.premium.syncUI();
+  }
+
+  // 5) Re-render icons (se estiver usando lucide)
   if (window.lucide && typeof window.lucide.createIcons === 'function') {
     window.lucide.createIcons();
   }
 }
-
-
-
 
 
 
