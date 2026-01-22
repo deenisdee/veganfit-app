@@ -3762,103 +3762,7 @@ font-size:14px;
 }
 
 
-/* ================================
-   LAZY IMAGE - fade-in suave (sem mexer no card)
-   ================================ */
-.recipe-image {
-  opacity: 0;
-  transition: opacity .25s ease;
-}
 
-.recipe-image.is-loaded {
-  opacity: 1;
-}
-
-
-
-
-/* ==============================
-   Image Loading UX (Skeleton + Spinner)
-   ============================== */
-
-.recipe-image-container {
-  position: relative;
-  overflow: hidden;
-}
-
-/* camada do skeleton */
-.recipe-image-container::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    #eef2f7 0%,
-    #f7f9fc 35%,
-    #eef2f7 70%,
-    #eef2f7 100%
-  );
-  background-size: 200% 100%;
-  animation: rfShimmer 1.1s ease-in-out infinite;
-  opacity: 1;
-  transition: opacity .25s ease;
-  z-index: 2!important;
-}
-
-/* spinner por cima do skeleton */
-.recipe-image-container::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 22px;
-  height: 22px;
-  margin-left: -11px;
-  margin-top: -11px;
-
-  border: 3px solid rgba(17, 24, 39, .18);
-  border-top-color: rgba(17, 24, 39, .55);
-  border-radius: 999px;
-
-  animation: rfSpin .85s linear infinite;
-  opacity: 1;
-  transition: opacity .2s ease;
-  z-index: 1!important;
-}
-
-/* imagem começa invisível e aparece quando carregada */
-.recipe-image {
-  opacity: 0;
-  transition: opacity .25s ease;
-  position: relative;
-  z-index: 2; /* acima do skeleton */
-}
-
-/* quando carregou: some skeleton e spinner e mostra imagem */
-.recipe-image-container.is-loaded::before,
-.recipe-image-container.is-loaded::after {
-  opacity: 0 !important;
-  pointer-events: none;
-}
-
-.recipe-image.is-loaded {
-  opacity: 1;
-}
-
-@keyframes rfShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-@keyframes rfSpin {
-  to { transform: rotate(360deg); }
-}
-
-/* acessibilidade: reduz movimento */
-@media (prefers-reduced-motion: reduce) {
-  .recipe-image-container::before { animation: none; }
-  .recipe-image-container::after { animation: none; }
-}
 
 
 
@@ -4931,4 +4835,79 @@ input[type="range"]::-moz-range-thumb:hover {
     .filter-actions {
         flex-direction: column;
     }
+}
+
+
+/* ============================================
+   SKELETON (diagonal) + SPINNER (gear)
+   ============================================ */
+
+.recipe-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* placeholder que aparece antes da imagem carregar */
+.rf-skeleton {
+  position: absolute;
+  inset: 0;
+  background: #e5e7eb; /* cinza */
+}
+
+/* brilho diagonal animado */
+.rf-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: -40% -60%;
+  transform: rotate(20deg);
+  background: linear-gradient(
+    90deg,
+    rgba(229,231,235,0) 0%,
+    rgba(255,255,255,0.55) 45%,
+    rgba(229,231,235,0) 100%
+  );
+  animation: rfShimmer 1.15s ease-in-out infinite;
+}
+
+@keyframes rfShimmer {
+  0%   { transform: translateX(-35%) rotate(20deg); }
+  100% { transform: translateX(35%) rotate(20deg); }
+}
+
+/* spinner tipo "config" (engrenagem) girando */
+.rf-skeleton-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  opacity: 0.85;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* desenha uma engrenagem simples via SVG herdando cor */
+.rf-skeleton-spinner svg {
+  width: 30px;
+  height: 30px;
+  animation: rfSpin 1.1s linear infinite;
+  color: rgba(55, 65, 81, 0.75);
+}
+
+@keyframes rfSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* quando a imagem carrega, escondemos skeleton */
+.recipe-image.is-loaded + .rf-skeleton {
+  display: none;
+}
+
+/* garante que a imagem fique por cima do fundo, mas abaixo do overlay/categoria */
+.recipe-image {
+  position: relative;
+  z-index: 1;
 }
