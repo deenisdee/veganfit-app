@@ -176,6 +176,193 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 
+
+// =====================================
+// HERO SLIDER (drag/snap + click)
+// Requisitos no HTML:
+// - #sliderTrack (container das slides)
+// - #sliderDots (dots)
+// Cada slide deve ter: data-recipe-id="123"
+// =====================================
+function setupHeroSliderDrag() {
+  const track = document.getElementById('sliderTrack');
+  const dotsEl = document.getElementById('sliderDots');
+  if (!track) return;
+
+  // evita duplicar listeners
+  if (track.dataset.dragReady === '1') return;
+  track.dataset.dragReady = '1';
+
+  let index = 0;
+  let startX = 0;
+  let currentX = 0;
+  let dragging = false;
+  let moved = false;
+
+  const DRAG_THRESHOLD_PX = 10;     // separa click de drag
+  const SNAP_THRESHOLD_RATIO = 0.18; // % da largura para trocar slide
+
+  function slides() {
+    return Array.from(track.children || []);
+  }
+
+  function slideWidth() {
+    const s = slides();
+    if (!s.length) return 0;
+    const rect = s[0].getBoundingClientRect();
+    return rect.width || 0;
+  }
+
+  function clampIndex(i) {
+    const max = Math.max(0, slides().length - 1);
+    return Math.min(max, Math.max(0, i));
+  }
+
+  function setTranslate(x) {
+    track.style.transform = `translate3d(${x}px,0,0)`;
+  }
+
+  function goto(i, animate = true) {
+    index = clampIndex(i);
+    const w = slideWidth();
+    const x = -index * w;
+
+    track.style.transition = animate ? 'transform 260ms ease' : 'none';
+    setTranslate(x);
+
+    updateDots();
+  }
+
+  function updateDots() {
+    if (!dotsEl) return;
+    const s = slides();
+    dotsEl.innerHTML = s.map((_, i) => `
+      <button class="slider-dot ${i === index ? 'active' : ''}" type="button" aria-label="Slide ${i + 1}"></button>
+    `).join('');
+
+    // click nos dots
+    Array.from(dotsEl.querySelectorAll('.slider-dot')).forEach((btn, i) => {
+      btn.addEventListener('click', () => goto(i, true));
+    });
+  }
+
+  function onResize() {
+    // recalc posição atual no novo width
+    goto(index, false);
+  }
+
+  // Clique do slide (se não arrastou)
+  track.addEventListener('click', (e) => {
+    if (moved) return; // se arrastou, não é click
+    const slide = e.target.closest?.('[data-recipe-id]');
+    if (!slide) return;
+
+    const id = slide.getAttribute('data-recipe-id');
+    if (!id) return;
+
+    // chama seu PORTEIRO (crédito/premium/unlocked)
+    if (typeof requestOpenRecipe === 'function') {
+      requestOpenRecipe(String(id));
+    } else if (typeof renderRecipeDetail === 'function') {
+      // fallback: abre direto (não ideal, mas evita quebrar)
+      renderRecipeDetail(String(id));
+    }
+  });
+  
+  
+    track.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+
+    const slide = e.target.closest?.('[data-recipe-id]');
+    if (!slide) return;
+
+    e.preventDefault();
+
+    const id = slide.getAttribute('data-recipe-id');
+    if (!id) return;
+
+    if (typeof requestOpenRecipe === 'function') requestOpenRecipe(String(id));
+  });
+
+  
+  
+
+  // Drag (pointer events)
+  track.addEventListener('pointerdown', (e) => {
+    // só botão principal / toque
+    track.setPointerCapture?.(e.pointerId);
+
+    dragging = true;
+    moved = false;
+    startX = e.clientX;
+    currentX = e.clientX;
+
+    track.style.transition = 'none';
+  });
+
+  track.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+
+    currentX = e.clientX;
+    const dx = currentX - startX;
+
+    if (Math.abs(dx) > DRAG_THRESHOLD_PX) moved = true;
+
+    const w = slideWidth();
+    const baseX = -index * w;
+    setTranslate(baseX + dx);
+  });
+
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+
+    const dx = currentX - startX;
+    const w = slideWidth();
+
+    // snap
+    const ratio = w ? Math.abs(dx) / w : 0;
+    if (ratio > SNAP_THRESHOLD_RATIO) {
+      if (dx < 0) goto(index + 1, true);
+      else goto(index - 1, true);
+    } else {
+      goto(index, true);
+    }
+
+    // libera o click na próxima interação
+    setTimeout(() => { moved = false; }, 0);
+  }
+
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
+  window.addEventListener('resize', onResize);
+
+  // Inicializa dots e posição
+  goto(0, false);
+}
+
+// (Opcional) API para setas existentes chamarem
+function heroSliderNext() {
+  const track = document.getElementById('sliderTrack');
+  if (!track) return;
+  const total = track.children?.length || 0;
+  const cur = Number(track.dataset.heroIndex || '0');
+  const next = Math.min(total - 1, cur + 1);
+  track.dataset.heroIndex = String(next);
+}
+
+function heroSliderPrev() {
+  const track = document.getElementById('sliderTrack');
+  if (!track) return;
+  const cur = Number(track.dataset.heroIndex || '0');
+  const prev = Math.max(0, cur - 1);
+  track.dataset.heroIndex = String(prev);
+}
+
+
+
+
+
 // ============================================
 // Premium – estado único + sync de UI (Header/Tab/Hamb)
 // ============================================
@@ -865,23 +1052,35 @@ function initSliderAndCategories() {
   if (sliderTrack && sliderDots) {
     featuredRecipes = allRecipes.filter(r => r.featured).slice(0, 4);
 
-    sliderTrack.innerHTML = featuredRecipes.map(recipe => `
-      <div class="slide-new">
-        <img src="${recipe.image}" alt="${recipe.name}"
-          onerror="this.src='https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1200&q=80'">
-        <div class="slide-overlay-new">
-          <h2 class="slide-title-new">${recipe.name}</h2>
-          <p class="slide-description-new">${recipe.description || 'Receita deliciosa e saudável'}</p>
-        </div>
+
+
+    sliderTrack.innerHTML = featuredRecipes.map(recipe => {
+  const id = String(recipe.id);
+  const img = recipe.images?.hero || recipe.image; // usa hero se existir
+
+  return `
+    <div class="slide-new" data-recipe-id="${id}" role="button" tabindex="0" aria-label="Abrir receita ${recipe.name}">
+      <img src="${img}" alt="${recipe.name}"
+        loading="eager" decoding="async"
+        onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=60';">
+      <div class="slide-overlay-new">
+        <h2 class="slide-title-new">${recipe.name}</h2>
+        <p class="slide-description-new">${recipe.description || 'Receita deliciosa'}</p>
       </div>
-    `).join('');
+    </div>
+  `;
+}).join('');
 
-    sliderDots.innerHTML = featuredRecipes.map((_, idx) =>
-      `<button class="slider-dot-new ${idx === 0 ? 'active' : ''}" onclick="goToSlideNew(${idx})"></button>`
-    ).join('');
 
-    startAutoplay();
-    updateSlider();
+
+
+  sliderDots.innerHTML = featuredRecipes.map((_, idx) => `
+  <button class="slider-dot-new ${idx === 0 ? 'active' : ''}" type="button" aria-label="Ir para slide ${idx + 1}"></button>
+`).join('');
+
+
+setupHeroSliderDrag();
+
   }
 
   if (categoriesGrid) {
@@ -4450,3 +4649,6 @@ function setupRecipeGridClickGuard() {
     }
   });
 }
+
+
+
