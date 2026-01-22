@@ -1326,6 +1326,15 @@ function renderRecipes() {
   recipeGrid.innerHTML = filtered.map(recipe => {
     const isUnlocked = isPremium || unlockedRecipes.includes(recipe.id);
     const showLock = !isUnlocked && credits === 0;
+	
+	const id = String(recipe.id);
+    const isUnlocked = isPremium || unlockedRecipes.includes(recipe.id);
+    const noCredits = (!isPremium && Number.isFinite(credits) && credits <= 0);
+    const showLock = (!isUnlocked && noCredits);
+
+// botão premium aparece quando não tem créditos e a receita NÃO está desbloqueada
+const showPremiumCTA = (!isUnlocked && noCredits);
+
 
     const imgUrl = optimizeImageUrl(recipe.image);
 
@@ -1401,22 +1410,43 @@ function renderRecipes() {
             </div>
           </div>
 
-          <button class="recipe-button ${isUnlocked ? 'unlocked' : 'locked'}" type="button">
-            ${isUnlocked ? `
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-              </svg>
-              <span class="btn-label">Ver Receita</span>
-            ` : `
-              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              <span class="btn-label btn-label-desktop">Desbloquear <small>(1 crédito)</small></span>
-              <span class="btn-label btn-label-mobile">1 crédito</span>
-            `}
-          </button>
+
+
+          <button class="recipe-button ${
+  isUnlocked ? 'unlocked' : (showPremiumCTA ? 'premium-cta' : 'locked')
+}" type="button">
+  ${
+    isUnlocked
+      ? `
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+        </svg>
+        <span class="btn-label">Ver Receita</span>
+      `
+      : (showPremiumCTA
+          ? `
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            <span class="btn-label">Ativar Premium</span>
+          `
+          : `
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span class="btn-label btn-label-desktop">Desbloquear <small>(1 crédito)</small></span>
+            <span class="btn-label btn-label-mobile">1 crédito</span>
+          `
+        )
+  }
+</button>
+
+		  
+		  
+		  
+		  
         </div>
       </div>
     `;
