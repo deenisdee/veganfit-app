@@ -4856,7 +4856,7 @@ input[type="range"]::-moz-range-thumb:hover {
 
 /* Base do skeleton (cinza perceptível) */
 .rf-skeleton {
-  background-color: #cccccc; /* cinza base mais escuro que o padrão */
+  background-color: #e6e7eb; /* cinza base mais escuro que o padrão */
 }
 
 /* Faixa diagonal de destaque */
