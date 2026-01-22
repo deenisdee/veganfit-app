@@ -217,7 +217,7 @@ a { color:inherit; text-decoration:none; }
   width:55px; height:55px;
   border-radius:50%;
   cursor:pointer;
-  font-size:2rem;
+  font-size:1rem;
   display:flex; align-items:center; justify-content:center;
   transition:all .3s;
   backdrop-filter:blur(4px);
@@ -2155,6 +2155,14 @@ body.premium-active #premium-btn {
   .tab-bar { display: flex; }
   body { padding-bottom: 70px; }
   .footer { display: none; }
+  
+  .slider-arrow-new.next {
+  display:none;}
+	  
+ .slider-arrow-new.prev {
+	   display:none;}
+	 
+  
 }
 
 @media (min-width: 769px) {
@@ -2330,7 +2338,7 @@ body .hamburger-btn,
   .meal-option-btn:hover,
   .modal-actions button:hover,
   .btn-clear-list:hover{
-    transform: translateY(var(--rf-lift));
+ /*    transform: translateY(var(--rf-lift)); */
     box-shadow: var(--rf-shadow);
   }
 
