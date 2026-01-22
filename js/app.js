@@ -1049,114 +1049,144 @@ let sliderAutoplay = null;
 function initSliderAndCategories() {
   if (!allRecipes || allRecipes.length === 0) return;
 
+  // -----------------------------
+  // SLIDER (Hero)
+  // -----------------------------
   if (sliderTrack && sliderDots) {
+    // garante featuredRecipes global se você já usa em outros lugares
     featuredRecipes = allRecipes.filter(r => r.featured).slice(0, 4);
 
-
-
     sliderTrack.innerHTML = featuredRecipes.map(recipe => {
-  const id = String(recipe.id);
-  const img = recipe.images?.hero || recipe.image; // usa hero se existir
+      const id = String(recipe.id);
+      const img = recipe.images?.hero || recipe.image;
 
-  return `
-    <div class="slide-new" data-recipe-id="${id}" role="button" tabindex="0" aria-label="Abrir receita ${recipe.name}">
-      <img src="${img}" alt="${recipe.name}"
-        loading="eager" decoding="async"
-        onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=60';">
-      <div class="slide-overlay-new">
-        <h2 class="slide-title-new">${recipe.name}</h2>
-        <p class="slide-description-new">${recipe.description || 'Receita deliciosa'}</p>
-      </div>
-    </div>
-  `;
-}).join('');
+      return `
+        <div class="slide-new" data-recipe-id="${id}" role="button" tabindex="0" aria-label="Abrir receita ${recipe.name}">
+          <img src="${img}" alt="${recipe.name}"
+            loading="eager" decoding="async"
+            onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=60';">
+          <div class="slide-overlay-new">
+            <h2 class="slide-title-new">${recipe.name}</h2>
+            <p class="slide-description-new">${recipe.description || 'Receita deliciosa'}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
 
+    // Dots (sem onclick inline)
+    sliderDots.innerHTML = featuredRecipes.map((_, idx) => `
+      <button class="slider-dot-new ${idx === 0 ? 'active' : ''}" type="button" data-slide-idx="${idx}" aria-label="Ir para slide ${idx + 1}"></button>
+    `).join('');
 
+    // Clique nos dots (tenta usar sua função existente; senão faz fallback)
+    if (!sliderDots.dataset.dotsBound) {
+      sliderDots.dataset.dotsBound = '1';
+      sliderDots.addEventListener('click', function (e) {
+        const btn = e.target.closest?.('[data-slide-idx]');
+        if (!btn) return;
+        const idx = parseInt(btn.getAttribute('data-slide-idx') || '0', 10);
 
+        // Se você já tem goToSlideNew / updateSlider, usa.
+        if (typeof window.goToSlideNew === 'function') {
+          window.goToSlideNew(idx);
+          return;
+        }
 
-// ✅ Clique no slide -> mesma regra do grid (créditos/premium)
-if (!sliderTrack.dataset.clickBound) {
-  sliderTrack.dataset.clickBound = '1';
+        // fallback simples: scroll por transform
+        const slideW = sliderTrack.querySelector('.slide-new')?.getBoundingClientRect().width || 0;
+        sliderTrack.style.transition = 'transform 260ms ease';
+        sliderTrack.style.transform = `translate3d(${-idx * slideW}px,0,0)`;
 
- // ✅ Tap mobile (iPhone) -> mesma regra do grid (créditos/premium)
-if (!sliderTrack.dataset.tapBound) {
-  sliderTrack.dataset.tapBound = '1';
-
-  let startX = 0;
-  let startY = 0;
-  let moved = false;
-
-  const MOVE_THRESHOLD = 12; // px: separa tap de drag
-
-  function openFromEventTarget(target) {
-    const slide = target.closest?.('[data-recipe-id]');
-    if (!slide) return;
-
-    const id = slide.getAttribute('data-recipe-id');
-    if (!id) return;
-
-    if (typeof requestOpenRecipe === 'function') {
-      requestOpenRecipe(String(id));
-    } else if (typeof window.openConfirmCreditModal === 'function') {
-      window.openConfirmCreditModal(String(id));
-    } else {
-      console.warn('[slider] requestOpenRecipe/openConfirmCreditModal não encontrados');
+        // atualiza dot ativo
+        Array.from(sliderDots.querySelectorAll('.slider-dot-new')).forEach((d, i) => {
+          d.classList.toggle('active', i === idx);
+        });
+      }, { passive: true });
     }
+
+    // ✅ TAP MOBILE (iPhone): não depender de click
+    if (!sliderTrack.dataset.tapBound) {
+      sliderTrack.dataset.tapBound = '1';
+
+      let startX = 0;
+      let startY = 0;
+      let moved = false;
+
+      const MOVE_THRESHOLD = 12; // px: separa tap de drag
+
+      function openFromTarget(target) {
+        const slide = target.closest?.('[data-recipe-id]');
+        if (!slide) return;
+
+        const id = slide.getAttribute('data-recipe-id');
+        if (!id) return;
+
+        // chama seu PORTEIRO (créditos/premium/unlocked)
+        if (typeof window.requestOpenRecipe === 'function') {
+          window.requestOpenRecipe(String(id));
+        } else if (typeof window.openConfirmCreditModal === 'function') {
+          // fallback (não ideal)
+          window.openConfirmCreditModal(String(id));
+        } else {
+          console.warn('[slider] requestOpenRecipe/openConfirmCreditModal não encontrados');
+        }
+      }
+
+      // Pointer events (Safari iOS moderno)
+      sliderTrack.addEventListener('pointerdown', function (e) {
+        startX = e.clientX;
+        startY = e.clientY;
+        moved = false;
+      }, { passive: true });
+
+      sliderTrack.addEventListener('pointermove', function (e) {
+        const dx = Math.abs(e.clientX - startX);
+        const dy = Math.abs(e.clientY - startY);
+        if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) moved = true;
+      }, { passive: true });
+
+      sliderTrack.addEventListener('pointerup', function (e) {
+        if (moved) return; // foi arrasto
+        openFromTarget(e.target);
+      }, { passive: true });
+
+      // Fallback touch (iOS antigo / casos raros)
+      sliderTrack.addEventListener('touchstart', function (e) {
+        const t = e.touches && e.touches[0];
+        if (!t) return;
+        startX = t.clientX;
+        startY = t.clientY;
+        moved = false;
+      }, { passive: true });
+
+      sliderTrack.addEventListener('touchmove', function (e) {
+        const t = e.touches && e.touches[0];
+        if (!t) return;
+        const dx = Math.abs(t.clientX - startX);
+        const dy = Math.abs(t.clientY - startY);
+        if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) moved = true;
+      }, { passive: true });
+
+      sliderTrack.addEventListener('touchend', function (e) {
+        if (moved) return;
+        openFromTarget(e.target);
+      }, { passive: true });
+    }
+
+    // Se existir o slider drag completo que te passei antes, liga.
+    // (se não existir, não quebra)
+    if (typeof setupHeroSliderDrag === 'function') {
+      try { setupHeroSliderDrag(); } catch (_) {}
+    }
+
+    // Se você tinha autoplay antigo, não chama mais aqui para não brigar com touch/drag:
+    // startAutoplay();
+    // updateSlider();
   }
 
-  // iPhone: preferir pointer events
-  sliderTrack.addEventListener('pointerdown', function (e) {
-    startX = e.clientX;
-    startY = e.clientY;
-    moved = false;
-  }, { passive: true });
-
-  sliderTrack.addEventListener('pointermove', function (e) {
-    const dx = Math.abs(e.clientX - startX);
-    const dy = Math.abs(e.clientY - startY);
-    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) moved = true;
-  }, { passive: true });
-
-  sliderTrack.addEventListener('pointerup', function (e) {
-    if (moved) return; // foi arrasto
-    openFromEventTarget(e.target);
-  }, { passive: true });
-
-  // fallback para iOS antigo / casos raros
-  sliderTrack.addEventListener('touchstart', function (e) {
-    const t = e.touches && e.touches[0];
-    if (!t) return;
-    startX = t.clientX;
-    startY = t.clientY;
-    moved = false;
-  }, { passive: true });
-
-  sliderTrack.addEventListener('touchmove', function (e) {
-    const t = e.touches && e.touches[0];
-    if (!t) return;
-    const dx = Math.abs(t.clientX - startX);
-    const dy = Math.abs(t.clientY - startY);
-    if (dx > MOVE_THRESHOLD || dy > MOVE_THRESHOLD) moved = true;
-  }, { passive: true });
-
-  sliderTrack.addEventListener('touchend', function (e) {
-    if (moved) return;
-    openFromEventTarget(e.target);
-  }, { passive: true });
-}
-
-
-
-
-  sliderDots.innerHTML = featuredRecipes.map((_, idx) => `
-  <button class="slider-dot-new ${idx === 0 ? 'active' : ''}" type="button" aria-label="Ir para slide ${idx + 1}"></button>
-`).join('');
-
-
-setupHeroSliderDrag();
-
-  }
-
+  // -----------------------------
+  // CATEGORIAS (como no seu print)
+  // -----------------------------
   if (categoriesGrid) {
     const categories = [
       { name: 'Todas', value: '' },
@@ -1175,9 +1205,10 @@ setupHeroSliderDrag();
       </div>
     `).join('');
   }
-
-  initCategoriesDrag();
 }
+
+
+
 
 window.changeSlideNew = function(direction) {
   if (!featuredRecipes || featuredRecipes.length === 0) return;
