@@ -5054,3 +5054,233 @@ input[type="range"]::-moz-range-thumb:hover {
 #sliderTrack, .slider-track-new {
   touch-action: pan-y;
 }
+
+
+
+
+
+
+
+/* ============================================
+   DROPDOWN: BUSCAR POR INGREDIENTES (RF)
+   - visual clean (identidade verde/azul)
+   ============================================ */
+
+.rf-ingredients {
+  max-width: 1100px;
+  margin: 16px auto 0;
+  padding: 0 16px;
+}
+
+.rf-ingredients__toggle {
+  width: 100%;
+  border: 1px solid rgba(12, 74, 45, 0.16);
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 4px 12px;
+  text-align: left;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+}
+
+.rf-ingredients__title {
+  font-weight: 700;
+  color: #0a2f1f;
+  font-size: 16px;
+  line-height: 1.1;
+}
+
+.rf-ingredients__hint {
+  grid-column: 1 / 2;
+  font-size: 13px;
+  color: rgba(0,0,0,0.55);
+}
+
+.rf-ingredients__chev {
+  grid-column: 2 / 3;
+  grid-row: 1 / 3;
+  align-self: center;
+  justify-self: end;
+  font-size: 18px;
+  color: rgba(0,0,0,0.55);
+  transition: transform 180ms ease;
+}
+
+.rf-ingredients__toggle[aria-expanded="true"] .rf-ingredients__chev {
+  transform: rotate(180deg);
+}
+
+.rf-ingredients__panel {
+  margin-top: 10px;
+  border: 1px solid rgba(12, 74, 45, 0.12);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 18px 36px rgba(0,0,0,0.08);
+  max-height: 150px !important;
+overflow: hidden;
+  
+}
+
+.rf-ingredients__grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  
+  max-height: 150px!important;
+overflow-y: auto;
+padding-right: 6px;
+}
+
+@media (max-width: 980px) {
+  .rf-ingredients__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .rf-ingredients__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.rf-ing-chip {
+  border: 1px solid rgba(0,0,0,0.10);
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 10px;
+  display: grid;
+  place-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  
+}
+
+.rf-ing-chip:hover {
+  transform: translateY(1px);
+  
+}
+
+.rf-ing-chip__icon {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(18, 146, 83, 0.10);
+  color: #129253;
+  font-size: 16px;
+}
+
+.rf-ing-chip__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0,0,0,0.72);
+  text-align: center;
+  line-height: 1.15;
+}
+
+.rf-ing-chip.is-active {
+  border-color: rgba(18, 146, 83, 0.9);
+  
+  background: rgba(18, 146, 83, 0.06);
+  position: relative;
+}
+
+.rf-ing-chip.is-active::after {
+  content: "✓";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 12px;
+  background: #129253;
+  color: #fff;
+  box-shadow: 0 10px 18px rgba(0,0,0,0.14);
+}
+
+
+.rf-ing-chip.is-active .rf-ing-chip__icon {
+  background: rgba(18, 146, 83, 0.16);
+}
+
+.rf-ingredients__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.rf-btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rf-btn--ghost {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.75);
+}
+
+.rf-btn--primary {
+  background: #129253;
+  color: #fff;
+}
+
+
+
+
+/* ============================================
+   ROW: 2 botões lado a lado (Ingredientes | Filtros)
+   ============================================ */
+.rf-filter-row{
+  max-width: 1100px;
+  margin: 16px auto 0;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Força os dois botões a terem o MESMO visual */
+.rf-filter-btn{
+  width: 100%;
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid rgba(12, 74, 45, 0.16);
+background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.rf-filter-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 16px 34px rgba(0,0,0,0.10);
+  border-color: rgba(18, 146, 83, 0.35);
+}
+
+/* Ícones Lucide minimalistas e iguais */
+.rf-filter-btn i[data-lucide]{
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+}
+
+/* Estado "ativo" (se você quiser usar depois) */
+.rf-filter-btn.is-active{
+  border-color: rgba(18, 146, 83, 0.55);
+  box-shadow: 0 16px 34px rgba(18, 146, 83, 0.18);
+}
