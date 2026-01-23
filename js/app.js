@@ -175,6 +175,184 @@ window.addEventListener('DOMContentLoaded', function() {
  */
 
 
+// setupIngredientDropdown()
+// - Inicializa o dropdown "Buscar por ingredientes"
+// - NÃO depende do id do input (procura automaticamente)
+// - "Aplicar" escreve no input: ing: a, b, c e dispara input event
+function setupIngredientDropdown() {
+  const toggle = document.getElementById('rfIngToggle');
+  const panel = document.getElementById('rfIngPanel');
+  const grid = document.getElementById('rfIngGrid');
+  const btnClear = document.getElementById('rfIngClear');
+  const btnApply = document.getElementById('rfIngApply');
+
+  // ✅ Guard: só depende do dropdown existir
+  if (!toggle || !panel || !grid || !btnClear || !btnApply) return;
+
+  // Procura o input de busca de forma tolerante
+  function getSearchInput() {
+    return (
+      document.getElementById('searchInput') ||
+      document.querySelector('input[placeholder*="Buscar"]') ||
+      document.querySelector('input[type="search"]') ||
+      document.querySelector('header input') ||
+      null
+    );
+  }
+
+  // Estado local
+  let selected = new Set();
+
+  function collectIngredientsFromRecipes() {
+    const out = new Set();
+    if (!Array.isArray(window.RECIPES)) return [];
+
+    window.RECIPES.forEach((r) => {
+      const list = Array.isArray(r?.ingredients) ? r.ingredients : [];
+      list.forEach((ing) => {
+        let text = '';
+
+        if (!ing) return;
+        if (typeof ing === 'string') text = ing;
+        else if (typeof ing.text === 'string') text = ing.text;
+        else if (typeof ing.name === 'string') text = ing.name;
+
+        text = String(text || '').trim().toLowerCase();
+
+        text = text
+          .replace(/\d+/g, ' ')
+          .replace(/\b(xícara|xicara|colher|sopa|chá|cha|ml|g|kg|un|unidade|pitada|a\s+gosto)\b/gi, ' ')
+          .replace(/[()]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        if (text.length < 3) return;
+
+        out.add(text);
+      });
+    });
+
+    return Array.from(out).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }
+
+  function renderChips(items) {
+    grid.innerHTML = items.map((label) => {
+      const safe = label.replace(/"/g, '&quot;');
+      const active = selected.has(label) ? 'is-active' : '';
+      const icon = '🥬';
+
+      return `
+        <div class="rf-ing-chip ${active}" role="button" tabindex="0" data-ing="${safe}">
+          <div class="rf-ing-chip__icon">${icon}</div>
+          <div class="rf-ing-chip__label">${label}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function toggleChip(label) {
+    if (selected.has(label)) selected.delete(label);
+    else selected.add(label);
+  }
+
+
+
+
+function setOpen(isOpen) {
+  toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+  // compatível com o padrão do seu projeto (.hidden)
+  if (isOpen) {
+    panel.classList.remove('hidden');
+  } else {
+    panel.classList.add('hidden');
+  }
+}
+
+
+
+  function applySelection() {
+    const input = getSearchInput();
+    const list = Array.from(selected);
+
+    if (input) {
+      if (list.length === 0) input.value = '';
+      else input.value = `ing: ${list.join(', ')}`;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    setOpen(false);
+  }
+
+  function clearSelection() {
+    const input = getSearchInput();
+    selected = new Set();
+
+    if (input) {
+      input.value = '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    renderChips(ingredientsList);
+  }
+
+  const ingredientsList = collectIngredientsFromRecipes();
+  renderChips(ingredientsList);
+  setOpen(false);
+
+
+
+// ✅ Impede que cliques dentro do dropdown disparem handlers globais que fecham o painel
+panel.addEventListener('click', (e) => e.stopPropagation());
+grid.addEventListener('click', (e) => e.stopPropagation());
+toggle.addEventListener('click', (e) => e.stopPropagation());
+
+
+
+  // ✅ Toggle
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    setOpen(!open);
+  });
+
+  // Click fora fecha
+  document.addEventListener('click', (e) => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    if (!open) return;
+    const inside = e.target.closest('.rf-ingredients');
+    if (!inside) setOpen(false);
+  });
+
+  // Chips click/keyboard
+  grid.addEventListener('click', (e) => {
+    const el = e.target.closest('.rf-ing-chip');
+    if (!el) return;
+
+    const label = String(el.getAttribute('data-ing') || '').trim().toLowerCase();
+    if (!label) return;
+
+    const exact = ingredientsList.find(x => x.toLowerCase() === label) || label;
+
+    toggleChip(exact);
+    renderChips(ingredientsList);
+  });
+
+  grid.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const el = e.target.closest('.rf-ing-chip');
+    if (!el) return;
+    e.preventDefault();
+    el.click();
+  });
+
+  btnApply.addEventListener('click', applySelection);
+  btnClear.addEventListener('click', clearSelection);
+}
+
+// PRÓXIMA LINHA NO SEU ARQUIVO (não mexer abaixo)
+
+
+
 
 
 
@@ -614,6 +792,9 @@ let currentRecipe = null;
 let currentSlideIndex = 0;
 let featuredRecipes = [];
 let searchTerm = '';
+let selectedCategory = '';
+let searchIngredients = [];
+let advancedFilters = { maxCalories: null, minProtein: null, maxTime: null };
 let shoppingList = [];
 let weekPlan = {};
 
@@ -1242,15 +1423,14 @@ function initSliderAndCategories() {
   // CATEGORIAS (como no seu print)
   // -----------------------------
   if (categoriesGrid) {
-    const categories = [
-      { name: 'Todas', value: '' },
-      { name: 'Café da Manhã', value: 'Café da Manhã' },
-      { name: 'Almoço', value: 'Almoço' },
-      { name: 'Jantar', value: 'Jantar' },
-      { name: 'Lanches', value: 'Lanches' },
-      { name: 'Sobremesas', value: 'Sobremesas' },
-      { name: 'Veganas', value: 'Veganas' }
-    ];
+const categories = [
+  { name: 'Todas', value: '' },
+  { name: 'Café da Manhã', value: 'Café da Manhã' },
+  { name: 'Almoço/Janta', value: 'Almoço/Janta' },
+  { name: 'Lanches', value: 'Lanches' },
+  { name: 'Sobremesas', value: 'Sobremesas' },
+  { name: 'Sucos', value: 'Sucos' }
+];
 
     categoriesGrid.innerHTML = categories.map((cat, index) => `
       <div class="category-card-new ${index === 0 ? 'active' : ''}"
@@ -1342,6 +1522,12 @@ function initCategoriesDrag() {
   
 }
 
+
+
+
+// filterByCategory(category, element)
+// - Seleciona a categoria (estado separado)
+// - NÃO mexe no searchTerm (texto da busca)
 window.filterByCategory = function(category, element) {
   document.querySelectorAll('.category-card-new').forEach(card => card.classList.remove('active'));
   if (element) element.classList.add('active');
@@ -1350,10 +1536,11 @@ window.filterByCategory = function(category, element) {
     element.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
-  searchTerm = category || '';
+  selectedCategory = category || '';
   closeRecipeDetail();
   renderRecipes();
 };
+
 
 
 
@@ -1749,23 +1936,122 @@ function setupRecipeGridClickGuard() {
 
 
 
-// ==============================
-// RENDER RECEITAS
-// ==============================
 
+// initHomeUI()
+// - inicializa listeners e UI da home
+function initHomeUI() {
+  setupIngredientDropdown();
+}
+
+
+
+
+
+// getRecipeIngredientsHaystack(recipe)
+// - Cria um texto “pesquisável” com todos os ingredientes da receita
+// - Compatível com ingredientes como string OU como objeto { text } / { name }
+function getRecipeIngredientsHaystack(recipe) {
+  const list = Array.isArray(recipe?.ingredients) ? recipe.ingredients : [];
+  const parts = list.map((ing) => {
+    if (!ing) return '';
+    if (typeof ing === 'string') return ing;
+    if (typeof ing.text === 'string') return ing.text;
+    if (typeof ing.name === 'string') return ing.name;
+    return '';
+  });
+
+  return parts.join(' ').toLowerCase();
+}
+
+
+// parseAdvancedFilters(raw)
+// - Extrai filtros avançados do texto digitado:
+//   cal<=400 | calorias<=400
+//   prot>=15 | proteina>=15 | proteína>=15
+//   tempo<=20
+// - Retorna: { cleanedText, filters }
+function parseAdvancedFilters(raw) {
+  let text = String(raw || '').trim(); // vamos limpar daqui
+  const filters = { maxCalories: null, minProtein: null, maxTime: null };
+
+  // cal<=N
+  const mCal = text.match(/\b(cal|calorias)\s*<=\s*(\d+)\b/i);
+  if (mCal && mCal[2]) {
+    const n = Number(mCal[2]);
+    if (Number.isFinite(n)) filters.maxCalories = n;
+    text = text.replace(mCal[0], '').trim();
+  }
+
+  // prot>=N
+  const mProt = text.match(/\b(prot|proteina|proteína)\s*>=\s*(\d+)\b/i);
+  if (mProt && mProt[2]) {
+    const n = Number(mProt[2]);
+    if (Number.isFinite(n)) filters.minProtein = n;
+    text = text.replace(mProt[0], '').trim();
+  }
+
+  // tempo<=N
+  const mTime = text.match(/\b(tempo)\s*<=\s*(\d+)\b/i);
+  if (mTime && mTime[2]) {
+    const n = Number(mTime[2]);
+    if (Number.isFinite(n)) filters.maxTime = n;
+    text = text.replace(mTime[0], '').trim();
+  }
+
+  return { cleanedText: text, filters };
+}
+
+
+
+
+// renderRecipes()
+// - Layout antigo (img + meta + stats + botão)
+// - Filtros: categoria + texto + ingredientes + avançados (cal/prot/tempo)
 function renderRecipes() {
   if (!recipeGrid || !Array.isArray(allRecipes) || allRecipes.length === 0) return;
 
-  let filtered = allRecipes;
+  const q = (searchTerm || '').trim().toLowerCase();
+  const cat = (selectedCategory || '').trim();
+  const ingTokens = Array.isArray(searchIngredients) ? searchIngredients : [];
+  const f = advancedFilters || { maxCalories: null, minProtein: null, maxTime: null };
 
-  if (searchTerm) {
-    filtered = allRecipes.filter(recipe => {
-      return (
-        recipe.category === searchTerm ||
-        recipe.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
-  }
+  let filtered = allRecipes.filter(recipe => {
+    // 1) Categoria
+    if (cat) {
+      const recipeCat = String(recipe?.category || '');
+      const catOk =
+        recipeCat === cat ||
+        (cat === 'Almoço/Janta' && (recipeCat === 'Almoço' || recipeCat === 'Jantar'));
+
+      if (!catOk) return false;
+    }
+
+    // 2) Texto (nome)
+    if (q) {
+      const name = String(recipe?.name || '').toLowerCase();
+      if (!name.includes(q)) return false;
+    }
+
+    // 3) Ingredientes
+    if (ingTokens.length > 0) {
+      const hay = getRecipeIngredientsHaystack(recipe);
+      const allMatch = ingTokens.every(t => hay.includes(t));
+      if (!allMatch) return false;
+    }
+
+    // 4) Filtros avançados
+    if (Number.isFinite(f.maxCalories) && Number.isFinite(recipe?.calories)) {
+      if (Number(recipe.calories) > f.maxCalories) return false;
+    }
+    if (Number.isFinite(f.minProtein) && Number.isFinite(recipe?.protein)) {
+      if (Number(recipe.protein) < f.minProtein) return false;
+    }
+    if (Number.isFinite(f.maxTime) && Number.isFinite(recipe?.time)) {
+      if (Number(recipe.time) > f.maxTime) return false;
+    }
+
+    return true;
+  });
 
   const safeCredits = Number.isFinite(credits) ? credits : 0;
   const noCredits = (!isPremium && safeCredits <= 0);
@@ -1773,15 +2059,11 @@ function renderRecipes() {
   recipeGrid.innerHTML = filtered.map(recipe => {
     const id = String(recipe.id);
 
-    // 🔑 regra de acesso
     const isUnlocked =
       isPremium === true ||
       (Array.isArray(unlockedRecipes) && unlockedRecipes.includes(id));
 
-    // 🔒 só mostra cadeado quando NÃO está desbloqueada E não há créditos
     const showLock = (!isUnlocked && noCredits);
-
-    // ⭐ CTA premium só quando não desbloqueada e sem créditos
     const showPremiumCTA = (!isUnlocked && noCredits);
 
     return `
@@ -1798,13 +2080,8 @@ function renderRecipes() {
             onerror="this.onerror=null; this.classList.add('is-loaded'); this.src='https://images.unsplash.com/photo-1490644659350-3f5777c715be?auto=format&fit=crop&w=1200&q=60';"
           />
 
-
-  <!-- ✅ Skeleton visível até a imagem carregar -->
-  <div class="rf-skeleton" aria-hidden="true"></div>
-          
-		  
-		  
-		  <div class="recipe-category">${recipe.category}</div>
+          <div class="rf-skeleton" aria-hidden="true"></div>
+          <div class="recipe-category">${recipe.category}</div>
 
           ${
             showLock
@@ -1870,28 +2147,13 @@ function renderRecipes() {
                   </svg>
                   <span class="btn-label">Ver Receita</span>
                 `
-                : (
-                  showPremiumCTA
-                    ? `
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                      </svg>
-                      <span class="btn-label btn-label-desktop">
-					  
-                      <span class="btn-label">Desbloquear</span>
-                    `
-                    : `
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                      </svg>
-                      <span class="btn-label btn-label-desktop">
-                        Desbloquear 
-                      </span>
-                     
-                    `
-                )
+                : `
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <span class="btn-label">Desbloquear</span>
+                `
             }
           </button>
         </div>
@@ -3133,9 +3395,41 @@ if (premiumCodeInput) {
 
 if (searchInput) {
   searchInput.addEventListener('input', (e) => {
-    searchTerm = e.target.value || '';
-    renderRecipes();
-  });
+  const raw = String(e.target.value || '').trim();
+
+  // 1) Ingredientes: ing: ...
+  const m = raw.match(/^(ing|ingredientes)\s*:\s*(.+)$/i);
+
+  if (m && m[2]) {
+    // separa parte de ingredientes do resto (para poder ter filtros junto)
+    // Ex: "ing: tofu, tomate cal<=400"
+    const afterIng = m[2].trim();
+
+    // quebra por espaço para tentar detectar filtros no final
+    // (mais simples: primeiro parseia filtros do "afterIng" inteiro)
+    const parsed = parseAdvancedFilters(afterIng);
+
+    searchIngredients = parsed.cleanedText
+      .split(',')
+      .map(s => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    advancedFilters = parsed.filters;
+
+    // quando é "ing:", não usamos busca por texto
+    searchTerm = '';
+  } else {
+    // 2) Busca normal: pode conter filtros também
+    const parsed = parseAdvancedFilters(raw);
+
+    searchIngredients = [];
+    advancedFilters = parsed.filters;
+    searchTerm = parsed.cleanedText;
+  }
+
+  renderRecipes();
+});
+
 }
 
 if (calculatorBtn) calculatorBtn.addEventListener('click', window.openCalculator);
@@ -4125,10 +4419,13 @@ window.addEventListener('DOMContentLoaded', function() {
     wrapper.appendChild(table);
   }
 
-  // 1) roda em load
-  document.addEventListener('DOMContentLoaded', function(){
-    wrapPlannerTable();
-  });
+document.addEventListener('DOMContentLoaded', function(){
+  wrapPlannerTable();
+  setupIngredientDropdown();
+});
+
+
+
 
   // 2) roda sempre que abrir o modal (captura cliques nos botões do planner)
   document.addEventListener('click', function(){
@@ -4896,4 +5193,189 @@ function setupRecipeGridClickGuard() {
 }
 
 
+
+
+
+
+
+
+
+// Estado dos filtros
+let activeFilters = {
+    maxTime: 120,
+    minProtein: 0,
+    maxCalories: 1000,
+    dietary: {},
+    objectives: []
+};
+
+// Toggle painel de filtros
+window.toggleFilters = function() {
+    const panel = document.getElementById('filters-panel');
+    if (!panel) return;
+    
+    panel.classList.toggle('hidden');
+    
+    // Renderiza ícones Lucide
+    if (typeof lucide !== 'undefined') {
+        setTimeout(() => lucide.createIcons(), 100);
+    }
+};
+
+// Atualizar valores dos sliders
+window.updateFilterValue = function(type, value) {
+    const displayEl = document.getElementById(`${type}-value`);
+    if (displayEl) {
+        displayEl.textContent = value;
+    }
+    
+    // Atualiza gradiente do slider
+    const slider = document.getElementById(`filter-${type}`);
+    if (slider) {
+        const percent = ((value - slider.min) / (slider.max - slider.min)) * 100;
+        slider.style.background = `linear-gradient(to right, #16a34a 0%, #16a34a ${percent}%, #e5e7eb ${percent}%, #e5e7eb 100%)`;
+    }
+    
+    // Salva no estado
+    if (type === 'time') activeFilters.maxTime = parseInt(value);
+    if (type === 'protein') activeFilters.minProtein = parseInt(value);
+    if (type === 'calories') activeFilters.maxCalories = parseInt(value);
+};
+
+// Limpar filtros
+window.clearFilters = function() {
+    // Reseta sliders
+    document.getElementById('filter-time').value = 120;
+    document.getElementById('filter-protein').value = 0;
+    document.getElementById('filter-calories').value = 1000;
+    
+    updateFilterValue('time', 120);
+    updateFilterValue('protein', 0);
+    updateFilterValue('calories', 1000);
+    
+    // Desmarca checkboxes
+    document.querySelectorAll('.filter-checkbox input[type="checkbox"]').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    // Reseta estado
+    activeFilters = {
+        maxTime: 120,
+        minProtein: 0,
+        maxCalories: 1000,
+        dietary: {},
+        objectives: []
+    };
+    
+    // Aplica (mostra tudo)
+    applyFilters();
+};
+
+// Aplicar filtros
+window.applyFilters = function() {
+    // Coleta valores dos sliders
+    activeFilters.maxTime = parseInt(document.getElementById('filter-time')?.value || 120);
+    activeFilters.minProtein = parseInt(document.getElementById('filter-protein')?.value || 0);
+    activeFilters.maxCalories = parseInt(document.getElementById('filter-calories')?.value || 1000);
+    
+    // Coleta restrições alimentares
+    activeFilters.dietary = {};
+    ['vegan', 'glutenFree', 'dairyFree', 'soyFree', 'nutFree', 'lowCarb'].forEach(diet => {
+        const cb = document.getElementById(`filter-${diet}`);
+        if (cb && cb.checked) {
+            activeFilters.dietary[diet] = true;
+        }
+    });
+    
+    // Coleta objetivos
+    activeFilters.objectives = [];
+    ['ganho-massa', 'emagrecimento', 'energia', 'pos-treino'].forEach(obj => {
+        const cb = document.getElementById(`obj-${obj}`);
+        if (cb && cb.checked) {
+            activeFilters.objectives.push(obj);
+        }
+    });
+    
+    // Busca com filtros
+    const searchTerm = document.getElementById('search-input')?.value || '';
+    const filtered = searchRecipesAdvanced(searchTerm, activeFilters);
+    
+    // Renderiza resultados
+    renderFilteredRecipes(filtered);
+    
+    // Atualiza badge de filtros ativos
+    updateFiltersBadge();
+    
+    // Fecha painel (opcional)
+    // toggleFilters();
+};
+
+// Renderizar receitas filtradas
+function renderFilteredRecipes(recipes) {
+    if (!recipeGrid) return;
+    
+    if (recipes.length === 0) {
+        recipeGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem 1rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                <h3 style="font-size: 1.25rem; color: #374151; margin-bottom: 0.5rem;">
+                    Nenhuma receita encontrada
+                </h3>
+                <p style="color: #6b7280;">
+                    Tente ajustar os filtros ou fazer uma busca diferente
+                </p>
+                <button onclick="clearFilters()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #16a34a; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    Limpar Filtros
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    // Usa a função de render existente, mas com lista filtrada
+    const originalRecipes = window.allRecipes;
+    window.allRecipes = recipes;
+    renderRecipes(); // sua função existente
+    window.allRecipes = originalRecipes;
+}
+
+// Atualizar badge de filtros ativos
+function updateFiltersBadge() {
+    let count = 0;
+    
+    // Conta filtros ativos
+    if (activeFilters.maxTime < 120) count++;
+    if (activeFilters.minProtein > 0) count++;
+    if (activeFilters.maxCalories < 1000) count++;
+    count += Object.keys(activeFilters.dietary).length;
+    count += activeFilters.objectives.length;
+    
+    // Atualiza ou cria badge
+    const toggleBtn = document.querySelector('.filters-toggle');
+    if (!toggleBtn) return;
+    
+    let badge = toggleBtn.querySelector('.filters-active-badge');
+    
+    if (count > 0) {
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'filters-active-badge';
+            toggleBtn.appendChild(badge);
+        }
+        badge.textContent = count;
+    } else if (badge) {
+        badge.remove();
+    }
+}
+
+// Inicializar sliders ao carregar
+window.addEventListener('DOMContentLoaded', function() {
+    // Inicializa gradientes dos sliders
+    ['time', 'protein', 'calories'].forEach(type => {
+        const slider = document.getElementById(`filter-${type}`);
+        if (slider) {
+            updateFilterValue(type, slider.value);
+        }
+    });
+});
 
