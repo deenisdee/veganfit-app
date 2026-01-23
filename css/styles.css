@@ -5144,20 +5144,21 @@ padding-right: 6px;
 }
 
 .rf-ing-chip {
-  border: 1px solid rgba(0,0,0,0.10);
-  background: #fff;
-  border-radius: 10px;
-  padding: 10px 10px;
-  display: grid;
-  place-items: center;
-  gap: 6px;
-  cursor: pointer;
-  user-select: none;
-  
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
 }
 
 .rf-ing-chip:hover {
-  transform: translateY(1px);
+     background: #f0fdf4;
+    border-color: #16a34a;
   
 }
 
@@ -5173,17 +5174,17 @@ padding-right: 6px;
 }
 
 .rf-ing-chip__label {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 600;
   color: rgba(0,0,0,0.72);
   text-align: center;
   line-height: 1.15;
 }
 
 .rf-ing-chip.is-active {
-  border-color: rgba(18, 146, 83, 0.9);
+  border-color: #16a34a;
   
-  background: rgba(18, 146, 83, 0.06);
+  background: #f0fdf4;
   position: relative;
 }
 
@@ -5252,8 +5253,8 @@ padding-right: 6px;
 /* Força os dois botões a terem o MESMO visual */
 .rf-filter-btn{
   width: 100%;
-  height: 46px;
-  border-radius: 10px;
+  height: 55px;
+  border-radius: 50px;
   border: 1px solid rgba(12, 74, 45, 0.16);
 background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   display: inline-flex;
