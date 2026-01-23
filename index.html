@@ -248,6 +248,7 @@
       </label>
 
       <!-- Grid de ingredientes (chips via JS) -->
+	  
       <div class="rf-ingredients__grid" id="rfIngGrid"></div>
     </div>
 
@@ -273,6 +274,78 @@
 
   <!-- Painel de filtros (começa escondido) -->
   <div class="filters-panel hidden" id="filters-panel">
+
+
+<!-- Objetivos -->
+    <div class="filter-group">
+      <label class="filter-label">
+        <i data-lucide="target"></i>
+        Objetivos
+      </label>
+      <div class="filter-checkboxes">
+        <label class="filter-checkbox">
+          <input type="checkbox" id="obj-ganho-massa" value="ganho-massa" onchange="applyFilters()">
+          <span><i data-lucide="dumbbell"></i> Ganho de Massa</span>
+        </label>
+
+        <label class="filter-checkbox">
+          <input type="checkbox" id="obj-emagrecimento" value="emagrecimento" onchange="applyFilters()">
+          <span><i data-lucide="flame"></i> Emagrecimento</span>
+        </label>
+
+        <label class="filter-checkbox">
+          <input type="checkbox" id="obj-energia" value="energia" onchange="applyFilters()">
+          <span><i data-lucide="zap"></i> Energia</span>
+        </label>
+
+        <label class="filter-checkbox">
+          <input type="checkbox" id="obj-pos-treino" value="pos-treino" onchange="applyFilters()">
+          <span><i data-lucide="activity"></i> Pós-Treino</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Restrições alimentares -->
+    <div class="filter-group">
+      <label class="filter-label">
+        <i data-lucide="leaf"></i>
+        Restrições Alimentares
+      </label>
+      <div class="filter-checkboxes">
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filter-vegan" value="vegan" onchange="applyFilters()">
+          <span><i data-lucide="leaf"></i> Vegano</span>
+        </label>
+
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filter-glutenFree" value="glutenFree" onchange="applyFilters()">
+          <span><i data-lucide="wheat-off"></i> Sem Glúten</span>
+        </label>
+
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filter-dairyFree" value="dairyFree" onchange="applyFilters()">
+          <span><i data-lucide="milk-off"></i> Sem Lactose</span>
+        </label>
+
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filter-soyFree" value="soyFree" onchange="applyFilters()">
+          <span><i data-lucide="bean-off"></i> Sem Soja</span>
+        </label>
+
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filter-nutFree" value="nutFree" onchange="applyFilters()">
+          <span><i data-lucide="nut-off"></i> Sem Nozes</span>
+        </label>
+
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filter-lowCarb" value="lowCarb" onchange="applyFilters()">
+          <span><i data-lucide="zap"></i> Low Carb</span>
+        </label>
+      </div>
+    </div>
+
+
+
 
     <!-- Tempo de preparo -->
     <div class="filter-group">
@@ -324,73 +397,9 @@
       >
     </div>
 
-    <!-- Restrições alimentares -->
-    <div class="filter-group">
-      <label class="filter-label">
-        <i data-lucide="leaf"></i>
-        Restrições Alimentares
-      </label>
-      <div class="filter-checkboxes">
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-vegan" value="vegan" onchange="applyFilters()">
-          <span><i data-lucide="leaf"></i> Vegano</span>
-        </label>
 
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-glutenFree" value="glutenFree" onchange="applyFilters()">
-          <span><i data-lucide="wheat-off"></i> Sem Glúten</span>
-        </label>
-
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-dairyFree" value="dairyFree" onchange="applyFilters()">
-          <span><i data-lucide="milk-off"></i> Sem Lactose</span>
-        </label>
-
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-soyFree" value="soyFree" onchange="applyFilters()">
-          <span><i data-lucide="bean-off"></i> Sem Soja</span>
-        </label>
-
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-nutFree" value="nutFree" onchange="applyFilters()">
-          <span><i data-lucide="nut-off"></i> Sem Nozes</span>
-        </label>
-
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-lowCarb" value="lowCarb" onchange="applyFilters()">
-          <span><i data-lucide="zap"></i> Low Carb</span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Objetivos -->
-    <div class="filter-group">
-      <label class="filter-label">
-        <i data-lucide="target"></i>
-        Objetivos
-      </label>
-      <div class="filter-checkboxes">
-        <label class="filter-checkbox">
-          <input type="checkbox" id="obj-ganho-massa" value="ganho-massa" onchange="applyFilters()">
-          <span><i data-lucide="dumbbell"></i> Ganho de Massa</span>
-        </label>
-
-        <label class="filter-checkbox">
-          <input type="checkbox" id="obj-emagrecimento" value="emagrecimento" onchange="applyFilters()">
-          <span><i data-lucide="flame"></i> Emagrecimento</span>
-        </label>
-
-        <label class="filter-checkbox">
-          <input type="checkbox" id="obj-energia" value="energia" onchange="applyFilters()">
-          <span><i data-lucide="zap"></i> Energia</span>
-        </label>
-
-        <label class="filter-checkbox">
-          <input type="checkbox" id="obj-pos-treino" value="pos-treino" onchange="applyFilters()">
-          <span><i data-lucide="activity"></i> Pós-Treino</span>
-        </label>
-      </div>
-    </div>
+ 
+   
 
     <!-- Botões de ação -->
     <div class="filter-actions">
