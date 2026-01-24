@@ -2002,278 +2002,165 @@ function parseAdvancedFilters(raw) {
 }
 
 
-// ============================================
-// ADVANCED FILTERS — integração com a busca principal
-// - Cria estado único dos filtros avançados
-// - Implementa toggle/update/apply/clear usados no HTML (onclick/oninput)
-// - “Envelopa” renderRecipes() sem reescrever a função por dentro
-// ============================================
 
-// getAdvancedFiltersState()
-// - Estado único dos filtros avançados (fonte da verdade)
-function getAdvancedFiltersState() {
-  window.RF = window.RF || {};
-  RF.filters = RF.filters || {};
 
-  if (!RF.filters.advanced) {
-    RF.filters.advanced = {
-      maxTime: 60,
-      minProtein: 0,
-      maxCalories: 1000,
-      restrictions: {
-        vegan: false,
-        glutenFree: false,
-        dairyFree: false,
-        soyFree: false,
-        nutFree: false,
-        lowCarb: false
-      },
-      goals: {
-        ganhoMassa: false,
-        emagrecimento: false,
-        energia: false,
-        posTreino: false
-      },
-      enabled: false // só vira true quando clicar em "Aplicar"
-    };
-  }
+// renderRecipes()
+// - Layout antigo (img + meta + stats + botão)
+// - Filtros: categoria + texto + ingredientes + avançados (cal/prot/tempo)
+function renderRecipes() {
+  if (!recipeGrid || !Array.isArray(allRecipes) || allRecipes.length === 0) return;
 
-  return RF.filters.advanced;
-}
+  const q = (searchTerm || '').trim().toLowerCase();
+  const cat = (selectedCategory || '').trim();
+  const ingTokens = Array.isArray(searchIngredients) ? searchIngredients : [];
+  const f = advancedFilters || { maxCalories: null, minProtein: null, maxTime: null };
 
-// toggleFilters()
-// - Abre/fecha painel de filtros avançados (mantém seu HTML atual)
-function toggleFilters() {
-  const panel = document.getElementById('filters-panel');
-  if (!panel) return;
+  let filtered = allRecipes.filter(recipe => {
+    // 1) Categoria
+    if (cat) {
+      const recipeCat = String(recipe?.category || '');
+      const catOk =
+        recipeCat === cat ||
+        (cat === 'Almoço/Janta' && (recipeCat === 'Almoço' || recipeCat === 'Jantar'));
 
-  panel.classList.toggle('hidden');
-
-  // Recria ícones se necessário
-  try {
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      window.lucide.createIcons();
-    }
-  } catch (_) {}
-}
-
-// updateFilterValue(kind, value)
-// - Atualiza os labels dos sliders (Tempo/Proteína/Calorias)
-// - NÃO aplica automaticamente (aplica só no botão "Aplicar")
-function updateFilterValue(kind, value) {
-  const st = getAdvancedFiltersState();
-
-  if (kind === 'time') {
-    st.maxTime = Number(value) || 0;
-    const el = document.getElementById('time-value');
-    if (el) el.textContent = String(st.maxTime);
-  }
-
-  if (kind === 'protein') {
-    st.minProtein = Number(value) || 0;
-    const el = document.getElementById('protein-value');
-    if (el) el.textContent = String(st.minProtein);
-  }
-
-  if (kind === 'calories') {
-    st.maxCalories = Number(value) || 0;
-    const el = document.getElementById('calories-value');
-    if (el) el.textContent = String(st.maxCalories);
-  }
-}
-
-// applyFilters()
-// - Lê checkboxes (restrições/objetivos)
-// - Ativa filtros avançados e re-renderiza a home
-function applyFilters() {
-  const st = getAdvancedFiltersState();
-
-  // Restrições
-  st.restrictions.vegan = !!document.getElementById('filter-vegan')?.checked;
-  st.restrictions.glutenFree = !!document.getElementById('filter-glutenFree')?.checked;
-  st.restrictions.dairyFree = !!document.getElementById('filter-dairyFree')?.checked;
-  st.restrictions.soyFree = !!document.getElementById('filter-soyFree')?.checked;
-  st.restrictions.nutFree = !!document.getElementById('filter-nutFree')?.checked;
-  st.restrictions.lowCarb = !!document.getElementById('filter-lowCarb')?.checked;
-
-  // Objetivos
-  st.goals.ganhoMassa = !!document.getElementById('obj-ganho-massa')?.checked;
-  st.goals.emagrecimento = !!document.getElementById('obj-emagrecimento')?.checked;
-  st.goals.energia = !!document.getElementById('obj-energia')?.checked;
-  st.goals.posTreino = !!document.getElementById('obj-pos-treino')?.checked;
-
-  // “ligou” os filtros avançados
-  st.enabled = true;
-
-  // Re-renderiza usando o wrapper (abaixo)
-  try {
-    if (typeof renderRecipes === 'function') renderRecipes();
-  } catch (_) {}
-}
-
-// clearFilters()
-// - Reseta sliders/checkboxes + desativa filtros avançados
-function clearFilters() {
-  const st = getAdvancedFiltersState();
-
-  // sliders (UI)
-  const time = document.getElementById('filter-time');
-  const protein = document.getElementById('filter-protein');
-  const calories = document.getElementById('filter-calories');
-
-  if (time) time.value = '60';
-  if (protein) protein.value = '0';
-  if (calories) calories.value = '1000';
-
-  updateFilterValue('time', 60);
-  updateFilterValue('protein', 0);
-  updateFilterValue('calories', 1000);
-
-  // checkboxes (UI)
-  [
-    'filter-vegan',
-    'filter-glutenFree',
-    'filter-dairyFree',
-    'filter-soyFree',
-    'filter-nutFree',
-    'filter-lowCarb',
-    'obj-ganho-massa',
-    'obj-emagrecimento',
-    'obj-energia',
-    'obj-pos-treino'
-  ].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.checked = false;
-  });
-
-  // estado
-  st.enabled = false;
-  st.restrictions.vegan = false;
-  st.restrictions.glutenFree = false;
-  st.restrictions.dairyFree = false;
-  st.restrictions.soyFree = false;
-  st.restrictions.nutFree = false;
-  st.restrictions.lowCarb = false;
-
-  st.goals.ganhoMassa = false;
-  st.goals.emagrecimento = false;
-  st.goals.energia = false;
-  st.goals.posTreino = false;
-
-  // Re-renderiza “limpo”
-  try {
-    if (typeof renderRecipes === 'function') renderRecipes();
-  } catch (_) {}
-}
-
-// _rfRecipeHasTagLike(recipe, needle)
-// - Helper: procura “needle” em tags/benefits/macros/category
-function _rfRecipeHasTagLike(recipe, needle) {
-  const n = String(needle || '').toLowerCase().trim();
-  if (!n) return false;
-
-  const parts = [];
-
-  if (recipe.category) parts.push(String(recipe.category));
-  if (Array.isArray(recipe.tags)) parts.push(recipe.tags.join(' '));
-  if (Array.isArray(recipe.benefits)) parts.push(recipe.benefits.join(' '));
-
-  if (recipe.macros && typeof recipe.macros === 'object') {
-    try {
-      parts.push(Object.values(recipe.macros).join(' '));
-    } catch (_) {}
-  }
-
-  const hay = parts.join(' ').toLowerCase();
-  return hay.includes(n);
-}
-
-// _rfApplyAdvancedFilters(list)
-// - Aplica os filtros avançados sobre uma lista de receitas
-function _rfApplyAdvancedFilters(list) {
-  const st = getAdvancedFiltersState();
-  if (!st.enabled) return list;
-
-  return (list || []).filter(recipe => {
-    // sliders
-    const timeOk = (typeof recipe.time === 'number') ? recipe.time <= st.maxTime : true;
-    const proteinOk = (typeof recipe.protein === 'number') ? recipe.protein >= st.minProtein : true;
-    const caloriesOk = (typeof recipe.calories === 'number') ? recipe.calories <= st.maxCalories : true;
-
-    if (!timeOk || !proteinOk || !caloriesOk) return false;
-
-    // restrições (heurística por allergens/tags)
-    const allergens = Array.isArray(recipe.allergens) ? recipe.allergens.map(a => String(a).toLowerCase()) : [];
-    const hasAllergen = (kw) => allergens.some(a => a.includes(String(kw).toLowerCase()));
-
-    if (st.restrictions.glutenFree && (hasAllergen('glúten') || hasAllergen('gluten') || _rfRecipeHasTagLike(recipe, 'trigo'))) return false;
-    if (st.restrictions.dairyFree && (hasAllergen('leite') || hasAllergen('lact') || _rfRecipeHasTagLike(recipe, 'latic'))) return false;
-    if (st.restrictions.soyFree && (hasAllergen('soja') || _rfRecipeHasTagLike(recipe, 'soja'))) return false;
-    if (st.restrictions.nutFree && (hasAllergen('castanh') || hasAllergen('noz') || hasAllergen('amendoim') || _rfRecipeHasTagLike(recipe, 'oleagin'))) return false;
-
-    // vegan (no seu novo nicho tende a ser sempre true, mas deixei compat)
-    if (st.restrictions.vegan && !_rfRecipeHasTagLike(recipe, 'veg')) return false;
-
-    // low carb (usa carbs se existir; senão tenta tags)
-    if (st.restrictions.lowCarb) {
-      if (typeof recipe.carbs === 'number') {
-        if (recipe.carbs > 25) return false;
-      } else {
-        if (!_rfRecipeHasTagLike(recipe, 'low carb')) return false;
-      }
+      if (!catOk) return false;
     }
 
-    // objetivos (tags/macros/benefits)
-    const goalsSelected =
-      st.goals.ganhoMassa || st.goals.emagrecimento || st.goals.energia || st.goals.posTreino;
+    // 2) Texto (nome)
+    if (q) {
+      const name = String(recipe?.name || '').toLowerCase();
+      if (!name.includes(q)) return false;
+    }
 
-    if (goalsSelected) {
-      const match =
-        (st.goals.ganhoMassa && (_rfRecipeHasTagLike(recipe, 'hipertrof') || _rfRecipeHasTagLike(recipe, 'ganho') || _rfRecipeHasTagLike(recipe, 'massa'))) ||
-        (st.goals.emagrecimento && (_rfRecipeHasTagLike(recipe, 'emagrec') || _rfRecipeHasTagLike(recipe, 'deficit') || _rfRecipeHasTagLike(recipe, 'cut'))) ||
-        (st.goals.energia && (_rfRecipeHasTagLike(recipe, 'energia') || _rfRecipeHasTagLike(recipe, 'pré-treino') || _rfRecipeHasTagLike(recipe, 'pre-treino'))) ||
-        (st.goals.posTreino && (_rfRecipeHasTagLike(recipe, 'pós-treino') || _rfRecipeHasTagLike(recipe, 'pos-treino')));
+    // 3) Ingredientes
+    if (ingTokens.length > 0) {
+      const hay = getRecipeIngredientsHaystack(recipe);
+      const allMatch = ingTokens.every(t => hay.includes(t));
+      if (!allMatch) return false;
+    }
 
-      if (!match) return false;
+    // 4) Filtros avançados
+    if (Number.isFinite(f.maxCalories) && Number.isFinite(recipe?.calories)) {
+      if (Number(recipe.calories) > f.maxCalories) return false;
+    }
+    if (Number.isFinite(f.minProtein) && Number.isFinite(recipe?.protein)) {
+      if (Number(recipe.protein) < f.minProtein) return false;
+    }
+    if (Number.isFinite(f.maxTime) && Number.isFinite(recipe?.time)) {
+      if (Number(recipe.time) > f.maxTime) return false;
     }
 
     return true;
   });
+
+  const safeCredits = Number.isFinite(credits) ? credits : 0;
+  const noCredits = (!isPremium && safeCredits <= 0);
+
+  recipeGrid.innerHTML = filtered.map(recipe => {
+    const id = String(recipe.id);
+
+    const isUnlocked =
+      isPremium === true ||
+      (Array.isArray(unlockedRecipes) && unlockedRecipes.includes(id));
+
+    const showLock = (!isUnlocked && noCredits);
+    const showPremiumCTA = (!isUnlocked && noCredits);
+
+    return `
+      <div class="recipe-card" data-recipe-id="${id}">
+        <div class="recipe-image-container">
+
+          <img
+            src="${recipe.image}"
+            alt="${recipe.name}"
+            class="recipe-image"
+            loading="lazy"
+            decoding="async"
+            onload="this.classList.add('is-loaded')"
+            onerror="this.onerror=null; this.classList.add('is-loaded'); this.src='https://images.unsplash.com/photo-1490644659350-3f5777c715be?auto=format&fit=crop&w=1200&q=60';"
+          />
+
+          <div class="rf-skeleton" aria-hidden="true"></div>
+          <div class="recipe-category">${recipe.category}</div>
+
+          ${
+            showLock
+              ? `
+                <div class="recipe-overlay">
+                  <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+              `
+              : ''
+          }
+        </div>
+
+        <div class="recipe-content">
+          <h3 class="recipe-title">${recipe.name}</h3>
+
+          <div class="recipe-meta">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>${recipe.time}min</span>
+
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+            <span>${recipe.servings}</span>
+
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <span>${recipe.difficulty}</span>
+          </div>
+
+          <div class="recipe-stats">
+            <div class="stat">
+              <div class="stat-value calories">${recipe.calories}</div>
+              <div class="stat-label">calorias</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value protein">${recipe.protein}g</div>
+              <div class="stat-label">proteína</div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="recipe-button ${
+              isUnlocked
+                ? 'unlocked'
+                : (showPremiumCTA ? 'premium-cta' : 'locked')
+            }"
+          >
+            ${
+              isUnlocked
+                ? `
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+                  </svg>
+                  <span class="btn-label">Ver Receita</span>
+                `
+                : `
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                  <span class="btn-label">Desbloquear</span>
+                `
+            }
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
-
-// renderRecipes() WRAPPER
-// - Guarda a versão original e aplica filtros avançados “por fora”
-(function _rfWrapRenderRecipesOnce() {
-  if (window.__rfRenderWrapped) return;
-
-  if (typeof renderRecipes !== 'function') return;
-
-  window.__rfRenderWrapped = true;
-  window.__rfRenderRecipesBase = renderRecipes;
-
-  renderRecipes = function () {
-    try {
-      // fonte única que você já usa
-      const baseList = Array.isArray(ALL_RECIPES) && ALL_RECIPES.length ? ALL_RECIPES : (Array.isArray(allRecipes) ? allRecipes : []);
-
-      // aplica filtros avançados “por fora”
-      const filtered = _rfApplyAdvancedFilters(baseList);
-
-      // troca temporária (base render lê allRecipes)
-      const prev = allRecipes;
-      allRecipes = filtered;
-
-      // chama render original
-      window.__rfRenderRecipesBase();
-
-      // restaura
-      allRecipes = prev;
-    } catch (e) {
-      try { window.__rfRenderRecipesBase(); } catch (_) {}
-      console.warn('[RF] renderRecipes wrapper error:', e?.message || e);
-    }
-  };
-})();
 
 
 
