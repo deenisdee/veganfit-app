@@ -590,7 +590,7 @@ body.modal-open{ overflow:hidden; height:100vh; }
    CALCULADORA / FORMS
    ============================================ */
 .calculator-form{ display:flex; flex-direction:column; gap:0rem; }
-.form-row{ display:grid; grid-template-columns:repeat(2, 1fr); gap:0rem; }
+.form-row{ display:grid; grid-template-columns:repeat(2, 1fr); gap:.7rem; }
 .form-group{ display:flex; flex-direction:column; }
 .form-group label{
   font-size:.875rem;
@@ -5087,7 +5087,7 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 .rf-ingredients__title {
-  font-weight: 700;
+  font-weight: 500;
   color: #0a2f1f;
   font-size: 16px;
   line-height: 1.1;
@@ -5144,13 +5144,14 @@ padding-right: 6px;
 }
 
 .rf-ing-chip {
+	
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 0.6rem 0.8rem;
     background: #f9fafb;
     border: 2px solid #e5e7eb;
-    border-radius: 8px;
+    border-radius:50px;
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 0.875rem;
@@ -5175,9 +5176,9 @@ padding-right: 6px;
 
 .rf-ing-chip__label {
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 500;
   color: rgba(0,0,0,0.72);
-  text-align: center;
+  text-align: left;
   line-height: 1.15;
 }
 
@@ -5252,8 +5253,9 @@ padding-right: 6px;
 
 /* Força os dois botões a terem o MESMO visual */
 .rf-filter-btn{
+	font-family: inherit;
   width: 100%;
-  height: 55px;
+  height: 50px;
   border-radius: 50px;
   border: 1px solid rgba(12, 74, 45, 0.16);
 background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
@@ -5261,7 +5263,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-weight: 800;
+  font-weight: 500;
   color: #fff;
   box-shadow: 0 10px 26px rgba(0,0,0,0.06);
   transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
@@ -5284,4 +5286,292 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 .rf-filter-btn.is-active{
   border-color: rgba(18, 146, 83, 0.55);
   box-shadow: 0 16px 34px rgba(18, 146, 83, 0.18);
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ===== TAG CHIPS (Lucide, minimal) ===== */
+.rf-tags-group { position: relative; }
+
+.rf-tags-grid{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: .5rem;
+}
+
+.rf-tag-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .45rem .7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(17,24,39,.12);
+  background: rgba(255,255,255,.6);
+  cursor: pointer;
+  user-select: none;
+  transition: transform .08s ease, background .12s ease, border-color .12s ease;
+}
+
+.rf-tag-chip i,
+.rf-tag-chip svg{
+  width: 16px;
+  height: 16px;
+  opacity: .85;
+}
+
+.rf-tag-chip span{
+  font-size: .9rem;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.rf-tag-chip:hover{ transform: translateY(-1px); }
+
+.rf-tag-chip.is-active{
+  border-color: rgba(22,163,74,.55);
+  background: rgba(22,163,74,.10);
+}
+
+/* ===== overlay premium (não quebra layout) ===== */
+.rf-premium-overlay{
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  background: rgba(255,255,255,.80);
+  backdrop-filter: blur(6px);
+  display: none; /* controlado via JS */
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.rf-premium-overlay__box{
+  width: 100%;
+  max-width: 360px;
+  border-radius: 16px;
+  padding: 1rem;
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(17,24,39,.10);
+  box-shadow: 0 18px 50px rgba(0,0,0,.12);
+}
+
+.rf-premium-overlay__title{
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: .4rem;
+}
+
+.rf-premium-overlay__text{
+  margin: 0 0 .9rem 0;
+  color: rgba(17,24,39,.72);
+  font-size: .95rem;
+  line-height: 1.35;
+}
+
+.rf-premium-overlay__btn{
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: .75rem 1rem;
+  background: #16a34a;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+/* ===== chips (mesmo formato) ===== */
+.rf-chips{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: .5rem;
+}
+
+.rf-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .45rem .75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(17,24,39,.12);
+  background: rgba(255,255,255,.75);
+  cursor: pointer;
+  user-select: none;
+  transition: transform .08s ease, background .12s ease, border-color .12s ease;
+}
+
+.rf-chip i, .rf-chip svg{
+  width: 16px;
+  height: 16px;
+  opacity: .85;
+}
+
+.rf-chip span{
+  font-size: .92rem;
+  color: #111827;
+  white-space: nowrap;
+}
+
+.rf-chip:hover{ transform: translateY(-1px); }
+
+.rf-chip.is-active{
+  border-color: rgba(22,163,74,.55);
+  background: rgba(22,163,74,.10);
+}
+
+/* ===== sliders 3 em linha, quebra no mobile ===== */
+.rf-sliders-row{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: .75rem;
+}
+
+@media (max-width: 900px){
+  .rf-sliders-row{ grid-template-columns: 1fr; }
+}
+
+.rf-slider-card{
+  padding: .85rem;
+  border-radius: 14px;
+  border: 1px solid rgba(17,24,39,.10);
+  background: rgba(255,255,255,.65);
+}
+
+.rf-slider-head{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .6rem;
+  color: rgba(17,24,39,.85);
+  font-size: .95rem;
+}
+
+.rf-slider-card input[type="range"]{
+  width: 100%;
+}
+
+
+/* Ingredientes: não esticar chip por texto grande */
+.rf-ing-chip__label{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px; /* ajuste se quiser: 140/180 */
+}
+
+.rf-ing-chip{
+  max-width: 210px; /* evita chip gigante */
+}
+
+.rf-ing-chip__label{
+  flex: 1;
+  min-width: 0; /* necessário p/ ellipsis funcionar com flex */
+}
+
+
+/* Grid de ingredientes (desktop) */
+.rf-ingredients__grid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* Mobile: 2 colunas */
+@media (max-width: 768px){
+  .rf-ingredients__grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* Ingredientes: usa o mesmo visual das tags (rf-chip) */
+.rf-ingredients__grid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 768px){
+  .rf-ingredients__grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Chip de ingrediente: herda rf-chip e só ajusta truncamento */
+.rf-ing-chip{
+  width: 100%;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+/* Truncar texto (1 linha) */
+.rf-ing-chip__label{
+  display: block;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ícone sem “bolinha” */
+.rf-ing-chip i{
+  flex: 0 0 auto;
+}
+
+
+/* Remove o "check/bullet" verde dentro do chip de ingrediente ativo */
+.rf-ing-chip.is-active::after,
+.rf-ing-chip.is-active::before{
+  content: none !important;
+  display: none !important;
+}
+
+/* Se o check estiver vindo como background-image */
+.rf-ing-chip.is-active{
+  background-image: none !important;
+}
+
+
+.rf-empty-state{
+  padding: 22px;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 16px;
+  background: #fff;
+    width: 95% !important;
+  box-sizing: border-box;
+  text-align: center;
+    display: block;
+  margin: 0 auto;
+    grid-column: 1 / -1;
+}
+
+
+
+/* Desktop (web): 5 colunas fixas */
+.rf-ingredients__grid{
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* Mobile: 2 colunas */
+@media (max-width: 768px){
+  .rf-ingredients__grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
