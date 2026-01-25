@@ -174,33 +174,24 @@ window.addEventListener('DOMContentLoaded', function() {
 
  */
 
-
 // setupIngredientDropdown()
 // - Inicializa o dropdown "Buscar por ingredientes"
-// - NÃO depende do id do input (procura automaticamente)
-// - "Aplicar" escreve no input: ing: a, b, c e dispara input event
+// - NÃO depende do botão Aplicar
+// - Clicou no ingrediente => aplica automaticamente (sem precisar aplicar)
+// - Limpar continua funcionando
 function setupIngredientDropdown() {
   const toggle = document.getElementById('rfIngToggle');
   const panel = document.getElementById('rfIngPanel');
   const grid = document.getElementById('rfIngGrid');
   const btnClear = document.getElementById('rfIngClear');
-  const btnApply = document.getElementById('rfIngApply');
 
-  // ✅ Guard: só depende do dropdown existir
-  if (!toggle || !panel || !grid || !btnClear || !btnApply) return;
+  if (!toggle || !panel || !grid || !btnClear) return;
 
-  // Procura o input de busca de forma tolerante
+  // ✅ Usa o id REAL do seu HTML: search-input
   function getSearchInput() {
-    return (
-      document.getElementById('searchInput') ||
-      document.querySelector('input[placeholder*="Buscar"]') ||
-      document.querySelector('input[type="search"]') ||
-      document.querySelector('header input') ||
-      null
-    );
+    return document.getElementById('search-input');
   }
 
-  // Estado local
   let selected = new Set();
 
   function collectIngredientsFromRecipes() {
@@ -236,52 +227,95 @@ function setupIngredientDropdown() {
   }
 
   function renderChips(items) {
-    grid.innerHTML = items.map((label) => {
-      const safe = label.replace(/"/g, '&quot;');
-      const active = selected.has(label) ? 'is-active' : '';
-      const icon = '🥬';
+  // =========================
+  // ÍCONES POR INGREDIENTE (Lucide)
+  // =========================
+  function pickIcon(label) {
+    const t = String(label || '').toLowerCase();
 
-      return `
-        <div class="rf-ing-chip ${active}" role="button" tabindex="0" data-ing="${safe}">
-          <div class="rf-ing-chip__icon">${icon}</div>
-          <div class="rf-ing-chip__label">${label}</div>
-        </div>
-      `;
-    }).join('');
+    // frutas
+    if (t.includes('banana')) return 'banana';
+    if (t.includes('maca') || t.includes('maçã')) return 'apple';
+    if (t.includes('limao') || t.includes('limão') || t.includes('laranja')) return 'citrus';
+    if (t.includes('morango')) return 'cherry';
+    if (t.includes('uva')) return 'grape';
+    if (t.includes('abacate')) return 'avocado';
+    if (t.includes('abacaxi')) return 'sparkles'; // se não tiver ícone específico, cai no padrão
+
+    // legumes / verduras
+    if (t.includes('cenoura')) return 'carrot';
+    if (t.includes('tomate')) return 'tomato';
+    if (t.includes('cebola')) return 'onion';
+    if (t.includes('alho')) return 'garlic';
+    if (t.includes('abobora') || t.includes('abóbora')) return 'pumpkin';
+    if (t.includes('cogumelo') || t.includes('champignon')) return 'mushroom';
+    if (t.includes('espinafre') || t.includes('alface') || t.includes('couve') || t.includes('brocolis') || t.includes('brócolis')) return 'leaf';
+
+    // grãos / cereais
+    if (t.includes('arroz') || t.includes('aveia') || t.includes('farinha')) return 'wheat';
+
+    // proteínas vegetais
+    if (t.includes('tofu')) return 'cube';
+    if (t.includes('grao de bico') || t.includes('grão de bico') || t.includes('feijao') || t.includes('feijão') || t.includes('lentilha')) return 'bean';
+
+    // líquidos / temperos
+    if (t.includes('agua') || t.includes('água')) return 'droplets';
+    if (t.includes('leite')) return 'milk';
+    if (t.includes('azeite') || t.includes('oleo') || t.includes('óleo')) return 'droplet';
+
+    // ✅ padrão igual ao botão Ingredientes (sparkles)
+    return 'sparkles';
   }
+
+  grid.innerHTML = items.map((label) => {
+    const safe = label.replace(/"/g, '&quot;');
+    const active = selected.has(label) ? 'is-active' : '';
+    const icon = pickIcon(label);
+
+    return `
+      <button
+        type="button"
+        class="rf-chip tap rf-ing-chip ${active}"
+        data-ing="${safe}"
+        aria-pressed="${selected.has(label) ? 'true' : 'false'}"
+      >
+        <i data-lucide="${icon}"></i>
+        <span class="rf-ing-chip__label">${label}</span>
+      </button>
+    `;
+  }).join('');
+
+  try {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
+  } catch (_) {}
+}
+
+
 
   function toggleChip(label) {
     if (selected.has(label)) selected.delete(label);
     else selected.add(label);
   }
 
-
-
-
-function setOpen(isOpen) {
-  toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-
-  // compatível com o padrão do seu projeto (.hidden)
-  if (isOpen) {
-    panel.classList.remove('hidden');
-  } else {
-    panel.classList.add('hidden');
+  function setOpen(isOpen) {
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    if (isOpen) panel.classList.remove('hidden');
+    else panel.classList.add('hidden');
   }
-}
 
-
-
-  function applySelection() {
+  function applySelectionAuto() {
     const input = getSearchInput();
     const list = Array.from(selected);
 
-    if (input) {
-      if (list.length === 0) input.value = '';
-      else input.value = `ing: ${list.join(', ')}`;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-    }
+    if (!input) return;
 
-    setOpen(false);
+    if (list.length === 0) input.value = '';
+    else input.value = `ing: ${list.join(', ')}`;
+
+    // ✅ Isso dispara o motor oficial do input
+    input.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
   function clearSelection() {
@@ -300,30 +334,28 @@ function setOpen(isOpen) {
   renderChips(ingredientsList);
   setOpen(false);
 
+  panel.addEventListener('click', (e) => e.stopPropagation());
+  grid.addEventListener('click', (e) => e.stopPropagation());
+  toggle.addEventListener('click', (e) => e.stopPropagation());
 
-
-// ✅ Impede que cliques dentro do dropdown disparem handlers globais que fecham o painel
-panel.addEventListener('click', (e) => e.stopPropagation());
-grid.addEventListener('click', (e) => e.stopPropagation());
-toggle.addEventListener('click', (e) => e.stopPropagation());
-
-
-
-  // ✅ Toggle
   toggle.addEventListener('click', () => {
     const open = toggle.getAttribute('aria-expanded') === 'true';
+
+    if (!open && typeof window.closeAdvancedFiltersPanel === 'function') {
+      window.closeAdvancedFiltersPanel();
+    }
+
     setOpen(!open);
   });
 
-  // Click fora fecha
   document.addEventListener('click', (e) => {
     const open = toggle.getAttribute('aria-expanded') === 'true';
     if (!open) return;
-    const inside = e.target.closest('.rf-ingredients');
+
+    const inside = e.target.closest('.rf-filter-row, #ingredients-filters, .rf-ingredients, #rfIngPanel');
     if (!inside) setOpen(false);
   });
 
-  // Chips click/keyboard
   grid.addEventListener('click', (e) => {
     const el = e.target.closest('.rf-ing-chip');
     if (!el) return;
@@ -335,6 +367,8 @@ toggle.addEventListener('click', (e) => e.stopPropagation());
 
     toggleChip(exact);
     renderChips(ingredientsList);
+
+    applySelectionAuto();
   });
 
   grid.addEventListener('keydown', (e) => {
@@ -345,13 +379,12 @@ toggle.addEventListener('click', (e) => e.stopPropagation());
     el.click();
   });
 
-  btnApply.addEventListener('click', applySelection);
-  btnClear.addEventListener('click', clearSelection);
+  btnClear.addEventListener('click', function () {
+  clearSelection();
+  setOpen(false); // ✅ fecha o box após limpar
+});
+
 }
-
-// PRÓXIMA LINHA NO SEU ARQUIVO (não mexer abaixo)
-
-
 
 
 
@@ -1529,6 +1562,10 @@ function initCategoriesDrag() {
 // - Seleciona a categoria (estado separado)
 // - NÃO mexe no searchTerm (texto da busca)
 window.filterByCategory = function(category, element) {
+  // ✅ Fecha qualquer box aberto ao trocar categoria
+  if (typeof window.closeIngredientPanel === 'function') window.closeIngredientPanel();
+  if (typeof window.closeAdvancedFiltersPanel === 'function') window.closeAdvancedFiltersPanel();
+
   document.querySelectorAll('.category-card-new').forEach(card => card.classList.remove('active'));
   if (element) element.classList.add('active');
 
@@ -2002,14 +2039,62 @@ function parseAdvancedFilters(raw) {
 }
 
 
-
-
-// renderRecipes()
-// - Layout antigo (img + meta + stats + botão)
-// - Filtros: categoria + texto + ingredientes + avançados (cal/prot/tempo)
 function renderRecipes() {
   if (!recipeGrid || !Array.isArray(allRecipes) || allRecipes.length === 0) return;
 
+  // ===== helpers locais (não cria regra nova) =====
+  function rfNorm(v) {
+    return String(v || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  }
+
+  // lê chips ativos do DOM (auto-apply)
+  const selTags = Array.from(document.querySelectorAll('#rfTagsGrid .rf-chip.is-active'))
+    .map(el => rfNorm(el.getAttribute('data-tag')))
+    .filter(Boolean);
+
+  const selObjectives = Array.from(document.querySelectorAll('#rfObjChips .rf-chip.is-active'))
+    .map(el => rfNorm(el.getAttribute('data-value')))
+    .filter(Boolean);
+
+  const selDietary = Array.from(document.querySelectorAll('#rfDietChips .rf-chip.is-active'))
+    .map(el => rfNorm(el.getAttribute('data-value')))
+    .filter(Boolean);
+
+  function recipeTagSet(recipe) {
+    const set = new Set();
+
+    // recipe.tags
+    if (Array.isArray(recipe?.tags)) {
+      recipe.tags.forEach(t => {
+        const k = rfNorm(t);
+        if (k) set.add(k);
+      });
+    }
+
+    // searchMeta.objectives
+    if (Array.isArray(recipe?.searchMeta?.objectives)) {
+      recipe.searchMeta.objectives.forEach(t => {
+        const k = rfNorm(t);
+        if (k) set.add(k);
+      });
+    }
+
+    // searchMeta.dietary booleans
+    const d = recipe?.searchMeta?.dietary;
+    if (d && typeof d === 'object') {
+      Object.keys(d).forEach(key => {
+        if (d[key] === true) set.add(rfNorm(key));
+      });
+      if (d.vegan === true) set.add('vegano');
+    }
+
+    return set;
+  }
+
+  // ===== estado atual do motor =====
   const q = (searchTerm || '').trim().toLowerCase();
   const cat = (selectedCategory || '').trim();
   const ingTokens = Array.isArray(searchIngredients) ? searchIngredients : [];
@@ -2022,7 +2107,6 @@ function renderRecipes() {
       const catOk =
         recipeCat === cat ||
         (cat === 'Almoço/Janta' && (recipeCat === 'Almoço' || recipeCat === 'Jantar'));
-
       if (!catOk) return false;
     }
 
@@ -2032,14 +2116,42 @@ function renderRecipes() {
       if (!name.includes(q)) return false;
     }
 
-    // 3) Ingredientes
+    // 3) Ingredientes (AND)
     if (ingTokens.length > 0) {
       const hay = getRecipeIngredientsHaystack(recipe);
       const allMatch = ingTokens.every(t => hay.includes(t));
       if (!allMatch) return false;
     }
 
-    // 4) Filtros avançados
+    // 4) Chips: Tags / Objetivos / Restrições
+    if (selTags.length || selObjectives.length || selDietary.length) {
+      const set = recipeTagSet(recipe);
+
+      // Tags: AND
+      if (selTags.length > 0) {
+        for (let i = 0; i < selTags.length; i++) {
+          if (!set.has(selTags[i])) return false;
+        }
+      }
+
+      // Restrições: AND
+      if (selDietary.length > 0) {
+        for (let i = 0; i < selDietary.length; i++) {
+          if (!set.has(selDietary[i])) return false;
+        }
+      }
+
+      // Objetivos: OR
+      if (selObjectives.length > 0) {
+        let ok = false;
+        for (let i = 0; i < selObjectives.length; i++) {
+          if (set.has(selObjectives[i])) { ok = true; break; }
+        }
+        if (!ok) return false;
+      }
+    }
+
+    // 5) Sliders
     if (Number.isFinite(f.maxCalories) && Number.isFinite(recipe?.calories)) {
       if (Number(recipe.calories) > f.maxCalories) return false;
     }
@@ -2053,6 +2165,18 @@ function renderRecipes() {
     return true;
   });
 
+  // ✅ Estado vazio: mensagem genérica (funciona para ingredientes + filtros + sliders)
+  if (!filtered || filtered.length === 0) {
+    recipeGrid.innerHTML = `
+      <div class="rf-empty-state">
+        <h3>Nenhuma receita encontrada</h3>
+        <p>Não encontramos nenhuma receita com os filtros usados. Tente remover uma tag, ajustar os valores ou limpar os filtros.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // ===== BLOQUEIO (mantém seu comportamento atual) =====
   const safeCredits = Number.isFinite(credits) ? credits : 0;
   const noCredits = (!isPremium && safeCredits <= 0);
 
@@ -3393,6 +3517,42 @@ if (premiumCodeInput) {
   });
 }
 
+
+
+
+function handleSearchInput(e) {
+  const raw = String(e?.target?.value || '').trim();
+
+  // 1) Ingredientes: ing: ...
+  const m = raw.match(/^(ing|ingredientes)\s*:\s*(.+)$/i);
+
+  if (m && m[2]) {
+    const afterIng = m[2].trim();
+    const parsed = parseAdvancedFilters(afterIng);
+
+    searchIngredients = parsed.cleanedText
+      .split(',')
+      .map(s => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    advancedFilters = parsed.filters;
+
+    // quando é "ing:", não usamos busca por texto
+    searchTerm = '';
+  } else {
+    // 2) Busca normal: pode conter filtros também
+    const parsed = parseAdvancedFilters(raw);
+
+    searchIngredients = [];
+    advancedFilters = parsed.filters;
+    searchTerm = parsed.cleanedText;
+  }
+
+  renderRecipes();
+}
+
+
+
 if (searchInput) {
   searchInput.addEventListener('input', (e) => {
   const raw = String(e.target.value || '').trim();
@@ -4419,9 +4579,15 @@ window.addEventListener('DOMContentLoaded', function() {
     wrapper.appendChild(table);
   }
 
+
+
+
+
+
 document.addEventListener('DOMContentLoaded', function(){
   wrapPlannerTable();
   setupIngredientDropdown();
+  setupAdvancedFiltersAutoApply();
 });
 
 
@@ -5197,9 +5363,6 @@ function setupRecipeGridClickGuard() {
 
 
 
-
-
-
 // Estado dos filtros
 let activeFilters = {
     maxTime: 120,
@@ -5209,18 +5372,52 @@ let activeFilters = {
     objectives: []
 };
 
+
 // Toggle painel de filtros
 window.toggleFilters = function() {
     const panel = document.getElementById('filters-panel');
     if (!panel) return;
-    
+
+    const willOpen = panel.classList.contains('hidden');
+
+    // ✅ Se vai abrir os filtros, fecha ingredientes antes
+    if (willOpen && typeof window.closeIngredientPanel === 'function') {
+        window.closeIngredientPanel();
+    }
+
     panel.classList.toggle('hidden');
-    
+
     // Renderiza ícones Lucide
     if (typeof lucide !== 'undefined') {
         setTimeout(() => lucide.createIcons(), 100);
     }
 };
+
+
+
+
+
+// =========================================================
+// CONTROLE DE PAINÉIS (Ingredientes x Filtros)
+// - Garante que apenas 1 painel fica aberto por vez
+// =========================================================
+
+window.closeIngredientPanel = function() {
+  const toggle = document.getElementById('rfIngToggle');
+  const panel = document.getElementById('rfIngPanel');
+
+  if (toggle) toggle.setAttribute('aria-expanded', 'false');
+  if (panel) panel.classList.add('hidden');
+};
+
+window.closeAdvancedFiltersPanel = function() {
+  const panel = document.getElementById('filters-panel');
+  if (panel) panel.classList.add('hidden');
+};
+
+
+
+
 
 // Atualizar valores dos sliders
 window.updateFilterValue = function(type, value) {
@@ -5242,73 +5439,75 @@ window.updateFilterValue = function(type, value) {
     if (type === 'calories') activeFilters.maxCalories = parseInt(value);
 };
 
-// Limpar filtros
+
+
+// Limpar filtros (UNIFICADO: advancedFilters + renderRecipes)
 window.clearFilters = function() {
-    // Reseta sliders
-    document.getElementById('filter-time').value = 120;
-    document.getElementById('filter-protein').value = 0;
-    document.getElementById('filter-calories').value = 1000;
-    
-    updateFilterValue('time', 120);
-    updateFilterValue('protein', 0);
-    updateFilterValue('calories', 1000);
-    
-    // Desmarca checkboxes
-    document.querySelectorAll('.filter-checkbox input[type="checkbox"]').forEach(cb => {
-        cb.checked = false;
+    // 1) Chips: desmarca tudo
+    document.querySelectorAll('#filters-panel .rf-chip.is-active').forEach(chip => {
+        chip.classList.remove('is-active');
     });
-    
-    // Reseta estado
-    activeFilters = {
-        maxTime: 120,
-        minProtein: 0,
-        maxCalories: 1000,
-        dietary: {},
-        objectives: []
-    };
-    
-    // Aplica (mostra tudo)
-    applyFilters();
+
+    // 2) Sliders: volta para "não filtrar"
+    const elTime = document.getElementById('filter-time');
+    const elProt = document.getElementById('filter-protein');
+    const elCal  = document.getElementById('filter-calories');
+
+    if (elTime) elTime.value = elTime.max || 120;
+    if (elCal)  elCal.value  = elCal.max  || 1000;
+    if (elProt) elProt.value = elProt.min || 0;
+
+    // Atualiza labels numéricas
+    if (typeof updateFilterValue === 'function') {
+        if (elTime) updateFilterValue('time', elTime.value);
+        if (elProt) updateFilterValue('protein', elProt.value);
+        if (elCal)  updateFilterValue('calories', elCal.value);
+    }
+
+    // 3) Estado do motor principal
+    window.advancedFilters = { maxCalories: null, minProtein: null, maxTime: null };
+
+    // 4) Renderiza usando o motor real
+    if (typeof renderRecipes === 'function') {
+        renderRecipes();
+    }
+
+    // 5) Badge (se existir)
+    if (typeof updateFiltersBadge === 'function') {
+        updateFiltersBadge();
+    }
+
+    // 6) ✅ FECHA OS DOIS BOXES após limpar
+    if (typeof window.closeIngredientPanel === 'function') {
+        window.closeIngredientPanel();
+    }
+    if (typeof window.closeAdvancedFiltersPanel === 'function') {
+        window.closeAdvancedFiltersPanel();
+    }
 };
 
-// Aplicar filtros
-window.applyFilters = function() {
-    // Coleta valores dos sliders
-    activeFilters.maxTime = parseInt(document.getElementById('filter-time')?.value || 120);
-    activeFilters.minProtein = parseInt(document.getElementById('filter-protein')?.value || 0);
-    activeFilters.maxCalories = parseInt(document.getElementById('filter-calories')?.value || 1000);
-    
-    // Coleta restrições alimentares
-    activeFilters.dietary = {};
-    ['vegan', 'glutenFree', 'dairyFree', 'soyFree', 'nutFree', 'lowCarb'].forEach(diet => {
-        const cb = document.getElementById(`filter-${diet}`);
-        if (cb && cb.checked) {
-            activeFilters.dietary[diet] = true;
-        }
-    });
-    
-    // Coleta objetivos
-    activeFilters.objectives = [];
-    ['ganho-massa', 'emagrecimento', 'energia', 'pos-treino'].forEach(obj => {
-        const cb = document.getElementById(`obj-${obj}`);
-        if (cb && cb.checked) {
-            activeFilters.objectives.push(obj);
-        }
-    });
-    
-    // Busca com filtros
-    const searchTerm = document.getElementById('search-input')?.value || '';
-    const filtered = searchRecipesAdvanced(searchTerm, activeFilters);
-    
-    // Renderiza resultados
-    renderFilteredRecipes(filtered);
-    
-    // Atualiza badge de filtros ativos
-    updateFiltersBadge();
-    
-    // Fecha painel (opcional)
-    // toggleFilters();
+
+
+// Aplicar filtros (UNIFICADO: advancedFilters + renderRecipes)
+window.applyFilters = function () {
+  const maxTime = parseInt(document.getElementById('filter-time')?.value || '120', 10);
+  const minProtein = parseInt(document.getElementById('filter-protein')?.value || '0', 10);
+  const maxCalories = parseInt(document.getElementById('filter-calories')?.value || '1000', 10);
+
+  // ✅ Fonte única (o renderRecipes usa advancedFilters)
+  advancedFilters = {
+    maxTime: Number.isFinite(maxTime) ? maxTime : null,
+    minProtein: Number.isFinite(minProtein) ? minProtein : null,
+    maxCalories: Number.isFinite(maxCalories) ? maxCalories : null
+  };
+
+  // ✅ Render pelo motor único (categoria + texto + ingredientes + avançados)
+  renderRecipes();
+
+  if (typeof updateFiltersBadge === 'function') updateFiltersBadge();
 };
+
+
 
 // Renderizar receitas filtradas
 function renderFilteredRecipes(recipes) {
@@ -5339,34 +5538,45 @@ function renderFilteredRecipes(recipes) {
     window.allRecipes = originalRecipes;
 }
 
-// Atualizar badge de filtros ativos
+
+
 function updateFiltersBadge() {
     let count = 0;
-    
-    // Conta filtros ativos
-    if (activeFilters.maxTime < 120) count++;
-    if (activeFilters.minProtein > 0) count++;
-    if (activeFilters.maxCalories < 1000) count++;
-    count += Object.keys(activeFilters.dietary).length;
-    count += activeFilters.objectives.length;
-    
-    // Atualiza ou cria badge
-    const toggleBtn = document.querySelector('.filters-toggle');
+
+    // Conta sliders ativos pelo motor REAL (advancedFilters)
+    const f = window.advancedFilters || {};
+    if (Number.isFinite(f.maxTime)) count++;
+    if (Number.isFinite(f.minProtein)) count++;
+    if (Number.isFinite(f.maxCalories)) count++;
+
+    // Conta chips ativos (tags/objetivos/restrições)
+    const chipsActive = document.querySelectorAll('#filters-panel .rf-chip.is-active').length;
+    count += chipsActive;
+
+    // ✅ IMPORTANTE: badge deve ir no botão "Filtros", não no de ingredientes
+    const toggleBtn =
+        document.getElementById('rfAdvToggle') ||
+        document.querySelector('.rf-filter-row .filters-toggle[onclick*="toggleFilters"]') ||
+        (document.querySelectorAll('.rf-filter-row .filters-toggle')[1] || null);
+
     if (!toggleBtn) return;
-    
+
     let badge = toggleBtn.querySelector('.filters-active-badge');
-    
+
     if (count > 0) {
         if (!badge) {
             badge = document.createElement('span');
             badge.className = 'filters-active-badge';
             toggleBtn.appendChild(badge);
         }
-        badge.textContent = count;
+        badge.textContent = String(count);
     } else if (badge) {
         badge.remove();
     }
 }
+
+
+
 
 // Inicializar sliders ao carregar
 window.addEventListener('DOMContentLoaded', function() {
@@ -5379,3 +5589,57 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+
+// Atalho: usa o motor oficial já ligado no input (searchInput.addEventListener('input', ...))
+function filterRecipes(query) {
+  const input = document.getElementById('search-input');
+  if (!input) return;
+
+  input.value = String(query || '');
+  input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+
+
+
+function setupAdvancedFiltersAutoApply() {
+  const panel = document.getElementById('filters-panel');
+  if (!panel) return;
+
+  // evita duplicar listener
+  if (panel.__rfAutoApplyBound) return;
+  panel.__rfAutoApplyBound = true;
+
+  // 1) Chips: clique = aplica
+  panel.addEventListener('click', function (e) {
+    const chip = e.target.closest('.rf-chip');
+    if (!chip) return;
+
+    // toggle visual (se já existir em outro lugar, não tem problema)
+    chip.classList.toggle('is-active');
+
+    // aplica imediatamente (usa sua applyFilters atual)
+    if (typeof window.applyFilters === 'function') {
+      window.applyFilters();
+    }
+  });
+
+  // 2) Sliders: mexeu = aplica
+  const ids = ['filter-time', 'filter-protein', 'filter-calories'];
+  ids.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.addEventListener('input', function () {
+      // atualiza label numérica (se existir)
+      if (typeof updateFilterValue === 'function') {
+        if (id === 'filter-time') updateFilterValue('time', this.value);
+        if (id === 'filter-protein') updateFilterValue('protein', this.value);
+        if (id === 'filter-calories') updateFilterValue('calories', this.value);
+      }
+      if (typeof window.applyFilters === 'function') {
+        window.applyFilters();
+      }
+    });
+  });
+}
