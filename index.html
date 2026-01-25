@@ -205,9 +205,9 @@
          <!-- CATEGORIAS -->
 		 
          <div class="categories-new">
-		 
-		 
-<!-- ====== ROW DOS 2 BOTÕES (lado a lado) ====== -->
+	
+	
+	<!-- ====== ROW DOS 2 BOTÕES (lado a lado) ====== -->
 <div class="rf-filter-row">
 
   <!-- Botão Ingredientes -->
@@ -222,7 +222,7 @@
     <span>Ingredientes</span>
   </button>
 
-  <!-- Botão Filtros Avançados (seu botão atual, só ganhou rf-filter-btn) -->
+  <!-- Botão Filtros Avançados -->
   <button
     class="filters-toggle rf-filter-btn tap"
     type="button"
@@ -248,20 +248,14 @@
       </label>
 
       <!-- Grid de ingredientes (chips via JS) -->
-	  
       <div class="rf-ingredients__grid" id="rfIngGrid"></div>
     </div>
 
-    <!-- Botões (reaproveitando suas classes do painel de filtros) -->
+    <!-- Botões -->
     <div class="filter-actions">
       <button class="btn-clear-filters tap" type="button" id="rfIngClear">
         <i data-lucide="x"></i>
-        Limpar
-      </button>
-
-      <button class="btn-apply-filters tap" type="button" id="rfIngApply">
-        <i data-lucide="check"></i>
-        Aplicar
+        Limpar Ingredientes
       </button>
     </div>
 
@@ -269,155 +263,182 @@
 </div>
 
 
-<!-- ====== PAINEL: FILTROS AVANÇADOS (seu painel atual, sem o botão) ====== -->
+<!-- ====== PAINEL: FILTROS AVANÇADOS ====== -->
 <div class="advanced-filters" id="advanced-filters">
 
   <!-- Painel de filtros (começa escondido) -->
   <div class="filters-panel hidden" id="filters-panel">
 
+    <!-- TAGS (chips) -->
+    <div class="filter-group">
+      <label class="filter-label">
+        <i data-lucide="tags"></i>
+        Tags
+      </label>
 
-<!-- Objetivos -->
+      <div class="rf-chips" id="rfTagsGrid">
+        <button type="button" class="rf-chip tap" data-tag="glutenFree">
+          <i data-lucide="wheat-off"></i><span>Sem Glúten</span>
+        </button>
+
+        <button type="button" class="rf-chip tap" data-tag="dairyFree">
+          <i data-lucide="milk-off"></i><span>Sem Lactose</span>
+        </button>
+
+        <button type="button" class="rf-chip tap" data-tag="soyFree">
+          <i data-lucide="ban"></i><span>Sem Soja</span>
+        </button>
+
+        <button type="button" class="rf-chip tap" data-tag="nutFree">
+          <i data-lucide="ban"></i><span>Sem Nozes</span>
+        </button>
+
+        <button type="button" class="rf-chip tap" data-tag="lowCarb">
+          <i data-lucide="zap"></i><span>Low Carb</span>
+        </button>
+      </div>
+    </div>
+
+
+    <!-- OBJETIVOS (chips) -->
     <div class="filter-group">
       <label class="filter-label">
         <i data-lucide="target"></i>
         Objetivos
       </label>
-      <div class="filter-checkboxes">
-        <label class="filter-checkbox">
-          <input type="checkbox" id="obj-ganho-massa" value="ganho-massa" onchange="applyFilters()">
-          <span><i data-lucide="dumbbell"></i> Ganho de Massa</span>
-        </label>
 
-        <label class="filter-checkbox">
-          <input type="checkbox" id="obj-emagrecimento" value="emagrecimento" onchange="applyFilters()">
-          <span><i data-lucide="flame"></i> Emagrecimento</span>
-        </label>
+      <div class="rf-chips" id="rfObjChips">
+        <button type="button" class="rf-chip tap" data-filter="objective" data-value="ganho_massa">
+          <i data-lucide="dumbbell"></i><span>Ganho de Massa</span>
+        </button>
 
-        <label class="filter-checkbox">
-          <input type="checkbox" id="obj-energia" value="energia" onchange="applyFilters()">
-          <span><i data-lucide="zap"></i> Energia</span>
-        </label>
+        <button type="button" class="rf-chip tap" data-filter="objective" data-value="emagrecimento">
+          <i data-lucide="flame"></i><span>Emagrecimento</span>
+        </button>
 
-        <label class="filter-checkbox">
-          <input type="checkbox" id="obj-pos-treino" value="pos-treino" onchange="applyFilters()">
-          <span><i data-lucide="activity"></i> Pós-Treino</span>
-        </label>
+        <button type="button" class="rf-chip tap" data-filter="objective" data-value="energia">
+          <i data-lucide="zap"></i><span>Energia</span>
+        </button>
+
+        <button type="button" class="rf-chip tap" data-filter="objective" data-value="pos_treino">
+          <i data-lucide="activity"></i><span>Pós-treino</span>
+        </button>
       </div>
     </div>
 
-    <!-- Restrições alimentares -->
+
+    <!-- RESTRIÇÕES (chips) -->
     <div class="filter-group">
       <label class="filter-label">
-        <i data-lucide="leaf"></i>
+        <i data-lucide="shield"></i>
         Restrições Alimentares
       </label>
-      <div class="filter-checkboxes">
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-vegan" value="vegan" onchange="applyFilters()">
-          <span><i data-lucide="leaf"></i> Vegano</span>
-        </label>
 
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-glutenFree" value="glutenFree" onchange="applyFilters()">
-          <span><i data-lucide="wheat-off"></i> Sem Glúten</span>
-        </label>
+      <div class="rf-chips" id="rfDietChips">
+        <button type="button" class="rf-chip tap" data-filter="dietary" data-value="vegano">
+          <i data-lucide="leaf"></i><span>Vegano</span>
+        </button>
 
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-dairyFree" value="dairyFree" onchange="applyFilters()">
-          <span><i data-lucide="milk-off"></i> Sem Lactose</span>
-        </label>
+        <button type="button" class="rf-chip tap" data-filter="dietary" data-value="glutenFree">
+          <i data-lucide="wheat-off"></i><span>Sem Glúten</span>
+        </button>
 
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-soyFree" value="soyFree" onchange="applyFilters()">
-          <span><i data-lucide="bean-off"></i> Sem Soja</span>
-        </label>
+        <button type="button" class="rf-chip tap" data-filter="dietary" data-value="dairyFree">
+          <i data-lucide="milk-off"></i><span>Sem Lactose</span>
+        </button>
 
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-nutFree" value="nutFree" onchange="applyFilters()">
-          <span><i data-lucide="nut-off"></i> Sem Nozes</span>
-        </label>
+        <button type="button" class="rf-chip tap" data-filter="dietary" data-value="soyFree">
+          <i data-lucide="ban"></i><span>Sem Soja</span>
+        </button>
 
-        <label class="filter-checkbox">
-          <input type="checkbox" id="filter-lowCarb" value="lowCarb" onchange="applyFilters()">
-          <span><i data-lucide="zap"></i> Low Carb</span>
-        </label>
+        <button type="button" class="rf-chip tap" data-filter="dietary" data-value="nutFree">
+          <i data-lucide="ban"></i><span>Sem Nozes</span>
+        </button>
+
+        <button type="button" class="rf-chip tap" data-filter="dietary" data-value="lowCarb">
+          <i data-lucide="zap"></i><span>Low Carb</span>
+        </button>
       </div>
     </div>
 
 
-
-
-    <!-- Tempo de preparo -->
+    <!-- SLIDERS (3 na mesma linha, responsivo) -->
     <div class="filter-group">
       <label class="filter-label">
-        <i data-lucide="clock"></i>
-        Tempo máximo: <span id="time-value">60</span> min
+        <i data-lucide="sliders-horizontal"></i>
+        Ajustes
       </label>
-      <input
-        type="range"
-        id="filter-time"
-        min="0"
-        max="120"
-        value="60"
-        oninput="updateFilterValue('time', this.value)"
-      >
+
+      <div class="rf-sliders-row">
+
+        <!-- Tempo -->
+        <div class="rf-slider-card">
+          <div class="rf-slider-head">
+            <span>Tempo máx:</span>
+            <strong><span id="time-value">60</span> min</strong>
+          </div>
+          <input
+            type="range"
+            id="filter-time"
+            min="0"
+            max="120"
+            value="60"
+            oninput="updateFilterValue('time', this.value)"
+          />
+        </div>
+
+        <!-- Proteína -->
+        <div class="rf-slider-card">
+          <div class="rf-slider-head">
+            <span>Proteína mín:</span>
+            <strong><span id="protein-value">0</span> g</strong>
+          </div>
+          <input
+            type="range"
+            id="filter-protein"
+            min="0"
+            max="50"
+            value="0"
+            step="5"
+            oninput="updateFilterValue('protein', this.value)"
+          />
+        </div>
+
+        <!-- Calorias -->
+        <div class="rf-slider-card">
+          <div class="rf-slider-head">
+            <span>Calorias máx:</span>
+            <strong><span id="calories-value">1000</span> kcal</strong>
+          </div>
+          <input
+            type="range"
+            id="filter-calories"
+            min="0"
+            max="1000"
+            value="1000"
+            step="50"
+            oninput="updateFilterValue('calories', this.value)"
+          />
+        </div>
+
+      </div>
     </div>
 
-    <!-- Proteína mínima -->
-    <div class="filter-group">
-      <label class="filter-label">
-        <i data-lucide="dumbbell"></i>
-        Proteína mínima: <span id="protein-value">0</span>g
-      </label>
-      <input
-        type="range"
-        id="filter-protein"
-        min="0"
-        max="50"
-        value="0"
-        step="5"
-        oninput="updateFilterValue('protein', this.value)"
-      >
-    </div>
 
-    <!-- Calorias -->
-    <div class="filter-group">
-      <label class="filter-label">
-        <i data-lucide="flame"></i>
-        Calorias máx: <span id="calories-value">1000</span> kcal
-      </label>
-      <input
-        type="range"
-        id="filter-calories"
-        min="0"
-        max="1000"
-        value="1000"
-        step="50"
-        oninput="updateFilterValue('calories', this.value)"
-      >
-    </div>
-
-
- 
-   
-
-    <!-- Botões de ação -->
+    <!-- BOTÕES -->
     <div class="filter-actions">
-      <button class="btn-clear-filters" onclick="clearFilters()">
+      <button class="btn-clear-filters tap" type="button" onclick="clearFilters()">
         <i data-lucide="x"></i>
         Limpar Filtros
       </button>
-      <button class="btn-apply-filters" onclick="applyFilters()">
-        <i data-lucide="check"></i>
-        Aplicar
-      </button>
+
+ 
     </div>
 
   </div>
-</div>	 
-		 
-		 
-		 
+</div>
+
+
 		 
             <div class="categories-grid-new" id="categoriesGrid"></div>
          </div>
