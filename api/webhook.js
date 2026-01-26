@@ -64,14 +64,22 @@ export default async function handler(req, res) {
 
     console.log('[WEBHOOK] 📋 Payment ID:', paymentId);
 
-    // ✅ IDEMPOTÊNCIA (não processa o mesmo paymentId 2x)
-    // - Mercado Pago pode reenviar webhook
+    // ✅ IDEMPOTÊNCIA ATÔMICA (LOCK)
+    // - Evita corrida (2 webhooks chegando juntos)
+    // - Se o doc já existir, outro processo já está executando ou já executou
     const webhookRef = db.collection('webhook_logs').doc(String(paymentId));
-    const webhookSnap = await webhookRef.get();
 
-    if (webhookSnap.exists) {
-      console.log('[WEBHOOK] ♻️ Webhook já processado para paymentId:', paymentId);
-      return res.status(200).json({ ok: true, message: 'Webhook já processado' });
+    try {
+      await webhookRef.create({
+        paymentId: String(paymentId),
+        status: 'processing',
+        receivedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      console.log('[WEBHOOK] 🔒 Lock criado para paymentId:', paymentId);
+    } catch (e) {
+      console.log('[WEBHOOK] ♻️ Lock já existe (ignorando) paymentId:', paymentId);
+      return res.status(200).json({ ok: true, message: 'Webhook já processado (lock)' });
     }
 
     // ✅ BUSCA DETALHES DO PAGAMENTO
@@ -82,6 +90,13 @@ export default async function handler(req, res) {
     // ✅ SÓ PROCESSA SE APROVADO
     if (payment.body.status !== 'approved') {
       console.log('[WEBHOOK] ⚠️ Pagamento não aprovado, ignorando');
+
+      await webhookRef.update({
+        status: 'ignored',
+        paymentStatus: payment.body.status,
+        ignoredAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
       return res.status(200).json({
         ok: true,
         message: 'Pagamento não aprovado ainda'
@@ -99,6 +114,13 @@ export default async function handler(req, res) {
 
     if (!email) {
       console.log('[WEBHOOK] ❌ Email não encontrado');
+
+      await webhookRef.update({
+        status: 'error',
+        error: 'Email não encontrado',
+        failedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
       return res.status(400).json({ error: 'Email não encontrado' });
     }
 
@@ -170,6 +192,8 @@ export default async function handler(req, res) {
     console.log('[WEBHOOK] ✅ Código salvo no Firestore');
 
     // ✅ ENVIA EMAIL AUTOMATICAMENTE
+    let emailSent = false;
+
     try {
       // ✅ BaseURL robusto (não depende de VERCEL_URL)
       const baseUrl = `https://${req.headers.host}`;
@@ -182,7 +206,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           email: email,
           name: name,
-          codigo: code, // ✅ CORRIGIDO (antes era "code")
+          codigo: code, // ✅ campo certo
           plan: plan,
           expiresAt: expiresAt
         })
@@ -191,6 +215,7 @@ export default async function handler(req, res) {
       if (emailResponse.ok) {
         const emailData = await emailResponse.json();
         console.log('[WEBHOOK] ✅ Email enviado com sucesso:', emailData);
+        emailSent = true;
       } else {
         const errorText = await emailResponse.text();
         console.error('[WEBHOOK] ⚠️ Falha ao enviar email:', errorText);
@@ -200,14 +225,15 @@ export default async function handler(req, res) {
       // Não falha o webhook por causa do email
     }
 
-    // ✅ Marca este paymentId como "processado" (idempotência)
-    await webhookRef.set({
-      paymentId: String(paymentId),
+    // ✅ Finaliza lock (status done)
+    await webhookRef.update({
       processedAt: admin.firestore.FieldValue.serverTimestamp(),
-      status: payment.body.status,
+      status: 'done',
+      paymentStatus: payment.body.status,
       email: email,
       plan: plan,
-      expiresAt: expiresAt
+      expiresAt: expiresAt,
+      emailSent: emailSent
     });
 
     return res.status(200).json({
@@ -216,11 +242,27 @@ export default async function handler(req, res) {
       email: email,
       plan: plan,
       expiresAt: new Date(expiresAt).toISOString(),
-      emailSent: true
+      emailSent: emailSent
     });
 
   } catch (error) {
     console.error('[WEBHOOK] ❌ Erro:', error);
+
+    // tenta registrar erro no lock se possível
+    try {
+      const paymentId = req.body?.data?.id;
+      if (paymentId) {
+        const webhookRef = db.collection('webhook_logs').doc(String(paymentId));
+        await webhookRef.update({
+          status: 'error',
+          failedAt: admin.firestore.FieldValue.serverTimestamp(),
+          details: error?.message || 'Erro desconhecido'
+        });
+      }
+    } catch (_) {
+      // ignora
+    }
+
     return res.status(500).json({
       error: 'Erro no webhook',
       details: error.message
@@ -228,4 +270,4 @@ export default async function handler(req, res) {
   }
 }
 
-// (próxima função, se existir no arquivo, começa abaixo)
+// (fim do arquivo)
