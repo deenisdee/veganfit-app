@@ -180,7 +180,7 @@ const RECIPES = [{
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/tofu-mexido.webp',
       steps: [ ]
     },
 	
@@ -221,7 +221,7 @@ const RECIPES = [{
     ],
 	
 	
-    image: 'image/',
+    image: 'image/panqueca-vegana-de-banana-e-aveia.webp',
 	
 	
     ingredients: [
@@ -268,7 +268,7 @@ const RECIPES = [{
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/panqueca-vegana-de-banana-e-aveia.webp',
       steps: [ ]
     },
 	
@@ -309,7 +309,7 @@ const RECIPES = [{
     ],
 	
 	
-    image: 'image/',
+    image: 'image/vitamina-proteica-de-morango.webp',
 	
 	
     ingredients: [
@@ -356,7 +356,7 @@ const RECIPES = [{
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/vitamina-proteica-de-morango.webp',
       steps: [ ]
     },
 	
@@ -397,7 +397,7 @@ const RECIPES = [{
     ],
 	
 	
-    image: 'image/',
+    image: 'image/tapioca-com-homus-e-tomate.webp',
 	
 	
     ingredients: [
@@ -438,7 +438,7 @@ const RECIPES = [{
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/tapioca-com-homus-e-tomate.webp',
       steps: [ ]
     },
 	
@@ -477,7 +477,7 @@ const RECIPES = [{
     allergens: [ ],
 	
 	
-    image: 'image/',
+    image: 'image/pao-de-queijo-vegano-de-mandioquinha.webp',
 	
 	
     ingredients: [
@@ -524,7 +524,7 @@ const RECIPES = [{
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/pao-de-queijo-vegano-de-mandioquinha.webp',
       steps: [ ]
     },
 	
@@ -563,7 +563,7 @@ const RECIPES = [{
     allergens: [ ],
 	
 	
-    image: 'image/',
+    image: 'image/creme-de-abacate-com-cacau.webp',
 	
 	
     ingredients: [
@@ -604,7 +604,7 @@ const RECIPES = [{
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/creme-de-abacate-com-cacau.webp',
       steps: [ ]
     },
 	
@@ -645,7 +645,7 @@ const RECIPES = [{
     ],
 	
 	
-    image: 'image/',
+    image: 'image/granola-caseira-crocante.webp',
 	
 	
     ingredients: [
@@ -692,7 +692,7 @@ const RECIPES = [{
  	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/granola-caseira-crocante.webp',
       steps: [ ]
     },
 	
@@ -731,7 +731,7 @@ const RECIPES = [{
     allergens: [ ],
 	
 	
-    image: 'image/',
+    image: 'image/pudim-de-chia-com-manga.webp',
 	
 	
     ingredients: [
@@ -772,7 +772,7 @@ const RECIPES = [{
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/pudim-de-chia-com-manga.webp',
       steps: [ ]
     },
 	
@@ -811,7 +811,7 @@ const RECIPES = [{
     allergens: [ ],
 	
 	
-    image: 'image/',
+    image: 'image/cuscuz-de-milho-com-legumes.webp',
 	
 	
     ingredients: [
@@ -856,7 +856,7 @@ const RECIPES = [{
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/cuscuz-de-milho-com-legumes.webp',
       steps: [ ]
     },
 	
@@ -897,7 +897,7 @@ const RECIPES = [{
     ],
 	
 	
-image: 'image/',
+image: 'image/strogonoff-vegano-de-grao-de-bico.webp',
 
 
     ingredients: [
@@ -948,7 +948,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/strogonoff-vegano-de-grao-de-bico.webp',
       steps: [ ]
     },
 	
@@ -987,7 +987,7 @@ image: 'image/',
     allergens: [ ],
 	
 	
-image: 'image/',
+image: 'image/curry-de-legumes-com-lentilha.webp',
 
 
     ingredients: [
@@ -1038,7 +1038,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/curry-de-legumes-com-lentilha.webp',
       steps: [ ]
     },
 	
@@ -1077,7 +1077,7 @@ image: 'image/',
     allergens: [ ],
 	
 	
-image: 'image/',
+image: 'image/chili-vegano.webp',
 
 
     ingredients: [
@@ -1124,7 +1124,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/chili-vegano.webp',
       steps: [ ]
     },
 	
@@ -1165,7 +1165,7 @@ image: 'image/',
     ],
 	
 	
-image: 'image/',
+image: 'image/bowl-de-tofu-grelhado.webp',
 
 
     ingredients: [
@@ -1210,7 +1210,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/bowl-de-tofu-grelhado.webp',
       steps: [ ]
     },
 	
@@ -1251,7 +1251,7 @@ image: 'image/',
     ],
 	
 	
-image: 'image/',
+image: 'image/macarrao-ao-molho-de-castanha.webp',
 
 
     ingredients: [
@@ -1297,7 +1297,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/macarrao-ao-molho-de-castanha.webp',
       steps: [ ]
     },
 	
@@ -1336,7 +1336,7 @@ image: 'image/',
     allergens: [ ],
 	
 	
-image: 'image/',
+image: 'image/hamburguer-de-feijao-preto.webp',
 
 
     ingredients: [
@@ -1376,7 +1376,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/hamburguer-de-feijao-preto.webp',
       steps: [ ]
     },
 	
@@ -1415,7 +1415,7 @@ image: 'image/',
     allergens: [ ],
 	
 	
-image: 'image/',
+image: 'image/moqueca-vegana-de-palmito.webp',
 
 
     ingredients: [
@@ -1462,7 +1462,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/moqueca-vegana-de-palmito.webp',
       steps: [ ]
     },
 	
@@ -1499,7 +1499,9 @@ image: 'image/',
       'Rende bem'
     ],
     allergens: [ ],
-image: 'image/',
+	
+image: 'image/escondidinho-de-lentilha.webp',
+
     ingredients: [
       {
         icon: 'potato',
@@ -1537,7 +1539,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/escondidinho-de-lentilha.webp',
       steps: [ ]
     },
 	
@@ -1576,7 +1578,11 @@ image: 'image/',
     allergens: [
       'Oleaginosas (opcional)'
     ],
-image: 'image/',
+	
+	
+image: 'image/berinjela-a-parmegiana-vegana.webp',
+
+
     ingredients: [
       {
         icon: 'leaf',
@@ -1616,7 +1622,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/berinjela-a-parmegiana-vegana.webp',
       steps: [ ]
     },
 	
@@ -1653,7 +1659,7 @@ image: 'image/',
       'Ótimo custo-benefício'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/arroz-de-brocolis-com-grao-de-bico.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -1696,7 +1702,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/arroz-de-brocolis-com-grao-de-bico.webp',
       steps: [ ]
     },
 	
@@ -1735,7 +1741,7 @@ image: 'image/',
     allergens: [
       'Gergelim'
     ],
-image: 'image/',
+image: 'image/homus-tradicional.webp',
     ingredients: [
       {
         icon: 'beans',
@@ -1779,7 +1785,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/homus-tradicional.webp',
       steps: [ ]
     },
 	
@@ -1818,7 +1824,7 @@ image: 'image/',
     allergens: [
       'Oleaginosas (se usar pasta)'
     ],
-image: 'image/',
+image: 'image/bolinha-energetica-de-tamara-e-cacau.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -1857,7 +1863,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/bolinha-energetica-de-tamara-e-cacau.webp',
       steps: [ ]
     },
 	
@@ -1894,7 +1900,7 @@ image: 'image/',
       'Ótimo para controlar fome'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/guacamole-express.webp',
     ingredients: [
       {
         icon: 'leaf',
@@ -1932,7 +1938,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/guacamole-express.webp',
       steps: [ ]
     },
 	
@@ -1969,7 +1975,7 @@ image: 'image/',
       'Mata vontade'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/pipoca-com-levedura-nutricional.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -2006,7 +2012,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/pipoca-com-levedura-nutricional.webp',
       steps: [ ]
     },
 	
@@ -2045,7 +2051,7 @@ image: 'image/',
     allergens: [
       'Glúten (se tortilha comum)'
     ],
-image: 'image/',
+image: 'image/wrap-vegano-de-legumes.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -2088,7 +2094,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/wrap-vegano-de-legumes.webp',
       steps: [ ]
     },
 	
@@ -2127,7 +2133,7 @@ image: 'image/',
     allergens: [
       'Pode conter soja'
     ],
-image: 'image/',
+image: 'image/iogurte-vegano-com-frutas-e-sementes.webp',
     ingredients: [
       {
         icon: 'droplets',
@@ -2165,7 +2171,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/iogurte-vegano-com-frutas-e-sementes.webp',
       steps: [ ]
     },
 	
@@ -2204,7 +2210,7 @@ image: 'image/',
     allergens: [
       'Oleaginosas (se incluir castanhas)'
     ],
-image: 'image/',
+image: 'image/mix-crocante-de-sementes.webp',
     ingredients: [
       {
         icon: 'sparkles',
@@ -2242,7 +2248,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/mix-crocante-de-sementes.webp',
       steps: [ ]
     },
 	
@@ -2282,7 +2288,7 @@ image: 'image/',
       'Soja',
       'Glúten (se pão comum)'
     ],
-image: 'image/',
+image: 'image/sanduiche-de-tofu-com-mostarda.webp',
     ingredients: [
       {
         icon: 'square',
@@ -2320,7 +2326,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/sanduiche-de-tofu-com-mostarda.webp',
       steps: [ ]
     },
 	
@@ -2357,7 +2363,7 @@ image: 'image/',
       'Evita beliscar'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/salada-no-pote.webp',
     ingredients: [
       {
         icon: 'droplets',
@@ -2400,7 +2406,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/salada-no-pote.webp',
       steps: [ ]
     },
 	
@@ -2437,7 +2443,7 @@ image: 'image/',
       'Ótimo acompanhamento'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/chips-de-batata-doce-airfryer.webp',
     ingredients: [
       {
         icon: 'potato',
@@ -2470,7 +2476,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/chips-de-batata-doce-airfryer.webp',
       steps: [ ]
     },
 	
@@ -2507,7 +2513,7 @@ image: 'image/',
       'Doce sem culpa'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/mousse-de-chocolate-com-abacate.webp',
     ingredients: [
       {
         icon: 'leaf',
@@ -2545,7 +2551,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/mousse-de-chocolate-com-abacate.webp',
       steps: [ ]
     },
 	
@@ -2582,7 +2588,7 @@ image: 'image/',
       'Boa digestão'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/pudim-de-chia-com-cacau.webp',
     ingredients: [
       {
         icon: 'sparkles',
@@ -2620,7 +2626,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/pudim-de-chia-com-cacau.webp',
       steps: [ ]
     },
 	
@@ -2659,7 +2665,7 @@ image: 'image/',
     allergens: [
       'Glúten (se aveia não certificada)'
     ],
-image: 'image/',
+image: 'image/brownie-vegano-de-banana.webp',
     ingredients: [
       {
         icon: 'banana',
@@ -2696,7 +2702,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/brownie-vegano-de-banana.webp',
       steps: [ ]
     },
 	
@@ -2733,7 +2739,7 @@ image: 'image/',
       'Leve'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/sorbet-de-manga-e-limao.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -2766,7 +2772,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/sorbet-de-manga-e-limao.webp',
       steps: [ ]
     },
 	
@@ -2803,7 +2809,7 @@ image: 'image/',
       'Sacia'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/brigadeiro-vegano-de-biomassa.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -2842,7 +2848,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/brigadeiro-vegano-de-biomassa.webp',
       steps: [ ]
     },
 	
@@ -2881,7 +2887,7 @@ image: 'image/',
     allergens: [
       'Glúten (se aveia não certificada)'
     ],
-image: 'image/',
+image: 'image/cookie-vegano-de-aveia.webp',
     ingredients: [
       {
         icon: 'banana',
@@ -2921,7 +2927,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/cookie-vegano-de-aveia.webp',
       steps: [ ]
     },
 	
@@ -2960,7 +2966,7 @@ image: 'image/',
     allergens: [
       'Oleaginosas (opcional)'
     ],
-image: 'image/',
+image: 'image/maca-assada-com-canela.webp',
     ingredients: [
       {
         icon: 'apple',
@@ -2993,7 +2999,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/maca-assada-com-canela.webp',
       steps: [ ]
     },
 	
@@ -3030,7 +3036,7 @@ image: 'image/',
       'Boa para dieta leve'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/gelatina-natural-de-frutas.webp',
     ingredients: [
       {
         icon: 'droplets',
@@ -3063,7 +3069,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/gelatina-natural-de-frutas.webp',
       steps: [ ]
     },
 	
@@ -3102,7 +3108,7 @@ image: 'image/',
     allergens: [
       'Glúten (se aveia não certificada)'
     ],
-image: 'image/',
+image: 'image/bolo-de-caneca-vegano.webp',
     ingredients: [
       {
         icon: 'wheat',
@@ -3145,7 +3151,7 @@ image: 'image/',
  	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/bolo-de-caneca-vegano.webp',
       steps: [ ]
     },
 	
@@ -3182,7 +3188,7 @@ image: 'image/',
       'Sem ingredientes animais'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/mousse-de-maracuja-vegana.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -3215,7 +3221,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/mousse-de-maracuja-vegana.webp',
       steps: [ ]
     },
 	
@@ -3252,7 +3258,7 @@ image: 'image/',
       'Leve para o dia a dia'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-verde-classico.webp',
     ingredients: [
       {
         icon: 'leaf',
@@ -3294,7 +3300,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-verde-classico.webp',
       steps: [ ]
     },
 	
@@ -3331,7 +3337,7 @@ image: 'image/',
       'Leve'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-de-abacaxi-com-hortela.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -3368,7 +3374,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-de-abacaxi-com-hortela.webp',
       steps: [ ]
     },
 	
@@ -3405,7 +3411,7 @@ image: 'image/',
       'Bom pré-treino'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-de-beterraba-com-laranja.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -3437,7 +3443,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-de-beterraba-com-laranja.webp',
       steps: [ ]
     },
 	
@@ -3474,7 +3480,7 @@ image: 'image/',
       'Fácil'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-de-melancia-com-limao.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -3505,7 +3511,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-de-melancia-com-limao.webp',
       steps: [ ]
     },
 	
@@ -3542,7 +3548,7 @@ image: 'image/',
       'Boa digestão'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-de-maracuja-com-cenoura.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -3580,7 +3586,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-de-maracuja-com-cenoura.webp',
       steps: [ ]
     },
 	
@@ -3617,7 +3623,7 @@ image: 'image/',
       'Muito prático'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-de-morango-com-banana.webp',
     ingredients: [
       {
         icon: 'strawberry',
@@ -3653,7 +3659,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-de-morango-com-banana.webp',
       steps: [ ]
     },
 	
@@ -3690,7 +3696,7 @@ image: 'image/',
       'Bom para recuperação'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-de-uva-integral-com-limao.webp',
     ingredients: [
       {
         icon: 'droplets',
@@ -3721,7 +3727,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-de-uva-integral-com-limao.webp',
       steps: [ ]
     },
 	
@@ -3758,7 +3764,7 @@ image: 'image/',
       'Acorda o corpo'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-de-laranja-com-gengibre.webp',
     ingredients: [
       {
         icon: 'droplets',
@@ -3785,7 +3791,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-de-laranja-com-gengibre.webp',
       steps: [ ]
     },
 	
@@ -3822,7 +3828,7 @@ image: 'image/',
       'Ótimo para calor'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-de-pepino-com-limao.webp',
     ingredients: [
       {
         icon: 'circle',
@@ -3859,7 +3865,7 @@ image: 'image/',
  	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-de-pepino-com-limao.webp',
       steps: [ ]
     },
 	
@@ -3896,7 +3902,7 @@ image: 'image/',
       'Ótimo para manhã'
     ],
     allergens: [ ],
-image: 'image/',
+image: 'image/suco-de-maca-com-cenoura.webp',
     ingredients: [
       {
         icon: 'apple',
@@ -3927,7 +3933,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/suco-de-maca-com-cenoura.webp',
       steps: [ ]
     },
 	
@@ -3965,7 +3971,7 @@ image: 'image/',
     
     allergens: ['Aveia'],
     
-image: 'image/',
+image: 'image/panquecas-de-aveia-e-banana.webp',
     
     ingredients: [
         { icon: 'banana', quantity: '2 unidades', text: 'bananas maduras' },
@@ -3997,7 +4003,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/panquecas-de-aveia-e-banana.webp',
       steps: [ ]
     },
 	
@@ -4048,7 +4054,7 @@ image: 'image/',
     
     allergens: ['Nenhum'],
     
-image: 'image/',
+image: 'image/smoothie-verde-detox.webp',
     
     ingredients: [
         { icon: 'leaf', quantity: '2 xícaras', text: 'de espinafre fresco' },
@@ -4077,7 +4083,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/smoothie-verde-detox.webp',
       steps: [ ]
     },
 	
@@ -4128,7 +4134,7 @@ image: 'image/',
     
     allergens: ['Aveia', 'Amendoim'],
     
-image: 'image/',
+image: 'image/overnight-oats-chocolate.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '1/2 xícara (50g)', text: 'de aveia em flocos' },
@@ -4158,7 +4164,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/overnight-oats-chocolate.webp',
       steps: [ ]
     },
 	
@@ -4208,7 +4214,7 @@ image: 'image/',
     
     allergens: ['Glúten (use pão sem glúten se necessário)'],
     
-image: 'image/',
+image: 'image/torradas-de-abacate-com-tomate.webp',
     ingredients: [
         { icon: 'wheat', quantity: '2 fatias', text: 'de pão integral' },
         { icon: 'leaf', quantity: '1 unidade', text: 'abacate maduro' },
@@ -4239,7 +4245,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/torradas-de-abacate-com-tomate.webp',
       steps: [ ]
     },
 	
@@ -4290,7 +4296,7 @@ image: 'image/',
     
     allergens: ['Oleaginosas (granola)'],
     
-image: 'image/',
+image: 'image/bowl-de-acai-tropical.webp',
     
     ingredients: [
         { icon: 'droplets', quantity: '200g', text: 'de polpa de açaí puro' },
@@ -4322,7 +4328,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/bowl-de-acai-tropical.webp',
       steps: [ ]
     },
 	
@@ -4373,7 +4379,7 @@ image: 'image/',
     
     allergens: ['Nenhum'],
     
-image: 'image/',
+image: 'image/tapioca-recheada-de-cogumelos.webp',
     
     ingredients: [
         { icon: 'circle', quantity: '4 colheres sopa', text: 'de goma de tapioca' },
@@ -4405,7 +4411,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/tapioca-recheada-de-cogumelos.webp',
       steps: [ ]
     },
 	
@@ -4455,7 +4461,7 @@ image: 'image/',
     
     allergens: ['Aveia'],
     
-image: 'image/',
+image: 'image/mingau-de-aveia-com-frutas-vermelhas.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '1/2 xícara (50g)', text: 'de aveia em flocos' },
@@ -4486,7 +4492,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/mingau-de-aveia-com-frutas-vermelhas.webp',
       steps: [ ]
     },
 	
@@ -4536,7 +4542,7 @@ image: 'image/',
     
     allergens: ['Nenhum'],
     
-image: 'image/',
+image: 'image/crepioca-de-espinafre.webp',
     
     ingredients: [
         { icon: 'circle', quantity: '3 colheres sopa', text: 'de goma de tapioca' },
@@ -4569,7 +4575,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/crepioca-de-espinafre.webp',
       steps: [ ]
     },
 	
@@ -4620,7 +4626,7 @@ image: 'image/',
     
     allergens: ['Oleaginosas', 'Aveia'],
     
-image: 'image/',
+image: 'image/granola-caseira-crocante.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '3 xícaras', text: 'de aveia em flocos' },
@@ -4652,7 +4658,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/granola-caseira-crocante.webp',
       steps: [ ]
     },
 	
@@ -4702,7 +4708,7 @@ image: 'image/',
     
     allergens: ['Glúten', 'Gergelim (tahine)'],
     
-image: 'image/',
+image: 'image/wrap-de-hummus-e-vegetais.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '1 unidade', text: 'de tortilha integral' },
@@ -4734,7 +4740,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/wrap-de-hummus-e-vegetais.webp',
       steps: [ ]
     },
 	
@@ -4785,7 +4791,7 @@ image: 'image/',
     
     allergens: ['Gergelim (tahine)'],
     
-image: 'image/',
+image: 'image/buddha-bowl-mediterraneo.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '1 xícara', text: 'de quinoa cozida' },
@@ -4817,7 +4823,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/buddha-bowl-mediterraneo.webp',
       steps: [ ]
     },
 	
@@ -4868,7 +4874,7 @@ image: 'image/',
     
     allergens: ['Nenhum'],
     
-image: 'image/',
+image: 'image/curry-de-lentilha-e-coco.webp',
     ingredients: [
         { icon: 'circle', quantity: '1 xícara', text: 'de lentilha vermelha' },
         { icon: 'milk', quantity: '1 lata (400ml)', text: 'leite de coco' },
@@ -4902,7 +4908,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/curry-de-lentilha-e-coco.webp',
       steps: [ ]
     },
 	
@@ -4953,7 +4959,7 @@ image: 'image/',
     
     allergens: ['Glúten', 'Castanhas'],
     
-image: 'image/',
+image: 'image/macarrao-ao-pesto-de-manjericao.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '200g', text: 'de macarrão integral' },
@@ -4987,7 +4993,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/macarrao-ao-pesto-de-manjericao.webp',
       steps: [ ]
     },
 	
@@ -5038,7 +5044,7 @@ image: 'image/',
     
     allergens: ['Gergelim'],
     
-image: 'image/',
+image: 'image/falafel-assado-com-salada-arabe.webp',
     
     ingredients: [
         { icon: 'circle', quantity: '2 xícaras', text: 'grão-de-bico cru (deixe de molho 12h)' },
@@ -5073,7 +5079,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/falafel-assado-com-salada-arabe.webp',
       steps: [ ]
     },
 	
@@ -5123,7 +5129,7 @@ image: 'image/',
     
     allergens: ['Nenhum'],
     
-image: 'image/',
+image: 'image/risoto-de-cogumelos.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '1 xícara', text: 'arroz arbóreo' },
@@ -5159,7 +5165,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/risoto-de-cogumelos.webp',
       steps: [ ]
     },
 	
@@ -5210,7 +5216,7 @@ image: 'image/',
     
     allergens: ['Nenhum'],
     
-image: 'image/',
+image: 'image/strogonoff-de-palmito.webp',
     
     ingredients: [
         { icon: 'circle', quantity: '2 vidros (300g)', text: 'palmito em rodelas' },
@@ -5246,7 +5252,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/strogonoff-de-palmito.webp',
       steps: [ ]
     },
 	
@@ -5297,7 +5303,7 @@ image: 'image/',
     
     allergens: ['Nenhum'],
     
-image: 'image/',
+image: 'image/burrito-bowl-mexicano.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '1 xícara', text: 'arroz integral cozido' },
@@ -5331,7 +5337,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/burrito-bowl-mexicano.webp',
       steps: [ ]
     },
 	
@@ -5382,7 +5388,7 @@ image: 'image/',
     
     allergens: ['Soja', 'Amendoim'],
     
-image: 'image/',
+image: 'image/pad-thai-vegano.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '200g', text: 'macarrão de arroz' },
@@ -5418,7 +5424,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/pad-thai-vegano.webp',
       steps: [ ]
     },
 	
@@ -5469,7 +5475,7 @@ image: 'image/',
     
     allergens: ['Nenhum'],
     
-image: 'image/',
+image: 'image/quiche-de-brocolis-sem-gluten.webp',
     
     ingredients: [
         { icon: 'wheat', quantity: '1 xícara', text: 'farinha de grão-de-bico' },
@@ -5504,7 +5510,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/quiche-de-brocolis-sem-gluten.webp',
       steps: [ ]
     },
 	
@@ -5555,7 +5561,7 @@ image: 'image/',
     
     allergens: ['Soja'],
     
-image: 'image/',
+image: 'image/escondidinho-de-mandioca-com-proteina-de-soja.webp',
     
     ingredients: [
         { icon: 'circle', quantity: '1kg', text: 'mandioca descascada' },
@@ -5590,7 +5596,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/escondidinho-de-mandioca-com-proteina-de-soja.webp',
       steps: [ ]
     },
 	
@@ -5636,7 +5642,7 @@ image: 'image/',
   allergens: ['Amendoim (pasta)', 'Oleaginosas (se usar granola)'],
   
   
-image: 'image/',
+image: 'image/bowl-de-frutas-com-pasta-de-amendoim.webp',
 
 
 
@@ -5662,7 +5668,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/bowl-de-frutas-com-pasta-de-amendoim.webp',
       steps: [ ]
     },
 	
@@ -5689,7 +5695,7 @@ image: 'image/',
   allergens: ['Aveia'],
   
   
-image: 'image/',
+image: 'image/mingau-de-aveia-com-canela.webp',
   
   
   
@@ -5715,7 +5721,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/mingau-de-aveia-com-canela.webp',
       steps: [ ]
     },
 	
@@ -5742,7 +5748,7 @@ image: 'image/',
   allergens: ['Amendoim'],
   
   
-image: 'image/',
+image: 'image/smoothie-de-banana-com-amendoim.webp',
   
   
   
@@ -5764,7 +5770,12 @@ image: 'image/',
     '🍫 Cacau em pó combina muito.',
     '💪 Se quiser mais proteína, adicione proteína vegetal em pó.'
   ],
-  images: { hero: 'image/smoothie-de-banana-com-amendoim', steps: [] },
+  	
+    images: {
+      hero: 'image/smoothie-de-banana-com-amendoim.webp',
+      steps: [ ]
+    },
+	
   macros: { breakfast: '17% proteína, 48% carboidratos, 33% gorduras', vegan: '100% vegetal' }
 },
 
@@ -5787,7 +5798,7 @@ image: 'image/',
   allergens: ['Pode conter soja (iogurte)', 'Oleaginosas (granola)'],
   
   
-  image: 'image/',
+  image: 'image/iogurte-vegano-com-granola-e-frutas.webp',
   
   
   ingredients: [
@@ -5810,7 +5821,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/iogurte-vegano-com-granola-e-frutas.webp',
       steps: [ ]
     },
 	
@@ -5837,7 +5848,7 @@ image: 'image/',
   allergens: ['Glúten (pão)'],
   
   
-image: 'image/',
+image: 'image/torrada-integral-com-guacamole.webp',
   
   
   ingredients: [
@@ -5861,7 +5872,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/torrada-integral-com-guacamole.webp',
       steps: [ ]
     },
 	
@@ -5888,7 +5899,7 @@ image: 'image/',
   allergens: [],
   
   
-image: 'image/',
+image: 'image/salada-morna-de-quinoa-e-legumes.webp',
   
   
   ingredients: [
@@ -5914,7 +5925,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/salada-morna-de-quinoa-e-legumes.webp',
       steps: [ ]
     },
 	
@@ -5941,7 +5952,7 @@ image: 'image/',
   allergens: ['Pode conter soja (defumado vegetal)'],
   
   
-  image: 'image/',
+  image: 'image/feijoada-vegana-fit.webp',
   
   
   ingredients: [
@@ -5968,7 +5979,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/feijoada-vegana-fit.webp',
       steps: [ ]
     },
 	
@@ -5995,7 +6006,7 @@ image: 'image/',
   allergens: [],
   
   
-image: 'image/',
+image: 'image/moqueca-vegana-de-banana-da-terra.webp',
   
   
   
@@ -6022,7 +6033,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/moqueca-vegana-de-banana-da-terra.webp',
       steps: [ ]
     },
 	
@@ -6050,7 +6061,7 @@ image: 'image/',
   
   
   
-image: 'image/',
+image: 'image/hamburguer-de-grao-de-bico.webp',
   
   
   
@@ -6077,7 +6088,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/hamburguer-de-grao-de-bico.webp',
       steps: [ ]
     },
 	
@@ -6105,7 +6116,7 @@ image: 'image/',
   
   
   
-image: 'image/',
+image: 'image/macarrao-integral-ao-pesto-vegano.webp',
   
   
   
@@ -6133,7 +6144,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/macarrao-integral-ao-pesto-vegano.webp',
       steps: [ ]
     },
 	
@@ -6215,7 +6226,7 @@ image: 'image/',
   
   
   
-image: 'image/',
+image: 'image/bowl-de-lentilha-com-vegetais.webp',
   
   
   
@@ -6243,7 +6254,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/bowl-de-lentilha-com-vegetais.webp',
       steps: [ ]
     },
 	
@@ -6271,7 +6282,7 @@ image: 'image/',
   
   
   
-image: 'image/',
+image: 'image/curry-de-grao-de-bico.webp',
   
   
   
@@ -6299,7 +6310,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/curry-de-grao-de-bico.webp',
       steps: [ ]
     },
 	
@@ -6326,7 +6337,7 @@ image: 'image/',
   allergens: ['Soja (tofu)'],
   
   
-image: 'image/',
+image: 'image/tofu-grelhado-com-legumes.webp',
   
   
   ingredients: [
@@ -6353,7 +6364,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/tofu-grelhado-com-legumes.webp',
       steps: [ ]
     },
 	
@@ -6380,7 +6391,7 @@ image: 'image/',
   allergens: ['Glúten (wrap)', 'Gergelim (se usar tahine)', 'Grão-de-bico'],
   
   
-image: 'image/',
+image: 'image/wrap-integral-de-falafel.webp',
   
   
   ingredients: [
@@ -6405,7 +6416,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/wrap-integral-de-falafel.webp',
       steps: [ ]
     },
 	
@@ -6432,7 +6443,7 @@ image: 'image/',
   allergens: [],
   
   
-image: 'image/',
+image: 'image/sopa-detox-de-abobora.webp',
   
   
   ingredients: [
@@ -6458,7 +6469,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/sopa-detox-de-abobora.webp',
       steps: [ ]
     },
 	
@@ -6485,7 +6496,7 @@ image: 'image/',
   allergens: ['Oleaginosas (se usar castanhas)', 'Glúten (croutons)'],
   
   
-image: 'image/',
+image: 'image/salada-caesar-vegana.webp',
   
   
   ingredients: [
@@ -6510,7 +6521,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/salada-caesar-vegana.webp',
       steps: [ ]
     },
 	
@@ -6537,7 +6548,7 @@ image: 'image/',
   allergens: ['Pode conter soja (creme vegetal)'],
   
   
-image: 'image/',
+image: 'image/strogonoff-vegano-de-cogumelos.webp',
   
   
   ingredients: [
@@ -6564,7 +6575,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/strogonoff-vegano-de-cogumelos.webp',
       steps: [ ]
     },
 	
@@ -6591,7 +6602,7 @@ image: 'image/',
   allergens: [],
   
   
-image: 'image/',
+image: 'image/bolinho-assado-de-quinoa.webp',
   
   
   
@@ -6618,7 +6629,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/bolinho-assado-de-quinoa.webp',
       steps: [ ]
     },
 	
@@ -6645,7 +6656,7 @@ image: 'image/',
   allergens: [],
   
   
-image: 'image/',
+image: 'image/chili-vegano.webp',
   
   
   ingredients: [
@@ -6672,7 +6683,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/chili-vegano.webp',
       steps: [ ]
     },
 	
