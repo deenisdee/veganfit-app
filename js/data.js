@@ -1,5 +1,5 @@
 // ============================================
-// ARQUIVO: js/data.js - VEGANO (50 RECEITAS)
+// ARQUIVO: js/data.js - VEGANO 
 // Gerado para o Receitafit.App (vegano).
 // Categorias: Café da Manhã | Almoço/Janta | Lanches | Sobremesas | Sucos
 // Imagens: placeholders via source.unsplash.com (troque pelo seu repositório futuro quando quiser)
