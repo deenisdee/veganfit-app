@@ -2702,7 +2702,7 @@ image: 'image/brownie-vegano-de-banana.webp',
 	
 	
     images: {
-      hero: 'image/brownie-vegano-de-banana.webp',
+      hero: 'image/brownie-vegano-de-banana-16-9.png',
       steps: [ ]
     },
 	
@@ -3727,7 +3727,7 @@ image: 'image/suco-de-uva-integral-com-limao.webp',
 	
 	
     images: {
-      hero: 'image/suco-de-uva-integral-com-limao.webp',
+      hero: 'image/suco-de-uva-integral-com-limao-16-9.png',
       steps: [ ]
     },
 	
@@ -4575,7 +4575,7 @@ image: 'image/crepioca-de-espinafre.webp',
 	
 	
     images: {
-      hero: 'image/crepioca-de-espinafre.webp',
+      hero: 'image/crepioca-de-espinafre-16-9.png',
       steps: [ ]
     },
 	
@@ -5510,7 +5510,7 @@ image: 'image/quiche-de-brocolis-sem-gluten.webp',
 	
 	
     images: {
-      hero: 'image/quiche-de-brocolis-sem-gluten.webp',
+      hero: 'image/quiche-de-brocolis-sem-gluten-16-9.png',
       steps: [ ]
     },
 	
