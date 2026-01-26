@@ -1332,7 +1332,11 @@ function initSliderAndCategories() {
         <div class="slide-new" data-recipe-id="${id}" role="button" tabindex="0" aria-label="Abrir receita ${recipe.name}">
           <img src="${img}" alt="${recipe.name}"
             loading="eager" decoding="async"
-            onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=60';">
+			
+			
+            onerror="this.onerror=null; this.src='https://mymortgagecompany.co.uk/wp-content/uploads/2016/09/placeholder.png';">
+			
+			
           <div class="slide-overlay-new">
             <h2 class="slide-title-new">${recipe.name}</h2>
             <p class="slide-description-new">${recipe.description || 'Receita deliciosa'}</p>
