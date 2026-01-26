@@ -1,2751 +1,4032 @@
 // ============================================
-// ARQUIVO: js/data.js - VERSÃO COMPLETA
+// ARQUIVO: js/data.js - VEGANO (50 RECEITAS)
+// Gerado para o Receitafit.App (vegano).
+// Categorias: Café da Manhã | Almoço/Janta | Lanches | Sobremesas | Sucos
+// Imagens: placeholders via source.unsplash.com (troque pelo seu repositório futuro quando quiser)
 // ============================================
-// 
 
-const RECIPES = [
-   {
+const RECIPES = [{
     id: 1,
-    name: 'Bowl de Açaí Proteico',
+    name: 'Overnight Oats Proteico',
     category: 'Café da Manhã',
-    calories: 320,
-    protein: 25,
-    carbs: 42,
-    fats: 8,
-    fiber: 6,
+    calories: 420,
+    protein: 18,
+    carbs: 62,
+    fats: 12,
+    fiber: 10,
+    time: 8,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: true,
+    description: 'Aveia e chia com pasta de amendoim e frutas, alto teor de fibras e saciedade.',
+    tags: [
+      'Proteico',
+      'Rápido',
+      'Sem açúcar refinado',
+      'Fibras'
+    ],
+    benefits: [
+      'Alta saciedade pela fibra',
+      'Energia estável',
+      'Bom pré ou pós-treino leve'
+    ],
+    allergens: [
+      'Oleaginosas (pasta de amendoim)'
+    ],
+	
+	
+    image: 'image/overnight-oats-proteico.webp',
+	
+	
+    ingredients: [
+      {
+        icon: 'wheat',
+        quantity: '5 colheres sopa',
+        text: 'aveia em flocos'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher sopa',
+        text: 'chia'
+      },
+      {
+        icon: 'droplets',
+        quantity: '200ml',
+        text: 'bebida vegetal (aveia/amêndoas/coco)'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 colher sopa',
+        text: 'pasta de amendoim',
+        optional: true
+      },
+      {
+        icon: 'banana',
+        quantity: '1/2 unidade',
+        text: 'banana em rodelas'
+      },
+      {
+        icon: 'strawberry',
+        quantity: 'a gosto',
+        text: 'morangos ou frutas vermelhas'
+      }
+    ],
+    instructions: [
+      'Misture aveia, chia e a bebida vegetal em um pote.',
+      'Adicione canela (opcional) e mexa bem.',
+      'Leve à geladeira por pelo menos 4 horas (ideal: noite inteira).',
+      'Finalize com banana e frutas vermelhas.',
+      'Se quiser, coloque pasta de amendoim por cima.',
+      'Sirva gelado.'
+    ],
+    tips: [
+      '💡 Ajuste a textura: mais bebida vegetal deixa mais cremoso.',
+      '🔥 Para mais proteína: adicione 1 scoop de proteína vegetal (opcional).',
+      '🍓 Use frutas congeladas para ficar mais refrescante.'
+    ],
+	
+	
+    images: {
+      hero: 'image/overnight-oats-proteico.webp',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '17% proteína, 59% carboidratos, 26% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 2,
+    name: 'Tofu Mexido',
+    category: 'Café da Manhã',
+    calories: 290,
+    protein: 22,
+    carbs: 10,
+    fats: 18,
+    fiber: 4,
     time: 10,
     servings: 1,
     difficulty: 'Fácil',
-
     featured: false,
-    description: 'Bowl cremoso de açaí com 25g de proteína, perfeito para pós-treino',
-    
+    description: 'Tofu temperado e dourado, versão vegana do “ovo mexido”, rico em proteína.',
     tags: [
-        'Post-treino',
-        'Energético',
-        'Antioxidante',
-        'Rico em proteína'
+      'Proteico',
+      'Sem glúten',
+      'Rápido',
+      'Salgado'
     ],
+    benefits: [
+      'Boa proteína vegetal',
+      'Rápido e prático',
+      'Ótimo para sanduíches'
+    ],
+    allergens: [
+      'Soja'
+    ],
+	
+	
+    image: 'image/tofu-mexido.webp',
+	
+	
+    ingredients: [
+      {
+        icon: 'square',
+        quantity: '150g',
+        text: 'tofu firme amassado'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'azeite'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1/2 colher chá',
+        text: 'cúrcuma'
+      },
+      {
+        icon: 'leaf',
+        quantity: '1 colher sopa',
+        text: 'cebolinha picada'
+      },
+      {
+        icon: 'circle',
+        quantity: 'a gosto',
+        text: 'sal e pimenta'
+      },
+      {
+        icon: 'flame',
+        quantity: '1 colher sopa',
+        text: 'levedura nutricional',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Aqueça o azeite na frigideira.',
+      'Adicione o tofu amassado e refogue 2 minutos.',
+      'Tempere com cúrcuma, sal e pimenta.',
+      'Doure por 4–5 minutos, mexendo para não grudar.',
+      'Finalize com cebolinha e levedura nutricional (opcional).',
+      'Sirva quente.'
+    ],
+    tips: [
+      '🥪 Fica ótimo em pão integral com tomate.',
+      '🌶️ Para mais sabor: use páprica defumada.',
+      '🍄 Adicione cogumelos para uma versão mais completa.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '30% proteína, 14% carboidratos, 56% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 3,
+    name: 'Panqueca Vegana de Banana e Aveia',
+    category: 'Café da Manhã',
+    calories: 360,
+    protein: 10,
+    carbs: 62,
+    fats: 8,
+    fiber: 9,
+    time: 15,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Panqueca macia sem ovos, com banana madura e aveia.',
+    tags: [
+      'Sem ovo',
+      'Rápida',
+      'Doce natural',
+      'Fibras'
+    ],
+    benefits: [
+      'Sem açúcar refinado',
+      'Boa energia para manhã',
+      'Ajuda no controle de fome'
+    ],
+    allergens: [
+      'Glúten (se aveia não certificada)'
+    ],
+	
+	
+    image: 'image/',
+	
+	
+    ingredients: [
+      {
+        icon: 'banana',
+        quantity: '1 unidade',
+        text: 'banana madura'
+      },
+      {
+        icon: 'wheat',
+        quantity: '4 colheres sopa',
+        text: 'aveia'
+      },
+      {
+        icon: 'droplets',
+        quantity: '80ml',
+        text: 'bebida vegetal'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher chá',
+        text: 'fermento químico'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 colher chá',
+        text: 'canela',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Amasse a banana em uma tigela.',
+      'Misture a aveia e a bebida vegetal até virar massa.',
+      'Adicione canela e fermento e misture delicadamente.',
+      'Aqueça uma frigideira antiaderente levemente untada.',
+      'Cozinhe por 2 minutos de cada lado.',
+      'Sirva com frutas ou pasta de amendoim (opcional).'
+    ],
+    tips: [
+      '🥞 Se quiser mais fofinha: deixe a massa descansar 5 min.',
+      '🍓 Top: morangos + canela.',
+      '🧊 Banana bem madura dá mais doçura.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '11% proteína, 69% carboidratos, 20% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 4,
+    name: 'Vitamina Proteica de Morango',
+    category: 'Café da Manhã',
+    calories: 260,
+    protein: 8,
+    carbs: 45,
+    fats: 4,
+    fiber: 6,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Vitamina cremosa com morango, banana e proteína vegetal (opcional).',
+    tags: [
+      'Rápido',
+      'Pós-treino',
+      'Refrescante',
+      'Sem lactose'
+    ],
+    benefits: [
+      'Rápida digestão',
+      'Boa para energia',
+      'Alta saciedade se adicionar proteína'
+    ],
+    allergens: [
+      'Pode conter soja (dependendo da proteína)'
+    ],
+	
+	
+    image: 'image/',
+	
+	
+    ingredients: [
+      {
+        icon: 'strawberry',
+        quantity: '1 xícara',
+        text: 'morangos'
+      },
+      {
+        icon: 'banana',
+        quantity: '1/2 unidade',
+        text: 'banana'
+      },
+      {
+        icon: 'droplets',
+        quantity: '250ml',
+        text: 'bebida vegetal'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 scoop',
+        text: 'proteína vegetal (opcional)',
+        optional: true
+      },
+      {
+        icon: 'snowflake',
+        quantity: 'a gosto',
+        text: 'gelo',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata todos os ingredientes no liquidificador.',
+      'Ajuste a consistência com mais bebida vegetal, se necessário.',
+      'Sirva na hora.',
+      'Se quiser mais gelada, adicione gelo.',
+      'Finalize com canela (opcional).'
+    ],
+    tips: [
+      '💪 Proteína vegetal de ervilha costuma ficar bem cremosa.',
+      '🍌 Banana congelada melhora textura.',
+      '🍯 Se precisar de mais doce, use tâmaras em vez de açúcar.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '12% proteína, 69% carboidratos, 14% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 5,
+    name: 'Tapioca com Homus e Tomate',
+    category: 'Café da Manhã',
+    calories: 310,
+    protein: 9,
+    carbs: 55,
+    fats: 6,
+    fiber: 7,
+    time: 10,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Tapioca recheada com homus e tomate, prática e salgada.',
+    tags: [
+      'Sem glúten',
+      'Rápida',
+      'Salgada',
+      'Vegana'
+    ],
+    benefits: [
+      'Boa energia',
+      'Fonte de proteína do grão-de-bico',
+      'Leve'
+    ],
+    allergens: [
+      'Gergelim (se homus tiver tahine)'
+    ],
+	
+	
+    image: 'image/',
+	
+	
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '3 colheres sopa',
+        text: 'goma de tapioca'
+      },
+      {
+        icon: 'beans',
+        quantity: '3 colheres sopa',
+        text: 'homus'
+      },
+      {
+        icon: 'tomato',
+        quantity: '4 fatias',
+        text: 'tomate'
+      },
+      {
+        icon: 'leaf',
+        quantity: 'a gosto',
+        text: 'rúcula',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Aqueça a frigideira e espalhe a goma de tapioca.',
+      'Deixe firmar (cerca de 1 minuto) e vire.',
+      'Recheie com homus e tomate.',
+      'Adicione rúcula (opcional).',
+      'Dobre e sirva.'
+    ],
+    tips: [
+      '🌶️ Acrescente páprica ao homus.',
+      '🥒 Pepino fatiado deixa mais crocante.',
+      '🧂 Sal apenas se necessário (homus já costuma ter).'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '12% proteína, 71% carboidratos, 17% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 6,
+    name: 'Pão de Queijo Vegano de Mandioquinha',
+    category: 'Café da Manhã',
+    calories: 240,
+    protein: 6,
+    carbs: 38,
+    fats: 8,
+    fiber: 4,
+    time: 30,
+    servings: 6,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Versão vegana com mandioquinha e polvilho, crocante por fora e macio por dentro.',
+    tags: [
+      'Sem lactose',
+      'Assado',
+      'Conforto',
+      'Vegano'
+    ],
+    benefits: [
+      'Boa opção para lanche ou café',
+      'Sem ingredientes animais',
+      'Congela bem'
+    ],
+    allergens: [ ],
+	
+	
+    image: 'image/',
+	
+	
+    ingredients: [
+      {
+        icon: 'potato',
+        quantity: '1 xícara',
+        text: 'mandioquinha cozida e amassada'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 xícara',
+        text: 'polvilho azedo'
+      },
+      {
+        icon: 'droplets',
+        quantity: '2 colheres sopa',
+        text: 'azeite'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher chá',
+        text: 'sal'
+      },
+      {
+        icon: 'flame',
+        quantity: '1 colher sopa',
+        text: 'levedura nutricional',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Misture mandioquinha, azeite e sal.',
+      'Adicione o polvilho aos poucos, até dar ponto de enrolar.',
+      'Se usar, misture levedura nutricional.',
+      'Modele bolinhas.',
+      'Asse a 200°C por 20–25 minutos.',
+      'Sirva quente.'
+    ],
+    tips: [
+      '❄️ Congele as bolinhas cruas e asse direto do freezer.',
+      '🧀 Levedura nutricional dá sabor “queijinho”.',
+      '🔥 Não abra o forno nos primeiros 15 minutos.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '10% proteína, 63% carboidratos, 30% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 7,
+    name: 'Creme de Abacate com Cacau',
+    category: 'Café da Manhã',
+    calories: 280,
+    protein: 5,
+    carbs: 28,
+    fats: 16,
+    fiber: 8,
+    time: 10,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Creme doce com abacate e cacau, tipo mousse rápida.',
+    tags: [
+      'Sem açúcar refinado',
+      'Gorduras boas',
+      'Rápido',
+      'Doce natural'
+    ],
+    benefits: [
+      'Gorduras boas e saciedade',
+      'Antioxidantes do cacau',
+      'Sem lactose'
+    ],
+    allergens: [ ],
+	
+	
+    image: 'image/',
+	
+	
+    ingredients: [
+      {
+        icon: 'leaf',
+        quantity: '1/2 unidade',
+        text: 'abacate maduro'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher sopa',
+        text: 'cacau em pó 100%'
+      },
+      {
+        icon: 'circle',
+        quantity: '2 unidades',
+        text: 'tâmaras sem caroço'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1–2 colheres sopa',
+        text: 'água (para bater)',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata o abacate, cacau e tâmaras no processador.',
+      'Se necessário, adicione 1 colher de água para ajudar a bater.',
+      'Prove e ajuste o doce com mais tâmaras.',
+      'Leve à geladeira por 15 minutos.',
+      'Sirva gelado.'
+    ],
+    tips: [
+      '🍓 Combina com morango por cima.',
+      '🧊 Abacate bem maduro evita gosto “verde”.',
+      '🍫 Use cacau, não achocolatado.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '7% proteína, 40% carboidratos, 51% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 8,
+    name: 'Granola Caseira Crocante',
+    category: 'Café da Manhã',
+    calories: 210,
+    protein: 6,
+    carbs: 30,
+    fats: 8,
+    fiber: 5,
+    time: 30,
+    servings: 8,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Granola vegana assada com aveia, sementes e coco.',
+    tags: [
+      'Meal prep',
+      'Crocante',
+      'Fibras',
+      'Café da manhã'
+    ],
+    benefits: [
+      'Economiza na semana',
+      'Boa para iogurte vegetal',
+      'Rica em fibras'
+    ],
+    allergens: [
+      'Oleaginosas'
+    ],
+	
+	
+    image: 'image/',
+	
+	
+    ingredients: [
+      {
+        icon: 'wheat',
+        quantity: '2 xícaras',
+        text: 'aveia'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1/2 xícara',
+        text: 'sementes (chia/linhaça/girassol)'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 xícara',
+        text: 'coco em lascas'
+      },
+      {
+        icon: 'droplets',
+        quantity: '2 colheres sopa',
+        text: 'óleo de coco ou azeite suave'
+      },
+      {
+        icon: 'circle',
+        quantity: '2 colheres sopa',
+        text: 'melado de cana',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Misture aveia, sementes e coco.',
+      'Adicione óleo e, se usar, melado.',
+      'Espalhe em assadeira.',
+      'Asse a 170°C por 20 minutos, mexendo na metade.',
+      'Deixe esfriar para ficar crocante.',
+      'Guarde em pote fechado.'
+    ],
+    tips: [
+      '🔥 Granola só fica crocante depois de esfriar.',
+      '🥜 Adicione castanhas depois de assar para não queimar.',
+      '🧂 Pitada de sal realça o sabor.'
+    ],
+ 	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '11% proteína, 57% carboidratos, 34% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 9,
+    name: 'Pudim de Chia com Manga',
+    category: 'Café da Manhã',
+    calories: 230,
+    protein: 7,
+    carbs: 28,
+    fats: 10,
+    fiber: 12,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Pudim de chia com bebida vegetal e manga, leve e refrescante.',
+    tags: [
+      'Sem açúcar refinado',
+      'Fibras',
+      'Refrescante',
+      'Prático'
+    ],
+    benefits: [
+      'Alta saciedade',
+      'Ômega-3 (chia)',
+      'Ótimo para levar'
+    ],
+    allergens: [ ],
+	
+	
+    image: 'image/',
+	
+	
+    ingredients: [
+      {
+        icon: 'sparkles',
+        quantity: '2 colheres sopa',
+        text: 'chia'
+      },
+      {
+        icon: 'droplets',
+        quantity: '200ml',
+        text: 'bebida vegetal'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 xícara',
+        text: 'manga picada'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 colher chá',
+        text: 'baunilha',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Misture chia com bebida vegetal e baunilha (opcional).',
+      'Leve à geladeira por 2 horas (ou de um dia pro outro).',
+      'Mexa uma vez após 10 minutos para não empelotar.',
+      'Finalize com manga por cima.',
+      'Sirva gelado.'
+    ],
+    tips: [
+      '🥭 Qualquer fruta funciona: morango, banana, kiwi.',
+      '🥄 Se quiser mais doce: use 1 tâmara batida.',
+      '🧊 Faça em potes individuais para a semana.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '12% proteína, 49% carboidratos, 39% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 10,
+    name: 'Cuscuz de Milho com Legumes',
+    category: 'Café da Manhã',
+    calories: 320,
+    protein: 7,
+    carbs: 62,
+    fats: 6,
+    fiber: 6,
+    time: 18,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Cuscuz nordestino vegano com legumes salteados, simples e bem brasileiro.',
+    tags: [
+      'Sem lactose',
+      'Rápido',
+      'Salgado',
+      'Conforto'
+    ],
+    benefits: [
+      'Boa energia',
+      'Versátil para variar legumes',
+      'Ótimo com tofu mexido'
+    ],
+    allergens: [ ],
+	
+	
+    image: 'image/',
+	
+	
+    ingredients: [
+      {
+        icon: 'wheat',
+        quantity: '1/2 xícara',
+        text: 'flocão de milho (cuscuz)'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1/2 xícara',
+        text: 'água'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 pitada',
+        text: 'sal'
+      },
+      {
+        icon: 'carrot',
+        quantity: '1/3 xícara',
+        text: 'legumes picados (cenoura, ervilha, milho)'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher chá',
+        text: 'azeite',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Hidrate o flocão com água e sal por 5 minutos.',
+      'Cozinhe no cuscuzeiro por 8–10 minutos.',
+      'Salteie os legumes com um fio de azeite (opcional).',
+      'Misture os legumes ao cuscuz e sirva.'
+    ],
+    tips: [
+      '🌶️ Um toque de pimenta é opcional.',
+      '🥗 Sirva com folhas para equilibrar.',
+      '🧊 Dá pra deixar o cuscuz pronto e só aquecer.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      breakfast: '9% proteína, 78% carboidratos, 17% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 11,
+    name: 'Strogonoff Vegano de Grão-de-Bico',
+    category: 'Almoço/Janta',
+    calories: 520,
+    protein: 20,
+    carbs: 70,
+    fats: 16,
+    fiber: 13,
+    time: 20,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: true,
+    description: 'Strogonoff cremoso com grão-de-bico e creme vegetal, pronto em 20 min.',
+    tags: [
+      'Proteico',
+      'Conforto',
+      'Rápido',
+      'Sem lactose'
+    ],
+    benefits: [
+      'Boa proteína vegetal',
+      'Saciedade',
+      'Ótimo para marmita'
+    ],
+    allergens: [
+      'Pode conter soja (creme vegetal)'
+    ],
+	
+	
+image: 'image/',
+
+
+    ingredients: [
+      {
+        icon: 'beans',
+        quantity: '1 xícara',
+        text: 'grão-de-bico cozido'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'azeite'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 unidade',
+        text: 'cebola picada'
+      },
+      {
+        icon: 'circle',
+        quantity: '2 dentes',
+        text: 'alho'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '2 colheres sopa',
+        text: 'extrato de tomate'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 xícara',
+        text: 'creme vegetal (aveia/castanha)'
+      }
+    ],
+    instructions: [
+      'Refogue cebola e alho no azeite.',
+      'Adicione o extrato de tomate e mexa por 1 minuto.',
+      'Junte o grão-de-bico e misture.',
+      'Acrescente o creme vegetal e ajuste o sal.',
+      'Cozinhe por 5 minutos em fogo baixo.',
+      'Sirva com arroz e batata palha.'
+    ],
+    tips: [
+      '🍄 Adicione cogumelos para mais sabor.',
+      '🌶️ Páprica defumada dá um toque especial.',
+      '🥣 Para reduzir calorias, use creme de aveia caseiro.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '15% proteína, 54% carboidratos, 28% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 12,
+    name: 'Curry de Legumes com Lentilha',
+    category: 'Almoço/Janta',
+    calories: 560,
+    protein: 22,
+    carbs: 78,
+    fats: 18,
+    fiber: 14,
+    time: 30,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Curry aromático com lentilhas e legumes, perfeito para dias frios.',
+    tags: [
+      'Rico em fibras',
+      'Meal prep',
+      'Proteico',
+      'Sem lactose'
+    ],
+    benefits: [
+      'Ajuda saciedade',
+      'Fonte de ferro (lentilha)',
+      'Congela bem'
+    ],
+    allergens: [ ],
+	
+	
+image: 'image/',
+
+
+    ingredients: [
+      {
+        icon: 'beans',
+        quantity: '1 xícara',
+        text: 'lentilha cozida'
+      },
+      {
+        icon: 'carrot',
+        quantity: '1 unidade',
+        text: 'cenoura em cubos'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 xícara',
+        text: 'brócolis'
+      },
+      {
+        icon: 'droplets',
+        quantity: '200ml',
+        text: 'leite de coco light'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher sopa',
+        text: 'curry em pó'
+      },
+      {
+        icon: 'circle',
+        quantity: 'a gosto',
+        text: 'sal e pimenta'
+      }
+    ],
+    instructions: [
+      'Refogue os legumes em um fio de azeite.',
+      'Adicione o curry e mexa para liberar aroma.',
+      'Junte a lentilha e misture.',
+      'Acrescente o leite de coco e ajuste sal.',
+      'Cozinhe 8–10 minutos.',
+      'Sirva com arroz integral.'
+    ],
+    tips: [
+      '🍋 Finalize com limão para realçar.',
+      '🌿 Coentro é opcional, mas combina muito.',
+      '❄️ Ótimo para congelar em porções.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '16% proteína, 56% carboidratos, 29% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 13,
+    name: 'Chili Vegano',
+    category: 'Almoço/Janta',
+    calories: 480,
+    protein: 18,
+    carbs: 78,
+    fats: 8,
+    fiber: 15,
+    time: 25,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Chili apimentado com feijão, milho e tomate.',
+    tags: [
+      'Proteico',
+      'Sem lactose',
+      'Picante',
+      'Marmita'
+    ],
+    benefits: [
+      'Alta saciedade',
+      'Fonte de fibras',
+      'Ótimo custo-benefício'
+    ],
+    allergens: [ ],
+	
+	
+image: 'image/',
+
+
+    ingredients: [
+      {
+        icon: 'beans',
+        quantity: '1 e 1/2 xícara',
+        text: 'feijão cozido'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 xícara',
+        text: 'milho'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 xícara',
+        text: 'tomate picado ou pelado'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher chá',
+        text: 'cominho'
+      },
+      {
+        icon: 'flame',
+        quantity: 'a gosto',
+        text: 'pimenta',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Refogue cebola e alho (opcional).',
+      'Adicione tomate e temperos.',
+      'Junte feijão e milho.',
+      'Cozinhe 10 minutos.',
+      'Ajuste sal e pimenta.',
+      'Sirva com arroz ou tortilha.'
+    ],
+    tips: [
+      '🥑 Guacamole combina muito bem.',
+      '🧄 Alho e cebola elevam o sabor.',
+      '🌶️ Ajuste a pimenta ao seu paladar.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '15% proteína, 65% carboidratos, 15% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 14,
+    name: 'Bowl de Tofu Grelhado',
+    category: 'Almoço/Janta',
+    calories: 620,
+    protein: 28,
+    carbs: 72,
+    fats: 22,
+    fiber: 12,
+    time: 20,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Bowl completo com tofu, arroz, feijão e salada.',
+    tags: [
+      'Completo',
+      'Proteico',
+      'Marmita',
+      'Balanceado'
+    ],
+    benefits: [
+      'Refeição equilibrada',
+      'Boa proteína',
+      'Ótimo pós-treino'
+    ],
+    allergens: [
+      'Soja'
+    ],
+	
+	
+image: 'image/',
+
+
+    ingredients: [
+      {
+        icon: 'square',
+        quantity: '180g',
+        text: 'tofu em cubos'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'shoyu ou tamari'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 xícara',
+        text: 'arroz cozido'
+      },
+      {
+        icon: 'beans',
+        quantity: '1/2 xícara',
+        text: 'feijão cozido'
+      },
+      {
+        icon: 'leaf',
+        quantity: '1 xícara',
+        text: 'salada variada'
+      }
+    ],
+    instructions: [
+      'Tempere o tofu com shoyu e deixe 5 min.',
+      'Grelhe em frigideira antiaderente até dourar.',
+      'Monte o bowl com arroz, feijão e salada.',
+      'Coloque o tofu por cima.',
+      'Finalize com limão e azeite (opcional).'
+    ],
+    tips: [
+      '🔥 Use tamari para versão sem glúten.',
+      '🥗 Varie folhas e legumes para não enjoar.',
+      '🧊 Tofu firme grelha melhor.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '18% proteína, 46% carboidratos, 32% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 15,
+    name: 'Macarrão ao Molho de Castanha',
+    category: 'Almoço/Janta',
+    calories: 690,
+    protein: 18,
+    carbs: 92,
+    fats: 24,
+    fiber: 9,
+    time: 25,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Molho cremoso de castanha (tipo branco), sem lactose.',
+    tags: [
+      'Conforto',
+      'Cremoso',
+      'Sem lactose',
+      'Rápido'
+    ],
+    benefits: [
+      'Sabor de comida afetiva',
+      'Boa energia',
+      'Ótimo para família'
+    ],
+    allergens: [
+      'Oleaginosas'
+    ],
+	
+	
+image: 'image/',
+
+
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '80g',
+        text: 'macarrão (integral opcional)'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 xícara',
+        text: 'castanha de caju hidratada'
+      },
+      {
+        icon: 'droplets',
+        quantity: '200ml',
+        text: 'água'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 dente',
+        text: 'alho'
+      },
+      {
+        icon: 'sparkles',
+        quantity: 'a gosto',
+        text: 'sal e noz-moscada',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Cozinhe o macarrão e reserve.',
+      'Bata castanhas com água e alho até virar creme.',
+      'Aqueça o creme na panela e tempere.',
+      'Misture o macarrão ao molho.',
+      'Finalize com salsinha (opcional).'
+    ],
+    tips: [
+      '🥦 Acrescente brócolis para ficar completo.',
+      '🧄 Alho assado deixa mais suave.',
+      '💧 Ajuste a consistência com água do cozimento.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '10% proteína, 53% carboidratos, 31% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 16,
+    name: 'Hambúrguer de Feijão Preto',
+    category: 'Almoço/Janta',
+    calories: 410,
+    protein: 18,
+    carbs: 62,
+    fats: 10,
+    fiber: 14,
+    time: 25,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Hambúrguer vegano caseiro, ótimo para congelar.',
+    tags: [
+      'Proteico',
+      'Meal prep',
+      'Sem lactose',
+      'Sanduíche'
+    ],
+    benefits: [
+      'Boa proteína e fibra',
+      'Congela bem',
+      'Substitui carne com dignidade'
+    ],
+    allergens: [ ],
+	
+	
+image: 'image/',
+
+
+    ingredients: [
+      {
+        icon: 'beans',
+        quantity: '1 xícara',
+        text: 'feijão preto cozido e amassado'
+      },
+      {
+        icon: 'wheat',
+        quantity: '3 colheres sopa',
+        text: 'farinha de aveia'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/4 unidade',
+        text: 'cebola picada'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher chá',
+        text: 'cominho e páprica'
+      }
+    ],
+    instructions: [
+      'Misture feijão, farinha, cebola e temperos.',
+      'Modele 2 hambúrgueres.',
+      'Grelhe 4 minutos de cada lado.',
+      'Sirva no pão com salada e molho.',
+      'Ou congele cru para a semana.'
+    ],
+    tips: [
+      '❄️ Congele separando com papel manteiga.',
+      '🍞 Use pão integral para versão mais fit.',
+      '🌶️ Páprica defumada dá toque de churrasco.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '18% proteína, 60% carboidratos, 22% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 17,
+    name: 'Moqueca Vegana de Palmito',
+    category: 'Almoço/Janta',
+    calories: 540,
+    protein: 10,
+    carbs: 48,
+    fats: 34,
+    fiber: 8,
+    time: 25,
+    servings: 3,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Moqueca leve com palmito, tomate e leite de coco.',
+    tags: [
+      'Sem lactose',
+      'Brasileira',
+      'Saborosa',
+      'Rápida'
+    ],
+    benefits: [
+      'Rica em minerais',
+      'Conforto',
+      'Ótima para almoço em família'
+    ],
+    allergens: [ ],
+	
+	
+image: 'image/',
+
+
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '1 xícara',
+        text: 'palmito em rodelas'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 xícara',
+        text: 'tomate em cubos'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 unidade',
+        text: 'pimentão fatiado'
+      },
+      {
+        icon: 'droplets',
+        quantity: '200ml',
+        text: 'leite de coco'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher sopa',
+        text: 'azeite de dendê',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Refogue tomate e pimentão em panela.',
+      'Adicione palmito e misture.',
+      'Acrescente leite de coco e ajuste sal.',
+      'Se usar, coloque dendê.',
+      'Cozinhe 10 minutos.',
+      'Finalize com coentro (opcional) e sirva.'
+    ],
+    tips: [
+      '🍋 Limão no final realça muito.',
+      '🌿 Coentro é opcional.',
+      '🍚 Sirva com arroz integral.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '7% proteína, 36% carboidratos, 57% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 18,
+    name: 'Escondidinho de Lentilha',
+    category: 'Almoço/Janta',
+    calories: 650,
+    protein: 24,
+    carbs: 92,
+    fats: 18,
+    fiber: 18,
+    time: 45,
+    servings: 3,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Escondidinho com purê e recheio de lentilha temperada.',
+    tags: [
+      'Marmita',
+      'Conforto',
+      'Proteico',
+      'Meal prep'
+    ],
+    benefits: [
+      'Boa saciedade',
+      'Fonte de ferro',
+      'Rende bem'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'potato',
+        quantity: '2 xícaras',
+        text: 'batata ou mandioquinha cozida e amassada'
+      },
+      {
+        icon: 'beans',
+        quantity: '1 xícara',
+        text: 'lentilha cozida'
+      },
+      {
+        icon: 'circle',
+        quantity: '1/2 unidade',
+        text: 'cebola'
+      },
+      {
+        icon: 'sparkles',
+        quantity: 'a gosto',
+        text: 'sal, pimenta, páprica'
+      }
+    ],
+    instructions: [
+      'Faça o purê com a batata e ajuste sal.',
+      'Refogue cebola e temperos e junte a lentilha.',
+      'Em um refratário, faça camada de purê, recheio e purê.',
+      'Leve ao forno 200°C por 15 minutos.',
+      'Sirva.'
+    ],
+    tips: [
+      '🧀 Levedura nutricional por cima fica ótimo.',
+      '❄️ Congela super bem em porções.',
+      '🥗 Acompanhe com salada para equilibrar.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '15% proteína, 57% carboidratos, 25% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 19,
+    name: 'Berinjela à Parmegiana Vegana',
+    category: 'Almoço/Janta',
+    calories: 520,
+    protein: 16,
+    carbs: 68,
+    fats: 18,
+    fiber: 14,
+    time: 45,
+    servings: 3,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Berinjela assada com molho de tomate e “queijo” vegano de castanhas (opcional).',
+    tags: [
+      'Sem lactose',
+      'Saborosa',
+      'Forno',
+      'Jantar'
+    ],
+    benefits: [
+      'Vegetais em alta',
+      'Boa para família',
+      'Versão saudável'
+    ],
+    allergens: [
+      'Oleaginosas (opcional)'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'leaf',
+        quantity: '1 unidade',
+        text: 'berinjela fatiada'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 xícara',
+        text: 'molho de tomate'
+      },
+      {
+        icon: 'sparkles',
+        quantity: 'a gosto',
+        text: 'orégano e sal'
+      },
+      {
+        icon: 'circle',
+        quantity: '2 colheres sopa',
+        text: 'castanha triturada (opcional)',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Asse as fatias de berinjela 10 min a 200°C.',
+      'Em refratário, alterne berinjela e molho.',
+      'Tempere com orégano e sal.',
+      'Se quiser, finalize com castanha triturada.',
+      'Leve ao forno mais 10–15 min.',
+      'Sirva.'
+    ],
+    tips: [
+      '🍅 Molho caseiro fica mais saboroso.',
+      '🔥 Berinjela assada evita excesso de óleo.',
+      '🧄 Alho no molho eleva muito.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '12% proteína, 52% carboidratos, 31% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 20,
+    name: 'Arroz de Brócolis com Grão-de-Bico',
+    category: 'Almoço/Janta',
+    calories: 560,
+    protein: 20,
+    carbs: 86,
+    fats: 14,
+    fiber: 12,
+    time: 20,
+    servings: 3,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Arroz soltinho com brócolis e grão-de-bico, ótimo para marmita.',
+    tags: [
+      'Marmita',
+      'Rápido',
+      'Fibras',
+      'Completo'
+    ],
+    benefits: [
+      'Refeição simples e nutritiva',
+      'Boa proteína',
+      'Ótimo custo-benefício'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '1 xícara',
+        text: 'arroz cozido'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 xícara',
+        text: 'brócolis picado'
+      },
+      {
+        icon: 'beans',
+        quantity: '1/2 xícara',
+        text: 'grão-de-bico cozido'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'azeite'
+      },
+      {
+        icon: 'circle',
+        quantity: 'a gosto',
+        text: 'sal e pimenta'
+      }
+    ],
+    instructions: [
+      'Refogue o brócolis no azeite por 3 minutos.',
+      'Adicione o grão-de-bico e misture.',
+      'Junte o arroz cozido e mexa.',
+      'Ajuste sal e pimenta.',
+      'Sirva.'
+    ],
+    tips: [
+      '🥗 Combine com salada para ficar completo.',
+      '🧄 Alho e cebola são opcionais.',
+      '❄️ Ótimo para marmitas.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      lunch: '14% proteína, 61% carboidratos, 22% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 21,
+    name: 'Homus Tradicional',
+    category: 'Lanches',
+    calories: 260,
+    protein: 9,
+    carbs: 24,
+    fats: 14,
+    fiber: 7,
+    time: 10,
+    servings: 4,
+    difficulty: 'Fácil',
+    featured: true,
+    description: 'Patê de grão-de-bico com tahine, ótimo para lanches e sanduíches.',
+    tags: [
+      'Proteico',
+      'Fibras',
+      'Meal prep',
+      'Versátil'
+    ],
+    benefits: [
+      'Boa saciedade',
+      'Fonte de proteína vegetal',
+      'Dura vários dias'
+    ],
+    allergens: [
+      'Gergelim'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'beans',
+        quantity: '1 xícara',
+        text: 'grão-de-bico cozido'
+      },
+      {
+        icon: 'droplets',
+        quantity: '2 colheres sopa',
+        text: 'tahine'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 dente',
+        text: 'alho'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'limão'
+      },
+      {
+        icon: 'circle',
+        quantity: 'a gosto',
+        text: 'sal e cominho',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata tudo no processador.',
+      'Ajuste a textura com água aos poucos.',
+      'Prove e ajuste sal/limão.',
+      'Guarde por até 4 dias.',
+      'Sirva com legumes ou pão.'
+    ],
+    tips: [
+      '🥕 Cenoura e pepino são ótimos para mergulhar.',
+      '🌶️ Páprica por cima fica perfeito.',
+      '🧊 Dura bem na geladeira.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '14% proteína, 37% carboidratos, 48% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 22,
+    name: 'Bolinha Energética de Tâmara e Cacau',
+    category: 'Lanches',
+    calories: 140,
+    protein: 3,
+    carbs: 26,
+    fats: 3,
+    fiber: 4,
+    time: 10,
+    servings: 10,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Docinho rápido com tâmara, aveia e cacau.',
+    tags: [
+      'Sem açúcar refinado',
+      'Pré-treino',
+      'Prático',
+      'Doce'
+    ],
+    benefits: [
+      'Energia rápida',
+      'Boa para levar',
+      'Sem forno'
+    ],
+    allergens: [
+      'Oleaginosas (se usar pasta)'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '8 unidades',
+        text: 'tâmaras sem caroço'
+      },
+      {
+        icon: 'wheat',
+        quantity: '3 colheres sopa',
+        text: 'aveia'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher sopa',
+        text: 'cacau em pó'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 colher sopa',
+        text: 'pasta de amendoim',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata tâmaras no processador.',
+      'Adicione aveia e cacau.',
+      'Se precisar, pingue água.',
+      'Modele bolinhas.',
+      'Gele por 15 min.'
+    ],
+    tips: [
+      '❄️ Duram 5 dias na geladeira.',
+      '🍫 Use cacau 100%.',
+      '🥜 Pasta deixa mais macia.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '9% proteína, 74% carboidratos, 19% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 23,
+    name: 'Guacamole Express',
+    category: 'Lanches',
+    calories: 220,
+    protein: 3,
+    carbs: 12,
+    fats: 18,
+    fiber: 9,
+    time: 5,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Guacamole rápida com abacate e limão.',
+    tags: [
+      'Gorduras boas',
+      'Rápido',
+      'Sem glúten',
+      'Salgado'
+    ],
+    benefits: [
+      'Saciedade',
+      'Gorduras boas',
+      'Ótimo para controlar fome'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'leaf',
+        quantity: '1/2 unidade',
+        text: 'abacate'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'limão'
+      },
+      {
+        icon: 'circle',
+        quantity: 'a gosto',
+        text: 'sal e pimenta'
+      },
+      {
+        icon: 'leaf',
+        quantity: 'a gosto',
+        text: 'coentro',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Amasse o abacate.',
+      'Misture limão e temperos.',
+      'Finalize com coentro (opcional).',
+      'Sirva na hora.'
+    ],
+    tips: [
+      '🍋 Limão evita escurecer.',
+      '🌶️ Pimenta é opcional.',
+      '🥒 Pepino combina.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '5% proteína, 22% carboidratos, 74% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 24,
+    name: 'Pipoca com Levedura Nutricional',
+    category: 'Lanches',
+    calories: 190,
+    protein: 6,
+    carbs: 22,
+    fats: 8,
+    fiber: 5,
+    time: 8,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Pipoca com sabor “queijinho” vegano, leve.',
+    tags: [
+      'Sem lactose',
+      'Rápido',
+      'Crocante',
+      'Snack'
+    ],
+    benefits: [
+      'Alternativa melhor que salgadinhos',
+      'Boa fibra',
+      'Mata vontade'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '1/3 xícara',
+        text: 'milho de pipoca'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'azeite'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher sopa',
+        text: 'levedura nutricional'
+      },
+      {
+        icon: 'circle',
+        quantity: 'a gosto',
+        text: 'sal'
+      }
+    ],
+    instructions: [
+      'Estoure a pipoca.',
+      'Transfira para tigela.',
+      'Tempere com levedura e sal.',
+      'Misture e sirva.'
+    ],
+    tips: [
+      '🧂 Sal fino adere melhor.',
+      '🔥 Mexa a panela para não queimar.',
+      '🌶️ Páprica é um plus.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '13% proteína, 46% carboidratos, 38% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 25,
+    name: 'Wrap Vegano de Legumes',
+    category: 'Lanches',
+    calories: 330,
+    protein: 10,
+    carbs: 48,
+    fats: 10,
+    fiber: 8,
+    time: 10,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Wrap rápido com legumes e homus.',
+    tags: [
+      'Rápido',
+      'Leve',
+      'Prático',
+      'Para levar'
+    ],
+    benefits: [
+      'Boa opção para trabalho',
+      'Fácil de variar',
+      'Equilibrado'
+    ],
+    allergens: [
+      'Glúten (se tortilha comum)'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '1 unidade',
+        text: 'tortilha/wrap'
+      },
+      {
+        icon: 'circle',
+        quantity: '3 colheres sopa',
+        text: 'homus'
+      },
+      {
+        icon: 'leaf',
+        quantity: '1 xícara',
+        text: 'mix de folhas'
+      },
+      {
+        icon: 'carrot',
+        quantity: '1/2 unidade',
+        text: 'cenoura ralada'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'limão'
+      }
+    ],
+    instructions: [
+      'Passe homus na tortilha.',
+      'Adicione folhas e cenoura.',
+      'Regue com limão.',
+      'Enrole e corte.',
+      'Sirva.'
+    ],
+    tips: [
+      '🥒 Pepino deixa mais refrescante.',
+      '🧊 Embale para levar.',
+      '🌶️ Molho picante é opcional.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '12% proteína, 58% carboidratos, 27% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 26,
+    name: 'Iogurte Vegano com Frutas e Sementes',
+    category: 'Lanches',
+    calories: 260,
+    protein: 8,
+    carbs: 34,
+    fats: 10,
+    fiber: 6,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Lanche rápido com iogurte vegetal, frutas e sementes.',
+    tags: [
+      'Rápido',
+      'Fibras',
+      'Leve',
+      'Prático'
+    ],
+    benefits: [
+      'Saciedade',
+      'Boa energia',
+      'Fácil de montar'
+    ],
+    allergens: [
+      'Pode conter soja'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'droplets',
+        quantity: '170g',
+        text: 'iogurte vegetal'
+      },
+      {
+        icon: 'strawberry',
+        quantity: '1/2 xícara',
+        text: 'frutas'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher sopa',
+        text: 'sementes (chia/linhaça)'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 colher sopa',
+        text: 'granola',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Coloque o iogurte em um pote.',
+      'Adicione frutas.',
+      'Finalize com sementes e granola (opcional).',
+      'Sirva.'
+    ],
+    tips: [
+      '🍯 Adoce com tâmara se precisar.',
+      '🥣 Ótimo para tarde.',
+      '❄️ Fruta congelada refresca.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '12% proteína, 52% carboidratos, 35% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 27,
+    name: 'Mix Crocante de Sementes',
+    category: 'Lanches',
+    calories: 220,
+    protein: 8,
+    carbs: 10,
+    fats: 16,
+    fiber: 6,
+    time: 20,
+    servings: 6,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Mix assado de sementes para snack.',
+    tags: [
+      'Meal prep',
+      'Crocante',
+      'Fibras',
+      'Sem glúten'
+    ],
+    benefits: [
+      'Gorduras boas',
+      'Alta saciedade',
+      'Versátil'
+    ],
+    allergens: [
+      'Oleaginosas (se incluir castanhas)'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'sparkles',
+        quantity: '1/2 xícara',
+        text: 'sementes (girassol/abóbora)'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 colher sopa',
+        text: 'gergelim'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher chá',
+        text: 'azeite'
+      },
+      {
+        icon: 'circle',
+        quantity: 'a gosto',
+        text: 'sal e páprica',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Misture sementes com temperos.',
+      'Espalhe na assadeira.',
+      'Asse 160°C por 12–15 min.',
+      'Esfrie e guarde.'
+    ],
+    tips: [
+      '🔥 Queima rápido: olho no forno!',
+      '🥗 Excelente em saladas.',
+      '🧊 Dura 2 semanas em pote.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '15% proteína, 18% carboidratos, 65% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 28,
+    name: 'Sanduíche de Tofu com Mostarda',
+    category: 'Lanches',
+    calories: 390,
+    protein: 20,
+    carbs: 42,
+    fats: 14,
+    fiber: 7,
+    time: 15,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Sanduíche proteico com tofu grelhado e folhas.',
+    tags: [
+      'Proteico',
+      'Rápido',
+      'Salgado',
+      'Para levar'
+    ],
+    benefits: [
+      'Boa proteína',
+      'Sacia bem',
+      'Ótimo pós-treino'
+    ],
+    allergens: [
+      'Soja',
+      'Glúten (se pão comum)'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'square',
+        quantity: '120g',
+        text: 'tofu grelhado'
+      },
+      {
+        icon: 'circle',
+        quantity: '2 fatias',
+        text: 'pão integral'
+      },
+      {
+        icon: 'leaf',
+        quantity: 'a gosto',
+        text: 'alface e tomate'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher chá',
+        text: 'mostarda',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Grelhe o tofu.',
+      'Monte o sanduíche.',
+      'Adicione mostarda (opcional).',
+      'Sirva.'
+    ],
+    tips: [
+      '🥒 Pepino combina.',
+      '🔥 Tamari para sem glúten.',
+      '🧊 Bom para marmita fria.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '21% proteína, 43% carboidratos, 32% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 29,
+    name: 'Salada no Pote',
+    category: 'Lanches',
+    calories: 310,
+    protein: 12,
+    carbs: 34,
+    fats: 14,
+    fiber: 10,
+    time: 15,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Salada em camadas para levar, com grão-de-bico e legumes.',
+    tags: [
+      'Para levar',
+      'Fresco',
+      'Fibras',
+      'Proteico'
+    ],
+    benefits: [
+      'Ajuda na rotina',
+      'Saciedade',
+      'Evita beliscar'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'azeite + limão'
+      },
+      {
+        icon: 'beans',
+        quantity: '1/2 xícara',
+        text: 'grão-de-bico cozido'
+      },
+      {
+        icon: 'carrot',
+        quantity: '1/2 unidade',
+        text: 'cenoura ralada'
+      },
+      {
+        icon: 'circle',
+        quantity: 'a gosto',
+        text: 'tomate e pepino'
+      },
+      {
+        icon: 'leaf',
+        quantity: '1 xícara',
+        text: 'folhas'
+      }
+    ],
+    instructions: [
+      'Coloque azeite+limão no fundo.',
+      'Adicione grão-de-bico e legumes.',
+      'Coloque folhas por cima.',
+      'Tampe e leve.',
+      'Agite na hora de comer.'
+    ],
+    tips: [
+      '🥗 Faça 2–3 potes de uma vez.',
+      '🧂 Tempere na hora se preferir.',
+      '🍋 Limão ajuda a conservar.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '15% proteína, 44% carboidratos, 41% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 30,
+    name: 'Chips de Batata Doce (Airfryer)',
+    category: 'Lanches',
+    calories: 180,
+    protein: 2,
+    carbs: 36,
+    fats: 3,
+    fiber: 5,
+    time: 18,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Chips crocantes de batata doce, snack fit vegano.',
+    tags: [
+      'Crocante',
+      'Airfryer',
+      'Sem lactose',
+      'Snack'
+    ],
+    benefits: [
+      'Mata vontade de crocância',
+      'Ingrediente simples',
+      'Ótimo acompanhamento'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'potato',
+        quantity: '1 unidade',
+        text: 'batata doce fatiada'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher chá',
+        text: 'azeite',
+        optional: true
+      },
+      {
+        icon: 'sparkles',
+        quantity: 'a gosto',
+        text: 'sal e páprica'
+      }
+    ],
+    instructions: [
+      'Fatie bem fino.',
+      'Misture com temperos.',
+      'Asse na airfryer 180°C por 12–15 min, mexendo.',
+      'Sirva.'
+    ],
+    tips: [
+      '🔥 Fatiar fino é o segredo.',
+      '🧂 Tempere depois se preferir.',
+      '⏱️ Cada airfryer varia: ajuste tempo.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      snack: '4% proteína, 80% carboidratos, 15% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 31,
+    name: 'Mousse de Chocolate com Abacate',
+    category: 'Sobremesas',
+    calories: 260,
+    protein: 4,
+    carbs: 22,
+    fats: 17,
+    fiber: 7,
+    time: 10,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: true,
+    description: 'Mousse cremosa com abacate e cacau, sem lactose e sem açúcar refinado.',
+    tags: [
+      'Sem lactose',
+      'Rápido',
+      'Doce',
+      'Fit'
+    ],
+    benefits: [
+      'Antioxidantes do cacau',
+      'Gorduras boas',
+      'Doce sem culpa'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'leaf',
+        quantity: '1/2 unidade',
+        text: 'abacate maduro'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '2 colheres sopa',
+        text: 'cacau 100%'
+      },
+      {
+        icon: 'circle',
+        quantity: '2 unidades',
+        text: 'tâmaras'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'água',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata tudo até ficar cremoso.',
+      'Ajuste o doce.',
+      'Gele 20 minutos.',
+      'Sirva.'
+    ],
+    tips: [
+      '🍓 Finalize com frutas vermelhas.',
+      '🍫 Cacau 100% é essencial.',
+      '🧊 Fica ótimo gelado.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '6% proteína, 34% carboidratos, 59% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 32,
+    name: 'Pudim de Chia com Cacau',
+    category: 'Sobremesas',
+    calories: 230,
+    protein: 6,
+    carbs: 24,
+    fats: 10,
+    fiber: 12,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Pudim de chia com cacau e bebida vegetal, sobremesa leve.',
+    tags: [
+      'Sem lactose',
+      'Fibras',
+      'Gelado',
+      'Prático'
+    ],
+    benefits: [
+      'Ômega-3',
+      'Alta saciedade',
+      'Boa digestão'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'sparkles',
+        quantity: '2 colheres sopa',
+        text: 'chia'
+      },
+      {
+        icon: 'droplets',
+        quantity: '200ml',
+        text: 'bebida vegetal'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher sopa',
+        text: 'cacau em pó'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 colher sopa',
+        text: 'melado',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Misture tudo.',
+      'Mexa após 10 min.',
+      'Gele por 2 horas.',
+      'Sirva com frutas.'
+    ],
+    tips: [
+      '🍌 Banana por cima combina.',
+      '🥣 Faça em potinhos.',
+      '🍯 Melado é opcional.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '10% proteína, 42% carboidratos, 39% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 33,
+    name: 'Brownie Vegano de Banana',
+    category: 'Sobremesas',
+    calories: 190,
+    protein: 5,
+    carbs: 32,
+    fats: 4,
+    fiber: 5,
+    time: 30,
+    servings: 8,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Brownie úmido com banana, cacau e aveia.',
+    tags: [
+      'Assado',
+      'Sem açúcar refinado',
+      'Fit',
+      'Cacau'
+    ],
+    benefits: [
+      'Mata vontade de doce',
+      'Ingredientes simples',
+      'Boa fibra'
+    ],
+    allergens: [
+      'Glúten (se aveia não certificada)'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'banana',
+        quantity: '2 unidades',
+        text: 'banana madura'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '3 colheres sopa',
+        text: 'cacau em pó'
+      },
+      {
+        icon: 'wheat',
+        quantity: '1/2 xícara',
+        text: 'aveia'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher chá',
+        text: 'fermento'
+      }
+    ],
+    instructions: [
+      'Amasse a banana.',
+      'Misture os secos.',
+      'Asse 180°C por 18–22 min.',
+      'Esfrie e corte.'
+    ],
+    tips: [
+      '🔥 Não asse demais.',
+      '🍫 Use cacau 100%.',
+      '🥜 Castanhas são opcionais.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '11% proteína, 67% carboidratos, 19% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 34,
+    name: 'Sorbet de Manga e Limão',
+    category: 'Sobremesas',
+    calories: 150,
+    protein: 2,
+    carbs: 36,
+    fats: 0,
+    fiber: 4,
+    time: 5,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Sorbet 2 ingredientes: manga congelada e limão.',
+    tags: [
+      'Sem lactose',
+      'Refrescante',
+      'Sem açúcar',
+      'Rápido'
+    ],
+    benefits: [
+      'Ótimo para calor',
+      'Sem ultraprocessados',
+      'Leve'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '2 xícaras',
+        text: 'manga congelada'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'suco de limão'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1–2 colheres sopa',
+        text: 'água',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata a manga.',
+      'Adicione limão.',
+      'Ajuste com água.',
+      'Sirva.'
+    ],
+    tips: [
+      '❄️ Manga bem congelada dá textura.',
+      '🍋 Limão realça.',
+      '🍓 Troque por morango.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '5% proteína, 96% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 35,
+    name: 'Brigadeiro Vegano de Biomassa',
+    category: 'Sobremesas',
+    calories: 120,
+    protein: 2,
+    carbs: 22,
+    fats: 3,
+    fiber: 4,
+    time: 20,
+    servings: 10,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Brigadeiro leve com biomassa de banana verde e cacau.',
+    tags: [
+      'Sem lactose',
+      'Doce',
+      'Fit',
+      'Chocolate'
+    ],
+    benefits: [
+      'Menos açúcar',
+      'Boa fibra',
+      'Sacia'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '1/2 xícara',
+        text: 'biomassa de banana verde'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '2 colheres sopa',
+        text: 'cacau em pó'
+      },
+      {
+        icon: 'circle',
+        quantity: '2 colheres sopa',
+        text: 'melado',
+        optional: true
+      },
+      {
+        icon: 'droplets',
+        quantity: '1 colher sopa',
+        text: 'óleo de coco',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Misture em fogo baixo.',
+      'Mexa até encorpar.',
+      'Esfrie.',
+      'Enrole (opcional).'
+    ],
+    tips: [
+      '🍫 Cacau 100% dá melhor sabor.',
+      '🧊 Geladeira firma.',
+      '🥥 Coco ralado é ótimo.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '7% proteína, 73% carboidratos, 22% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 36,
+    name: 'Cookie Vegano de Aveia',
+    category: 'Sobremesas',
+    calories: 110,
+    protein: 2,
+    carbs: 22,
+    fats: 2,
+    fiber: 3,
+    time: 20,
+    servings: 10,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Cookie com aveia e banana, sem ovos.',
+    tags: [
+      'Assado',
+      'Sem açúcar refinado',
+      'Fácil',
+      'Snack doce'
+    ],
+    benefits: [
+      'Boa fibra',
+      'Ótimo para lanche',
+      'Ingredientes simples'
+    ],
+    allergens: [
+      'Glúten (se aveia não certificada)'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'banana',
+        quantity: '1 unidade',
+        text: 'banana madura'
+      },
+      {
+        icon: 'wheat',
+        quantity: '1 xícara',
+        text: 'aveia'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher chá',
+        text: 'canela',
+        optional: true
+      },
+      {
+        icon: 'circle',
+        quantity: '2 colheres sopa',
+        text: 'uvas-passas',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Amasse banana.',
+      'Misture aveia e canela.',
+      'Modele e achate.',
+      'Asse 180°C por 12–15 min.',
+      'Esfrie.'
+    ],
+    tips: [
+      '🔥 Esfria e fica crocante.',
+      '🍫 Chocolate vegano opcional.',
+      '🥜 Castanhas opcionais.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '7% proteína, 80% carboidratos, 16% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 37,
+    name: 'Maçã Assada com Canela',
+    category: 'Sobremesas',
+    calories: 140,
+    protein: 1,
+    carbs: 30,
+    fats: 2,
+    fiber: 5,
+    time: 15,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Sobremesa rápida: maçã assada com canela.',
+    tags: [
+      'Leve',
+      'Rápida',
+      'Conforto',
+      'Sem lactose'
+    ],
+    benefits: [
+      'Doce natural',
+      'Ajuda na saciedade',
+      'Boa para noite'
+    ],
+    allergens: [
+      'Oleaginosas (opcional)'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'apple',
+        quantity: '1 unidade',
+        text: 'maçã'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1/2 colher chá',
+        text: 'canela'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 colher sopa',
+        text: 'castanhas picadas',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Corte a maçã.',
+      'Polvilhe canela.',
+      'Asse/airfryer 180°C por 12–15 min.',
+      'Finalize (opcional).'
+    ],
+    tips: [
+      '🍯 Use 1 fio de melado se quiser.',
+      '🔥 Airfryer é rápida.',
+      '🍦 Sorvete vegano opcional.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '3% proteína, 86% carboidratos, 13% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 38,
+    name: 'Gelatina Natural de Frutas',
+    category: 'Sobremesas',
+    calories: 90,
+    protein: 1,
+    carbs: 22,
+    fats: 0,
+    fiber: 2,
+    time: 10,
+    servings: 4,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Gelatina com agar-agar e suco natural.',
+    tags: [
+      'Sem açúcar',
+      'Leve',
+      'Natural',
+      'Refrescante'
+    ],
+    benefits: [
+      'Sem ultraprocessados',
+      'Fácil',
+      'Boa para dieta leve'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'droplets',
+        quantity: '300ml',
+        text: 'suco natural (uva/laranja)'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher chá',
+        text: 'agar-agar'
+      },
+      {
+        icon: 'circle',
+        quantity: 'a gosto',
+        text: 'frutas picadas',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Dissolva agar-agar no suco.',
+      'Ferva 2 min mexendo.',
+      'Despeje em potes.',
+      'Gele 2 horas.'
+    ],
+    tips: [
+      '🍇 Suco integral funciona bem.',
+      '🧊 Dura 3 dias.',
+      '🍊 Ajuste acidez com água.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '4% proteína, 98% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 39,
+    name: 'Bolo de Caneca Vegano',
+    category: 'Sobremesas',
+    calories: 220,
+    protein: 5,
+    carbs: 34,
+    fats: 7,
+    fiber: 4,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Bolo de caneca rápido (micro-ondas) com cacau e aveia.',
+    tags: [
+      'Rápido',
+      'Porção individual',
+      'Doce',
+      'Prático'
+    ],
+    benefits: [
+      'Mata vontade sem exagero',
+      'Ingredientes simples',
+      'Sem lactose'
+    ],
+    allergens: [
+      'Glúten (se aveia não certificada)'
+    ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'wheat',
+        quantity: '4 colheres sopa',
+        text: 'farinha/aveia'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 colher sopa',
+        text: 'cacau'
+      },
+      {
+        icon: 'droplets',
+        quantity: '4 colheres sopa',
+        text: 'bebida vegetal'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 colher sopa',
+        text: 'melado',
+        optional: true
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1/2 colher chá',
+        text: 'fermento'
+      }
+    ],
+    instructions: [
+      'Misture secos.',
+      'Adicione bebida vegetal.',
+      'Micro-ondas 60–90s.',
+      'Espere 1 min e sirva.'
+    ],
+    tips: [
+      '🔥 Ajuste o tempo do micro.',
+      '🍫 Chocolate vegano opcional.',
+      '🥜 Pasta por cima fica ótimo.'
+    ],
+ 	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '9% proteína, 62% carboidratos, 29% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 40,
+    name: 'Mousse de Maracujá Vegana',
+    category: 'Sobremesas',
+    calories: 240,
+    protein: 2,
+    carbs: 28,
+    fats: 14,
+    fiber: 3,
+    time: 10,
+    servings: 4,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Mousse com maracujá e creme de coco, bem refrescante.',
+    tags: [
+      'Refrescante',
+      'Sem lactose',
+      'Doce',
+      'Rápida'
+    ],
+    benefits: [
+      'Sobremesa leve',
+      'Boa para calor',
+      'Sem ingredientes animais'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '1/2 xícara',
+        text: 'polpa de maracujá'
+      },
+      {
+        icon: 'droplets',
+        quantity: '200ml',
+        text: 'creme de coco'
+      },
+      {
+        icon: 'circle',
+        quantity: '1–2 colheres sopa',
+        text: 'melado',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata tudo.',
+      'Coloque em potes.',
+      'Gele 2 horas.',
+      'Sirva gelado.'
+    ],
+    tips: [
+      '🥥 Creme de coco bem gelado firma mais.',
+      '🍯 Ajuste o doce com melado.',
+      '🍋 Toque de limão opcional.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      dessert: '3% proteína, 47% carboidratos, 52% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 41,
+    name: 'Suco Verde Clássico',
+    category: 'Sucos',
+    calories: 110,
+    protein: 2,
+    carbs: 26,
+    fats: 0,
+    fiber: 4,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: true,
+    description: 'Couve, limão, maçã e gengibre — refrescante e leve.',
+    tags: [
+      'Detox',
+      'Refrescante',
+      'Fibras',
+      'Imunidade'
+    ],
+    benefits: [
+      'Ajuda hidratação',
+      'Rico em vitamina C',
+      'Leve para o dia a dia'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'leaf',
+        quantity: '1 folha',
+        text: 'couve'
+      },
+      {
+        icon: 'apple',
+        quantity: '1/2 unidade',
+        text: 'maçã'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1/2 unidade',
+        text: 'limão espremido'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 pedaço',
+        text: 'gengibre',
+        optional: true
+      },
+      {
+        icon: 'droplets',
+        quantity: '250ml',
+        text: 'água gelada'
+      }
+    ],
+    instructions: [
+      'Bata tudo.',
+      'Coe se preferir (opcional).',
+      'Sirva com gelo.'
+    ],
+    tips: [
+      '🧊 Use água bem gelada.',
+      '🥬 Comece com pouca couve.',
+      '🍋 Ajuste limão ao gosto.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '7% proteína, 95% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 42,
+    name: 'Suco de Abacaxi com Hortelã',
+    category: 'Sucos',
+    calories: 120,
+    protein: 1,
+    carbs: 30,
+    fats: 0,
+    fiber: 2,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Clássico digestivo e super refrescante.',
+    tags: [
+      'Digestivo',
+      'Refrescante',
+      'Sem açúcar',
+      'Verão'
+    ],
+    benefits: [
+      'Ajuda digestão',
+      'Hidrata',
+      'Leve'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '2 fatias',
+        text: 'abacaxi'
+      },
+      {
+        icon: 'leaf',
+        quantity: '6 folhas',
+        text: 'hortelã'
+      },
+      {
+        icon: 'droplets',
+        quantity: '250ml',
+        text: 'água gelada'
+      },
+      {
+        icon: 'snowflake',
+        quantity: 'a gosto',
+        text: 'gelo',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata tudo.',
+      'Coe se preferir.',
+      'Sirva na hora.'
+    ],
+    tips: [
+      '🍍 Abacaxi doce dispensa adoçar.',
+      '🍃 Hortelã dá frescor.',
+      '🧊 Sirva gelado.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '3% proteína, 100% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 43,
+    name: 'Suco de Beterraba com Laranja',
+    category: 'Sucos',
+    calories: 160,
+    protein: 3,
+    carbs: 38,
+    fats: 0,
+    fiber: 4,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Suco energizante com beterraba e laranja.',
+    tags: [
+      'Energético',
+      'Pré-treino',
+      'Imunidade',
+      'Natural'
+    ],
+    benefits: [
+      'Ajuda circulação',
+      'Rico em vitamina C',
+      'Bom pré-treino'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '1/2 unidade',
+        text: 'beterraba pequena'
+      },
+      {
+        icon: 'droplets',
+        quantity: '2 unidades',
+        text: 'laranja espremida'
+      },
+      {
+        icon: 'droplets',
+        quantity: '150ml',
+        text: 'água',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata beterraba com suco de laranja.',
+      'Adicione água se quiser mais leve.',
+      'Sirva.'
+    ],
+    tips: [
+      '🥤 Ótimo pré-treino.',
+      '🍊 Laranja doce ajuda.',
+      '🧊 Gelado é melhor.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '8% proteína, 95% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 44,
+    name: 'Suco de Melancia com Limão',
+    category: 'Sucos',
+    calories: 100,
+    protein: 1,
+    carbs: 25,
+    fats: 0,
+    fiber: 1,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Hidratante e refrescante, ideal para dias quentes.',
+    tags: [
+      'Hidratação',
+      'Refrescante',
+      'Verão',
+      'Leve'
+    ],
+    benefits: [
+      'Hidratante',
+      'Poucas calorias',
+      'Fácil'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '2 xícaras',
+        text: 'melancia em cubos'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1/2 unidade',
+        text: 'limão espremido'
+      },
+      {
+        icon: 'snowflake',
+        quantity: 'a gosto',
+        text: 'gelo',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata tudo.',
+      'Sirva sem coar.'
+    ],
+    tips: [
+      '🍋 Limão dá contraste.',
+      '🧊 Muito bom com gelo.',
+      '🍃 Hortelã combina.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '4% proteína, 100% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 45,
+    name: 'Suco de Maracujá com Cenoura',
+    category: 'Sucos',
+    calories: 140,
+    protein: 2,
+    carbs: 34,
+    fats: 0,
+    fiber: 3,
+    time: 8,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Mistura diferente: maracujá + cenoura, doce e cítrico.',
+    tags: [
+      'Imunidade',
+      'Vitamina A',
+      'Natural',
+      'Diferente'
+    ],
+    benefits: [
+      'Rico em vitamina A',
+      'Refrescante',
+      'Boa digestão'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '1/2 xícara',
+        text: 'polpa de maracujá'
+      },
+      {
+        icon: 'carrot',
+        quantity: '1/2 unidade',
+        text: 'cenoura'
+      },
+      {
+        icon: 'droplets',
+        quantity: '250ml',
+        text: 'água'
+      },
+      {
+        icon: 'circle',
+        quantity: '1 colher sopa',
+        text: 'melado',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata a cenoura com água.',
+      'Adicione maracujá e bata rápido.',
+      'Coe se preferir.',
+      'Adoce (opcional).'
+    ],
+    tips: [
+      '🥕 Bata bem.',
+      '🍯 Melado é opcional.',
+      '🧊 Sirva gelado.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '6% proteína, 97% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 46,
+    name: 'Suco de Morango com Banana',
+    category: 'Sucos',
+    calories: 220,
+    protein: 4,
+    carbs: 44,
+    fats: 2,
+    fiber: 6,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Vitamina simples e deliciosa com frutas.',
+    tags: [
+      'Cremoso',
+      'Energético',
+      'Pós-treino',
+      'Rápido'
+    ],
+    benefits: [
+      'Boa energia',
+      'Sacia',
+      'Muito prático'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'strawberry',
+        quantity: '1 xícara',
+        text: 'morangos'
+      },
+      {
+        icon: 'banana',
+        quantity: '1 unidade',
+        text: 'banana'
+      },
+      {
+        icon: 'droplets',
+        quantity: '250ml',
+        text: 'bebida vegetal'
+      },
+      {
+        icon: 'snowflake',
+        quantity: 'a gosto',
+        text: 'gelo',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata tudo.',
+      'Sirva.'
+    ],
+    tips: [
+      '🍌 Banana congelada melhora.',
+      '🍓 Morango maduro adoça.',
+      '💪 Proteína vegetal opcional.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '7% proteína, 80% carboidratos, 8% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 47,
+    name: 'Suco de Uva Integral com Limão',
+    category: 'Sucos',
+    calories: 170,
+    protein: 1,
+    carbs: 42,
+    fats: 0,
+    fiber: 1,
+    time: 2,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Suco de uva com toque cítrico, sem açúcar adicionado.',
+    tags: [
+      'Antioxidante',
+      'Imunidade',
+      'Rápido',
+      'Natural'
+    ],
+    benefits: [
+      'Rico em antioxidantes',
+      'Prático',
+      'Bom para recuperação'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'droplets',
+        quantity: '250ml',
+        text: 'suco de uva integral'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1/4 unidade',
+        text: 'limão espremido'
+      },
+      {
+        icon: 'snowflake',
+        quantity: 'a gosto',
+        text: 'gelo',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Misture o suco com limão.',
+      'Sirva com gelo.'
+    ],
+    tips: [
+      '🍇 Prefira 100% integral.',
+      '🍋 Limão evita enjoar.',
+      '🧊 Bem gelado fica ótimo.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '2% proteína, 99% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 48,
+    name: 'Suco de Laranja com Gengibre',
+    category: 'Sucos',
+    calories: 140,
+    protein: 2,
+    carbs: 32,
+    fats: 0,
+    fiber: 1,
+    time: 3,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Clássico com gengibre para dar energia.',
+    tags: [
+      'Imunidade',
+      'Vitamina C',
+      'Energético',
+      'Rápido'
+    ],
+    benefits: [
+      'Vitamina C',
+      'Ajuda imunidade',
+      'Acorda o corpo'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'droplets',
+        quantity: '300ml',
+        text: 'suco de laranja'
+      },
+      {
+        icon: 'sparkles',
+        quantity: '1 pedaço',
+        text: 'gengibre',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Misture o suco com gengibre.',
+      'Coe se preferir.',
+      'Sirva.'
+    ],
+    tips: [
+      '🫚 Use pouco gengibre.',
+      '🧊 Sirva gelado.',
+      '🍊 Laranja doce dispensa adoçar.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '6% proteína, 91% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 49,
+    name: 'Suco de Pepino com Limão',
+    category: 'Sucos',
+    calories: 60,
+    protein: 1,
+    carbs: 14,
+    fats: 0,
+    fiber: 1,
+    time: 5,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Suco ultra refrescante e leve.',
+    tags: [
+      'Refrescante',
+      'Leve',
+      'Hidratação',
+      'Detox'
+    ],
+    benefits: [
+      'Hidrata',
+      'Poucas calorias',
+      'Ótimo para calor'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'circle',
+        quantity: '1/2 unidade',
+        text: 'pepino'
+      },
+      {
+        icon: 'droplets',
+        quantity: '1/2 unidade',
+        text: 'limão'
+      },
+      {
+        icon: 'droplets',
+        quantity: '250ml',
+        text: 'água'
+      },
+      {
+        icon: 'leaf',
+        quantity: 'a gosto',
+        text: 'hortelã',
+        optional: true
+      }
+    ],
+    instructions: [
+      'Bata tudo.',
+      'Coe se preferir.',
+      'Sirva gelado.'
+    ],
+    tips: [
+      '🥒 Sem casca fica mais suave.',
+      '🍃 Hortelã é opcional.',
+      '🧊 Muito bom com gelo.'
+    ],
+ 	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '7% proteína, 93% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+    id: 50,
+    name: 'Suco de Maçã com Cenoura',
+    category: 'Sucos',
+    calories: 150,
+    protein: 2,
+    carbs: 34,
+    fats: 0,
+    fiber: 4,
+    time: 6,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Suco doce natural: maçã + cenoura.',
+    tags: [
+      'Vitamina A',
+      'Natural',
+      'Doce',
+      'Rápido'
+    ],
+    benefits: [
+      'Boa energia',
+      'Rico em vitamina A',
+      'Ótimo para manhã'
+    ],
+    allergens: [ ],
+image: 'image/',
+    ingredients: [
+      {
+        icon: 'apple',
+        quantity: '1 unidade',
+        text: 'maçã'
+      },
+      {
+        icon: 'carrot',
+        quantity: '1 unidade',
+        text: 'cenoura'
+      },
+      {
+        icon: 'droplets',
+        quantity: '200ml',
+        text: 'água'
+      }
+    ],
+    instructions: [
+      'Bata tudo até ficar liso.',
+      'Coe se preferir.',
+      'Sirva.'
+    ],
+    tips: [
+      '🥕 Bata bem.',
+      '🍎 Maçã madura adoça.',
+      '🧊 Sirva gelado.'
+    ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    macros: {
+      juice: '5% proteína, 91% carboidratos, 0% gorduras',
+      vegan: '100% vegetal'
+    }
+ },
+
+{
+	 
+ id: 51,
+    name: 'Panquecas de Aveia e Banana',
+    category: 'Café da Manhã',
+    calories: 285,
+    protein: 12,
+    carbs: 42,
+    fats: 8,
+    fiber: 6,
+    time: 15,
+    servings: 2,
+    difficulty: 'Fácil',
+    featured: true,
+    description: 'Panquecas fofinhas 100% veganas, sem glúten e naturalmente doces',
+    
+    tags: ['Vegano', 'Sem Glúten', 'Sem Açúcar Refinado', 'Proteico'],
     
     benefits: [
-        'Acelera recuperação muscular',
-        'Rico em antioxidantes naturais',
-        'Energia prolongada sem picos de insulina',
-        'Ajuda na queima de gordura'
+        'Rica em fibras para saciedade prolongada',
+        'Fonte de energia de liberação lenta',
+        'Sem picos de insulina',
+        'Alto teor de potássio e magnésio'
     ],
     
-    allergens: [
-        'Leite (opcional)',
-        'Oleaginosas'
-    ],
+    allergens: ['Aveia'],
     
-    image: 'https://images.unsplash.com/photo-1768134459263-34278a332e4c?q=80',
+image: 'image/',
     
-    // 👇 NOVA ESTRUTURA DE INGREDIENTES COM ÍCONES
     ingredients: [
-        { 
-            icon: 'droplets',
-            quantity: '200g',
-            text: 'de polpa de açaí puro (sem xarope de guaraná)'
-        },
-        { 
-            icon: 'zap',
-            quantity: '1 scoop (30g)',
-            text: 'de whey protein sabor baunilha ou neutro'
-        },
-        { 
-            icon: 'banana',
-            quantity: '1 unidade (100g)',
-            text: 'banana congelada média'
-        },
-        { 
-            icon: 'milk',
-            quantity: '50ml',
-            text: 'de leite de amêndoas sem açúcar'
-        },
-        { 
-            icon: 'wheat',
-            quantity: '2 colheres sopa (20g)',
-            text: 'de granola sem açúcar'
-        },
-        { 
-            icon: 'nut',
-            quantity: '1 colher chá',
-            text: 'de pasta de amendoim integral'
-        },
-        { 
-            icon: 'apple',
-            quantity: '50g total',
-            text: 'frutas frescas: morango, kiwi, banana'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '1 colher chá',
-            text: 'de mel puro',
-            optional: true
-        },
-        { 
-            icon: 'circle',
-            quantity: 'a gosto',
-            text: 'coco ralado sem açúcar para finalizar',
-            optional: true
-        }
+        { icon: 'banana', quantity: '2 unidades', text: 'bananas maduras' },
+        { icon: 'wheat', quantity: '1 xícara (100g)', text: 'de aveia em flocos' },
+        { icon: 'milk', quantity: '1/2 xícara', text: 'de leite vegetal' },
+        { icon: 'sparkles', quantity: '1 colher chá', text: 'de fermento em pó' },
+        { icon: 'droplet', quantity: '1 colher chá', text: 'de essência de baunilha' },
+        { icon: 'sparkles', quantity: '1 pitada', text: 'de canela em pó' }
     ],
     
     instructions: [
-        'Corte a banana em rodelas e congele por pelo menos 2 horas antes do preparo',
-        'No liquidificador ou processador, adicione a polpa de açaí semi-descongelada (textura cremosa, não líquida)',
-        'Adicione a banana congelada, whey protein e leite de amêndoas',
-        'Bata em velocidade média por 30-45 segundos até obter consistência cremosa e homogênea (similar a sorvete)',
-        'Se ficar muito grosso, adicione 10ml de leite por vez até atingir a textura ideal',
-        'Despeje em uma tigela funda (bowl)',
-        'Decore com granola em uma metade e frutas frescas na outra',
-        'Finalize com a pasta de amendoim por cima e opcional mel em fio',
-        'Sirva imediatamente para manter a temperatura ideal'
+        'Bata a aveia no liquidificador até virar farinha',
+        'Adicione as bananas, leite vegetal, fermento e baunilha',
+        'Bata até formar massa homogênea',
+        'Aqueça frigideira antiaderente em fogo médio',
+        'Despeje pequenas porções de massa',
+        'Quando surgirem bolhas, vire a panqueca',
+        'Doure por 1-2 minutos do outro lado',
+        'Sirva com frutas frescas e mel ou pasta de amendoim'
     ],
     
     tips: [
-        '🔥 Dica Pro: Congele a banana cortada em rodelas para facilitar',
-        '💪 Para mais proteína: adicione 1 colher de pasta de amendoim',
-        '⚡ Post-treino: adicione 5g de creatina monohidratada',
-        '🥤 Versão smoothie: adicione 100ml de leite para textura líquida',
-        '❄️ Textura perfeita: açaí semi-congelado (não totalmente duro)'
+        'Bananas bem maduras deixam mais doce naturalmente',
+        'Fogo médio-baixo evita queimar',
+        'Congele extras e reaqueça na airfryer',
+        'Adicione cacau para versão chocolate'
     ],
     
-    // 👇 FOTOS DAS ETAPAS (quando gerar no Leonardo.ai)
+	
+	
     images: {
-        hero: 'https://images.unsplash.com/photo-1768134459263-34278a332e4c?q=80',
-        steps: [ ]
+      hero: 'image/',
+      steps: [ ]
     },
+	
+	
     
-    macros: {
-        breakfast: '30% proteína, 55% carboidratos, 15% gorduras',
-        postWorkout: 'Perfeito para janela anabólica (até 1h pós-treino)'
+    searchMeta: {
+        mainIngredients: ['banana', 'aveia'],
+        objectives: ['energia', 'saciedade'],
+        dishType: ['panqueca', 'breakfast'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['cafe-da-manha'],
+        keywords: ['panqueca', 'banana', 'aveia', 'facil', 'rapida']
     }
 },
-    {
-        id: 2,
-        name: 'Frango Grelhado com Batata Doce',
-        category: 'Almoço',
-        calories: 450,
-        protein: 45,
-        carbs: 38,
-        fats: 12,
-        fiber: 7,
-        time: 30,
-        servings: 2,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Alto teor proteico',
-                'Ganho de massa',
-                'Pré-treino',
-                'Refeição completa'
-            ],
-        benefits: [
-                'Proteína de alta qualidade para ganho muscular',
-                'Carboidratos de baixo índice glicêmico',
-                'Rico em vitaminas A e C (batata doce)',
-                'Saciedade prolongada por até 4 horas'
-            ],
-        allergens: [],
-        image: 'https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?q=80',
-        ingredients: [
-                '300g de peito de frango (aproximadamente 2 filés médios)',
-                '2 batatas doces médias (400g total)',
-                '200g de brócolis frescos',
-                '2 dentes de alho picados',
-                '1 colher de sopa de azeite extra virgem',
-                '1 limão (suco)',
-                'Temperos: sal rosa do Himalaia, pimenta-do-reino, páprica doce, alecrim fresco',
-                '1 colher de chá de mostarda Dijon (opcional para marinada)',
-                'Ervas frescas: tomilho, orégano ou manjericão a gosto'
-            ],
-        instructions: [
-                'MARINADA: Em um bowl, misture o frango com suco de limão, alho, mostarda, sal, pimenta e páprica',
-                'Deixe marinar na geladeira por mínimo 20 minutos (ideal: 2 horas) coberto com filme plástico',
-                'Pré-aqueça o forno a 200°C enquanto prepara as batatas',
-                'Descasque e corte as batatas doces em cubos de 2cm (tamanho uniforme para cozimento igual)',
-                'Em uma assadeira, disponha as batatas, regue com metade do azeite, sal, páprica e alecrim',
-                'Leve ao forno por 25-30 minutos, virando na metade do tempo até ficarem douradas',
-                'Enquanto isso, aqueça uma grelha ou frigideira antiaderente em fogo médio-alto',
-                'Grelhe o frango por 6-8 minutos de cada lado até atingir 74°C internamente (use termômetro)',
-                'Nos últimos 5 minutos, cozinhe o brócolis no vapor (não deixe amolecer muito)',
-                'Retire o frango e deixe descansar por 3-5 minutos antes de cortar (mantém suculência)',
-                'Monte o prato: base de brócolis, batatas ao lado, frango fatiado por cima',
-                'Finalize com fio de azeite extra virgem e ervas frescas picadas'
-            ],
-        tips: [
-                '🔥 Dica Pro: Use termômetro culinário - 74°C = frango perfeito e suculento',
-                '💪 Ganho de massa: aumente para 400g de frango',
-                '🥔 Batata crocante: seque bem após lavar e use papel toalha',
-                '⏱️ Meal prep: prepare 4 porções e armazene por até 4 dias',
-                '🌿 Variação: substitua brócolis por aspargos ou vagem'
-            ],
-        macros: {
-            lunch: '40% proteína, 35% carboidratos, 25% gorduras',
-            preworkout: 'Consuma 1-2h antes do treino para energia sustentada'
-        },
-        mealPrepTips: [
-                'Armazene em potes de vidro separados (dura 4 dias)',
-                'Congele o frango cru marinado (até 3 meses)',
-                'Reaqueça no forno (microondas resseca o frango)'
-            ]
-    },
-    {
-        id: 3,
-        name: 'Omelete de Claras Fitness',
-        category: 'Café da Manhã',
-        calories: 180,
-        protein: 28,
-        carbs: 8,
-        fats: 4,
-        fiber: 2,
-        time: 15,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Baixa caloria',
-                'Alto teor proteico',
-                'Low carb',
-                'Definição muscular'
-            ],
-        benefits: [
-                'Máxima proteína com mínimas calorias',
-                'Zero gordura saturada',
-                'Rico em vitaminas do complexo B',
-                'Acelera metabolismo pela manhã'
-            ],
-        allergens: [
-                'Ovos',
-                'Laticínios'
-            ],
-        image: 'https://images.unsplash.com/photo-1583427548995-7210c027bd1f?q=80',
-        ingredients: [
-                '5 claras de ovo grandes (aproximadamente 150ml)',
-                '1 ovo inteiro caipira',
-                '1 xícara (30g) de espinafre fresco bem lavado',
-                '5 tomates cereja cortados ao meio',
-                '2 colheres de sopa (40g) de queijo cottage light',
-                '1 pitada de sal rosa do Himalaia',
-                'Pimenta-do-reino moída na hora',
-                '1/2 colher de chá de azeite de oliva ou spray antiaderente',
-                'Opcional: cebola roxa picada (10g)',
-                'Opcional: orégano seco e manjericão fresco'
-            ],
-        instructions: [
-                'Separe as claras das gemas com cuidado (reserve gemas para outras receitas)',
-                'Em um bowl, bata as claras e o ovo inteiro com um garfo por 30 segundos até espumar levemente',
-                'Tempere com sal e pimenta (não exagere no sal)',
-                'Pique o espinafre em tiras médias e os tomates ao meio',
-                'Aqueça uma frigideira antiaderente de 20cm em fogo médio por 2 minutos',
-                'Adicione o azeite ou spray e espalhe com papel toalha',
-                'Despeje a mistura de ovos na frigideira quente',
-                'Cozinhe em fogo médio-baixo por 2-3 minutos sem mexer',
-                'Quando as bordas começarem a dourar, adicione espinafre, tomate e cottage em metade da omelete',
-                'Com uma espátula de silicone, dobre a omelete ao meio cuidadosamente',
-                'Cozinhe por mais 1-2 minutos até o recheio aquecer',
-                'Deslize para o prato, finalize com orégano e manjericão fresco'
-            ],
-        tips: [
-                '🍳 Segredo da textura: fogo médio-baixo (fogo alto = omelete borrachuda)',
-                '💧 Clara espumosa: bata com garfo, não liquidificador',
-                '🧀 Versão vegana: troque cottage por tofu amassado',
-                '🌶️ Mais sabor: adicione jalapeño ou pimenta calabresa',
-                '⏱️ Meal prep: claras duram 4 dias na geladeira em pote fechado'
-            ],
-        macros: {
-            breakfast: '60% proteína, 20% carboidratos, 20% gorduras',
-            cutting: 'Ideal para fase de definição muscular'
-        },
-        variations: [
-                'Versão mexicana: adicione pico de gallo e abacate',
-                'Versão mediterrânea: tomate seco, azeitona e feta light',
-                'Versão proteica: adicione 30g de peito de peru fatiado'
-            ]
-    },
-    {
-        id: 4,
-        name: 'Salmão Grelhado',
-        category: 'Jantar',
-        calories: 380,
-        protein: 35,
-        carbs: 12,
-        fats: 22,
-        fiber: 4,
-        time: 25,
-        servings: 2,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Ômega-3',
-                'Anti-inflamatório',
-                'Jantar leve',
-                'Saúde cardiovascular'
-            ],
-        benefits: [
-                'Rico em ômega-3 EPA e DHA',
-                'Reduz inflamação muscular',
-                'Melhora saúde do coração',
-                'Acelera recuperação pós-treino'
-            ],
-        allergens: [
-                'Peixe'
-            ],
-        image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80',
-        ingredients: [
-                '2 filés de salmão fresco (150g cada)',
-                '200g de aspargos frescos',
-                '1 limão siciliano',
-                '2 colheres de sopa de azeite extra virgem',
-                '3 dentes de alho picados',
-                'Ervas frescas: tomilho e endro',
-                'Sal rosa do Himalaia',
-                'Pimenta-do-reino moída',
-                'Opcional: 100g de arroz integral'
-            ],
-        instructions: [
-                'Pré-aqueça o forno a 200°C',
-                'Lave e seque os filés de salmão',
-                'Em um bowl, misture suco de 1/2 limão, azeite, alho, sal e pimenta',
-                'Marine o salmão por 10 minutos',
-                'Corte aspargos em hastes, descarte a parte dura',
-                'Em uma assadeira, disponha os aspargos, regue com azeite e sal',
-                'Coloque o salmão sobre os aspargos',
-                'Asse por 15-18 minutos até o salmão ficar rosado no centro',
-                'Finalize com ervas frescas e fatias de limão'
-            ],
-        tips: [
-                '🐟 Ponto perfeito: 63°C no termômetro = salmão suculento',
-                '🌿 Substitua aspargos por brócolis ou vagem',
-                '🍋 Limão siciliano > limão taiti (mais suave)',
-                '❄️ Salmão congelado: descongele 24h na geladeira',
-                '⏱️ Meal prep: dura 2 dias refrigerado'
-            ],
-        macros: {
-            dinner: '45% proteína, 15% carboidratos, 40% gorduras boas'
-        }
-    },
-    {
-        id: 5,
-        name: 'Panqueca Proteica de Aveia',
-        category: 'Café da Manhã',
-        calories: 280,
-        protein: 22,
-        carbs: 30,
-        fats: 8,
-        fiber: 5,
-        time: 20,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Café da manhã',
-                'Energia sustentada',
-                'Proteína'
-            ],
-        benefits: [
-                'Boa dose de proteína para saciedade e recuperação muscular',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Ótimo para começar o dia com energia estável'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Ovos',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800&q=80',
-        ingredients: [
-                '3 ovos',
-                '50g de aveia',
-                '1 scoop de whey',
-                '1 banana',
-                'Canela',
-                'Mel para servir'
-            ],
-        instructions: [
-                'Bata todos ingredientes no liquidificador',
-                'Deixe descansar por 5 minutos',
-                'Aqueça frigideira antiaderente',
-                'Despeje porções da massa',
-                'Cozinhe 2 minutos cada lado',
-                'Sirva com mel e frutas'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            breakfast: '31% proteína, 43% carboidratos, 26% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão low carb: reduza a banana e use morango ou abacate',
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 6,
-        name: 'Bowl vegano de Quinoa',
-        category: 'Veganas',
-        calories: 420,
-        protein: 18,
-        carbs: 60,
-        fats: 12,
-        fiber: 8,
-        time: 35,
-        servings: 2,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Ganho de peso',
-                'Veganas',
-                'Rico em fibras',
-                'Energia sustentada'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal',
-                'Fonte vegetal de nutrientes e micronutrientes essenciais'
-            ],
-        allergens: [],
-        image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80',
-        ingredients: [
-                '1 xícara de quinoa',
-                'Grão de bico assado',
-                'Abacate fatiado',
-                'Tomate cereja',
-                'Rúcula',
-                'Tahine para molho'
-            ],
-        instructions: [
-                'Cozinhe a quinoa conforme embalagem',
-                'Tempere e asse o grão de bico',
-                'Prepare o molho de tahine',
-                'Monte o bowl com todos ingredientes',
-                'Regue com o molho',
-                'Finalize com sementes'
-            ],
-        tips: [
-                '🥑 Abacate no ponto: use bem maduro para cremosidade e melhor sabor',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '17% proteína, 57% carboidratos, 26% gorduras'
-        },
-        variations: [],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 7,
-        name: 'Tapioca Fit Recheada',
-        category: 'Café da Manhã',
-        calories: 210,
-        protein: 15,
-        carbs: 22,
-        fats: 7,
-        fiber: 5,
-        time: 10,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Emagrecimento',
-                'Definição',
-                'Café da manhã',
-                'Baixa caloria',
-                'Low carb',
-                'Rápido'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Ótimo para começar o dia com energia estável'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Ovos'
-            ],
-        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80',
-        ingredients: [
-                '4 colheres de goma de tapioca',
-                '2 ovos mexidos',
-                'Queijo cottage',
-                'Tomate picado',
-                'Orégano',
-                'Sal a gosto'
-            ],
-        instructions: [
-                'Aqueça frigideira antiaderente',
-                'Espalhe a tapioca uniformemente',
-                'Aguarde formar uma película',
-                'Recheie com ovos mexidos e cottage',
-                'Adicione tomate e orégano',
-                'Dobre ao meio e sirva'
-            ],
-        tips: [
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            breakfast: '28% proteína, 42% carboidratos, 30% gorduras'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    
-    {
-        id: 9,
-        name: 'Pão de Queijo Proteico',
-        category: 'Café da Manhã',
-        calories: 250,
-        protein: 20,
-        carbs: 22,
-        fats: 9,
-        fiber: 3,
-        time: 25,
-        servings: 6,
-        difficulty: 'Médio',
-        featured: true,
-        tags: [
-                'Emagrecimento',
-                'Definição',
-                'Café da manhã',
-                'Low carb',
-                'Proteína'
-            ],
-        benefits: [
-                'Boa dose de proteína para saciedade e recuperação muscular',
-                'Ótimo para começar o dia com energia estável'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Ovos',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.pexels.com/photos/17146251/pexels-photo-17146251.jpeg?_gl=1*8hsnkj*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDYxNDUkajgkbDAkaDA.',
-        ingredients: [
-                '2 ovos',
-                '100g de queijo minas',
-                '50g de polvilho doce',
-                '2 scoops de whey sem sabor',
-                '50ml de leite desnatado',
-                'Sal a gosto'
-            ],
-        instructions: [
-                'Pré-aqueça o forno a 180°C',
-                'Bata todos ingredientes no liquidificador',
-                'Despeje em forminhas de silicone',
-                'Asse por 20-25 minutos',
-                'Deixe esfriar antes de desenformar',
-                'Sirva morno ou frio'
-            ],
-        tips: [
-                '🔥 Dica Pro: pré-aqueça o forno para garantir textura uniforme',
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            breakfast: '32% proteína, 35% carboidratos, 33% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 10,
-        name: 'Mingau de Aveia com Frutas',
-        category: 'Café da Manhã',
-        calories: 290,
-        protein: 14,
-        carbs: 40,
-        fats: 8,
-        fiber: 7,
-        time: 12,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Café da manhã',
-                'Rico em fibras',
-                'Energia sustentada'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Ótimo para começar o dia com energia estável'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://plus.unsplash.com/premium_photo-1663841165436-95ccbc1bbd1c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        ingredients: [
-                '50g de aveia em flocos',
-                '250ml de leite desnatado',
-                '1 banana fatiada',
-                'Canela em pó',
-                '1 col de mel',
-                'Frutas vermelhas para decorar'
-            ],
-        instructions: [
-                'Aqueça o leite em uma panela',
-                'Adicione a aveia e mexa bem',
-                'Cozinhe por 5-7 minutos mexendo sempre',
-                'Desligue e adicione a banana',
-                'Polvilhe canela',
-                'Sirva com mel e frutas vermelhas'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            breakfast: '19% proteína, 56% carboidratos, 25% gorduras'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 11,
-        name: 'Crepioca de Banana',
-        category: 'Café da Manhã',
-        calories: 220,
-        protein: 16,
-        carbs: 26,
-        fats: 6,
-        fiber: 3,
-        time: 8,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Emagrecimento',
-                'Definição',
-                'Café da manhã',
-                'Baixa caloria',
-                'Rápido',
-                'Energia sustentada'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Ótimo para começar o dia com energia estável'
-            ],
-        allergens: [
-                'Ovos',
-                'Oleaginosas'
-            ],
-        image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=800&q=80',
-        ingredients: [
-                '1 ovo',
-                '2 col de tapioca',
-                '1 banana amassada',
-                'Canela',
-                'Mel (opcional)',
-                'Pasta de amendoim'
-            ],
-        instructions: [
-                'Bata o ovo com a tapioca',
-                'Despeje em frigideira quente',
-                'Espalhe a banana amassada',
-                'Polvilhe canela',
-                'Dobre ao meio quando firmar',
-                'Sirva com pasta de amendoim'
-            ],
-        tips: [
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            breakfast: '29% proteína, 47% carboidratos, 24% gorduras'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 12,
-        name: 'Iogurte Grego com Granola',
-        category: 'Café da Manhã',
-        calories: 260,
-        protein: 20,
-        carbs: 27,
-        fats: 8,
-        fiber: 7,
-        time: 5,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: true,
-        tags: [
-                'Café da manhã',
-                'Rico em fibras',
-                'Rápido'
-            ],
-        benefits: [
-                'Boa dose de proteína para saciedade e recuperação muscular',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal',
-                'Ótimo para começar o dia com energia estável'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Oleaginosas',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1593450298063-4e08a162a437?q=80',
-        ingredients: [
-                '200g de iogurte grego natural',
-                '3 col de granola sem açúcar',
-                'Frutas vermelhas',
-                '1 col de mel',
-                'Sementes de chia',
-                'Castanhas picadas'
-            ],
-        instructions: [
-                'Coloque o iogurte em uma tigela',
-                'Adicione a granola',
-                'Distribua as frutas vermelhas',
-                'Regue com mel',
-                'Finalize com chia e castanhas',
-                'Sirva imediatamente'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            breakfast: '31% proteína, 42% carboidratos, 28% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 13,
-        name: 'Toast de Abacate com Ovo',
-        category: 'Café da Manhã',
-        calories: 310,
-        protein: 18,
-        carbs: 35,
-        fats: 11,
-        fiber: 3,
-        time: 10,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Café da manhã',
-                'Rápido',
-                'Proteína'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal',
-                'Ótimo para começar o dia com energia estável'
-            ],
-        allergens: [
-                'Ovos',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=800&q=80',
-        ingredients: [
-                '2 fatias de pão integral',
-                '1 abacate maduro',
-                '2 ovos',
-                'Limão',
-                'Pimenta do reino',
-                'Sal rosa'
-            ],
-        instructions: [
-                'Toste o pão integral',
-                'Amasse o abacate com limão, sal e pimenta',
-                'Prepare os ovos pochê ou mexidos',
-                'Espalhe o abacate no pão',
-                'Coloque os ovos por cima',
-                'Sirva com pimenta a gosto'
-            ],
-        tips: [
-                '🥑 Abacate no ponto: use bem maduro para cremosidade e melhor sabor',
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            breakfast: '23% proteína, 45% carboidratos, 32% gorduras'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 14,
-        name: 'Smoothie Bowl de Morango',
-        category: 'Café da Manhã',
-        calories: 300,
-        protein: 22,
-        carbs: 33,
-        fats: 9,
-        fiber: 5,
-        time: 8,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Café da manhã',
-                'Rápido',
-                'Energia sustentada',
-                'Proteína'
-            ],
-        benefits: [
-                'Boa dose de proteína para saciedade e recuperação muscular',
-                'Ótimo para começar o dia com energia estável'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1622484212839-2425bcf558f3?q=80',
-        ingredients: [
-                '200g de morangos congelados',
-                '1 banana congelada',
-                '1 scoop de whey morango',
-                '100ml de leite de coco',
-                'Toppings: granola, frutas, coco',
-                'Sementes a gosto'
-            ],
-        instructions: [
-                'Bata frutas congeladas com whey e leite',
-                'A mistura deve ficar bem espessa',
-                'Despeje em uma tigela',
-                'Decore com granola e frutas frescas',
-                'Adicione coco ralado e sementes',
-                'Sirva imediatamente com colher'
-            ],
-        tips: [
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            breakfast: '29% proteína, 44% carboidratos, 27% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão low carb: reduza a banana e use morango ou abacate',
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 15,
-        name: 'Peito de Peru com Legumes',
-        category: 'Almoço',
-        calories: 380,
-        protein: 42,
-        carbs: 22,
-        fats: 14,
-        fiber: 5,
-        time: 30,
-        servings: 2,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Hipertrofia',
-                'Almoço',
-                'Alto teor proteico',
-                'Low carb'
-            ],
-        benefits: [
-                'Alto teor proteico para manutenção e ganho de massa magra',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [],
-        image: 'https://images.unsplash.com/photo-1670398564097-0762e1b30b3a?q=80',
-        ingredients: [
-                '400g de peito de peru',
-                'Abobrinha',
-                'Cenoura',
-                'Vagem',
-                'Alho e cebola',
-                'Azeite e temperos'
-            ],
-        instructions: [
-                'Corte o peru em cubos',
-                'Tempere com alho, sal e pimenta',
-                'Refogue a cebola no azeite',
-                'Adicione o peru e doure',
-                'Acrescente os legumes cortados',
-                'Cozinhe até ficarem al dente'
-            ],
-        tips: [
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            lunch: '44% proteína, 23% carboidratos, 33% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 16,
-        name: 'Atum com Salada de Grão de Bico',
-        category: 'Almoço',
-        calories: 340,
-        protein: 35,
-        carbs: 28,
-        fats: 10,
-        fiber: 7,
-        time: 15,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Hipertrofia',
-                'Almoço',
-                'Alto teor proteico',
-                'Rico em fibras',
-                'Proteína'
-            ],
-        benefits: [
-                'Alto teor proteico para manutenção e ganho de massa magra',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [
-                'Peixe'
-            ],
-        image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
-        ingredients: [
-                '2 latas de atum em água',
-                '1 lata de grão de bico',
-                'Tomate cereja',
-                'Pepino',
-                'Cebola roxa',
-                'Azeite e limão'
-            ],
-        instructions: [
-                'Escorra o atum e o grão de bico',
-                'Pique os legumes em cubos pequenos',
-                'Misture todos ingredientes',
-                'Tempere com azeite, limão e sal',
-                'Adicione ervas frescas',
-                'Sirva gelado'
-            ],
-        tips: [
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            lunch: '41% proteína, 33% carboidratos, 26% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 17,
-        name: 'Filé Mignon ao Molho Madeira',
-        category: 'Jantar',
-        calories: 420,
-        protein: 45,
-        carbs: 33,
-        fats: 12,
-        fiber: 3,
-        time: 35,
-        servings: 2,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Hipertrofia',
-                'Ganho de peso',
-                'Jantar',
-                'Alto teor proteico'
-            ],
-        benefits: [
-                'Alto teor proteico para manutenção e ganho de massa magra',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [
-                'Leite/Laticínios'
-            ],
-        image: 'https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=800&q=80',
-        ingredients: [
-                '2 filés mignon (150g cada)',
-                '100ml de vinho Madeira',
-                'Cogumelos frescos',
-                'Creme de leite light',
-                'Manteiga e alho',
-                'Sal e pimenta'
-            ],
-        instructions: [
-                'Tempere os filés com sal e pimenta',
-                'Sele na manteiga até o ponto desejado',
-                'Reserve os filés',
-                'Na mesma panela, refogue os cogumelos',
-                'Adicione o vinho e deixe reduzir',
-                'Finalize com creme de leite e sirva'
-            ],
-        tips: [
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            dinner: '43% proteína, 31% carboidratos, 26% gorduras',
-            preworkout: 'Consuma 1-2h antes do treino para energia e performance',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 18,
-        name: 'Tilápia com Crosta de Ervas',
-        category: 'Jantar',
-        calories: 290,
-        protein: 38,
-        carbs: 12,
-        fats: 10,
-        fiber: 3,
-        time: 25,
-        servings: 2,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Hipertrofia',
-                'Jantar',
-                'Alto teor proteico',
-                'Low carb'
-            ],
-        benefits: [
-                'Alto teor proteico para manutenção e ganho de massa magra',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [
-                'Glúten (pode conter)',
-                'Peixe'
-            ],
-        image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800&q=80',
-        ingredients: [
-                '2 filés de tilápia',
-                '2 col de farinha de rosca integral',
-                'Salsinha e cebolinha',
-                'Alho',
-                'Limão',
-                'Azeite'
-            ],
-        instructions: [
-                'Tempere os filés com limão e alho',
-                'Misture farinha com ervas picadas',
-                'Cubra os filés com a mistura',
-                'Regue com azeite',
-                'Asse a 200°C por 15-20 minutos',
-                'Sirva com legumes no vapor'
-            ],
-        tips: [
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            dinner: '52% proteína, 17% carboidratos, 31% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 19,
-        name: 'Risoto de Frango Light',
-        category: 'Almoço',
-        calories: 410,
-        protein: 32,
-        carbs: 44,
-        fats: 12,
-        fiber: 3,
-        time: 40,
-        servings: 3,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Hipertrofia',
-                'Ganho de peso',
-                'Almoço',
-                'Alto teor proteico',
-                'Proteína'
-            ],
-        benefits: [
-                'Alto teor proteico para manutenção e ganho de massa magra',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [
-                'Leite/Laticínios'
-            ],
-        image: 'https://images.unsplash.com/photo-1637361874063-e5e415d7bcf7?q=80',
-        ingredients: [
-                '200g de arroz arbóreo',
-                '300g de frango em cubos',
-                'Caldo de legumes',
-                'Cebola e alho',
-                'Vinho branco',
-                'Queijo parmesão light'
-            ],
-        instructions: [
-                'Refogue a cebola e alho',
-                'Adicione o frango e doure',
-                'Acrescente o arroz e toste',
-                'Adicione vinho e deixe evaporar',
-                'Vá adicionando caldo aos poucos',
-                'Finalize com queijo ralado'
-            ],
-        tips: [
-                '🍗 Para ficar suculento: não fure o frango e deixe descansar 3 min antes de cortar',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            lunch: '31% proteína, 43% carboidratos, 26% gorduras',
-            preworkout: 'Consuma 1-2h antes do treino para energia e performance'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 20,
-        name: 'Espaguete de Abobrinha ao Pesto',
-        category: 'Veganas',
-        calories: 280,
-        protein: 15,
-        carbs: 32,
-        fats: 10,
-        fiber: 8,
-        time: 20,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Veganas',
-                'Rico em fibras'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal',
-                'Fonte vegetal de nutrientes e micronutrientes essenciais'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Oleaginosas'
-            ],
-        image: 'https://images.unsplash.com/photo-1766300284417-23e4e7619a30?q=80',
-        ingredients: [
-                '3 abobrinhas médias',
-                'Manjericão fresco',
-                'Castanhas',
-                'Alho',
-                'Azeite',
-                'Queijo parmesão'
-            ],
-        instructions: [
-                'Corte as abobrinhas em espiral (spiralizer)',
-                'Bata manjericão, castanhas, alho e azeite',
-                'Faça um pesto cremoso',
-                'Refogue levemente a abobrinha',
-                'Misture com o pesto',
-                'Sirva com queijo ralado'
-            ],
-        tips: [
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '22% proteína, 46% carboidratos, 32% gorduras'
-        },
-        variations: [],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 21,
-        name: 'Hambúrguer Caseiro Fitness',
-        category: 'Almoço',
-        calories: 350,
-        protein: 40,
-        carbs: 25,
-        fats: 10,
-        fiber: 5,
-        time: 25,
-        servings: 4,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Hipertrofia',
-                'Almoço',
-                'Alto teor proteico',
-                'Low carb',
-                'Energia sustentada',
-                'Proteína'
-            ],
-        benefits: [
-                'Alto teor proteico para manutenção e ganho de massa magra',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [
-                'Ovos',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80',
-        ingredients: [
-                '500g de patinho moído',
-                '1 ovo',
-                'Aveia',
-                'Cebola picada',
-                'Alho',
-                'Temperos a gosto'
-            ],
-        instructions: [
-                'Misture a carne com ovo e aveia',
-                'Adicione cebola, alho e temperos',
-                'Modele os hambúrgueres',
-                'Grelhe por 5 minutos cada lado',
-                'Sirva em pão integral',
-                'Adicione salada e molho fit'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            lunch: '46% proteína, 29% carboidratos, 26% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 22,
-        name: 'Moqueca de Peixe Light',
-        category: 'Jantar',
-        calories: 320,
-        protein: 35,
-        carbs: 20,
-        fats: 11,
-        fiber: 5,
-        time: 35,
-        servings: 3,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Hipertrofia',
-                'Jantar',
-                'Alto teor proteico',
-                'Low carb',
-                'Proteína'
-            ],
-        benefits: [
-                'Alto teor proteico para manutenção e ganho de massa magra',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Peixe'
-            ],
-        image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=800&q=80',
-        ingredients: [
-                '500g de peixe branco',
-                'Leite de coco light',
-                'Tomate',
-                'Pimentão',
-                'Coentro',
-                'Azeite de dendê (pouco)'
-            ],
-        instructions: [
-                'Tempere o peixe com limão',
-                'Refogue cebola, tomate e pimentão',
-                'Adicione o peixe',
-                'Acrescente leite de coco',
-                'Cozinhe em fogo baixo',
-                'Finalize com coentro e dendê'
-            ],
-        tips: [
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            dinner: '44% proteína, 25% carboidratos, 31% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 23,
-        name: 'Strogonoff de Frango Light',
-        category: 'Jantar',
-        calories: 390,
-        protein: 38,
-        carbs: 28,
-        fats: 14,
-        fiber: 5,
-        time: 30,
-        servings: 4,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Hipertrofia',
-                'Jantar',
-                'Alto teor proteico',
-                'Proteína'
-            ],
-        benefits: [
-                'Alto teor proteico para manutenção e ganho de massa magra',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [
-                'Leite/Laticínios'
-            ],
-        image: 'https://images.unsplash.com/photo-1766300508550-0f537b4d0459?q=80',
-        ingredients: [
-                '600g de peito de frango',
-                'Champignon',
-                'Creme de leite light',
-                'Mostarda',
-                'Cebola',
-                'Extrato de tomate'
-            ],
-        instructions: [
-                'Corte o frango em tiras',
-                'Refogue cebola e frango',
-                'Adicione champignon',
-                'Acrescente extrato de tomate',
-                'Misture mostarda e creme de leite',
-                'Sirva com arroz integral'
-            ],
-        tips: [
-                '🍗 Para ficar suculento: não fure o frango e deixe descansar 3 min antes de cortar',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            dinner: '39% proteína, 29% carboidratos, 32% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 24,
-        name: 'Lasanha de Berinjela',
-        category: 'Jantar',
-        calories: 340,
-        protein: 28,
-        carbs: 30,
-        fats: 12,
-        fiber: 5,
-        time: 50,
-        servings: 6,
-        difficulty: 'Médio',
-        featured: true,
-        tags: [
-                'Hipertrofia',
-                'Jantar',
-                'Alto teor proteico',
-                'Proteína'
-            ],
-        benefits: [
-                'Boa dose de proteína para saciedade e recuperação muscular',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [
-                'Leite/Laticínios'
-            ],
-        image: 'https://images.unsplash.com/photo-1709429790175-b02bb1b19207?q=80',
-        ingredients: [
-                '2 berinjelas grandes',
-                'Carne moída magra',
-                'Molho de tomate caseiro',
-                'Queijo mozzarella light',
-                'Ricota',
-                'Manjericão'
-            ],
-        instructions: [
-                'Fatie as berinjelas e grelhe',
-                'Prepare molho com carne moída',
-                'Em refratário, alterne camadas',
-                'Berinjela, molho, queijo',
-                'Finalize com mozzarella',
-                'Asse a 180°C por 30 minutos'
-            ],
-        tips: [
-                '🔥 Dica Pro: pré-aqueça o forno para garantir textura uniforme',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            dinner: '33% proteína, 35% carboidratos, 32% gorduras',
-            preworkout: 'Consuma 1-2h antes do treino para energia e performance',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 25,
-        name: 'Wrap de Frango Teriyaki',
-        category: 'Jantar',
-        calories: 380,
-        protein: 35,
-        carbs: 35,
-        fats: 11,
-        fiber: 5,
-        time: 25,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Hipertrofia',
-                'Jantar',
-                'Alto teor proteico',
-                'Proteína'
-            ],
-        benefits: [
-                'Alto teor proteico para manutenção e ganho de massa magra',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&q=80',
-        ingredients: [
-                'Tortilhas integrais',
-                '300g de frango em tiras',
-                'Molho teriyaki light',
-                'Vegetais (cenoura, pepino)',
-                'Alface',
-                'Gergelim'
-            ],
-        instructions: [
-                'Refogue o frango',
-                'Adicione molho teriyaki',
-                'Aqueça as tortilhas',
-                'Monte com alface e vegetais',
-                'Adicione o frango',
-                'Enrole e sirva'
-            ],
-        tips: [
-                '🍗 Para ficar suculento: não fure o frango e deixe descansar 3 min antes de cortar',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            dinner: '37% proteína, 37% carboidratos, 26% gorduras',
-            preworkout: 'Consuma 1-2h antes do treino para energia e performance',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 26,
-        name: 'Sopa de Lentilha com Legumes',
-        category: 'Jantar',
-        calories: 290,
-        protein: 18,
-        carbs: 36,
-        fats: 8,
-        fiber: 7,
-        time: 40,
-        servings: 4,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Jantar',
-                'Rico em fibras'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Refeição completa: sustenta por horas sem beliscar'
-            ],
-        allergens: [],
-        image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&q=80',
-        ingredients: [
-                '200g de lentilha',
-                'Cenoura',
-                'Batata',
-                'Calabresa light (opcional)',
-                'Cebola e alho',
-                'Caldo de legumes'
-            ],
-        instructions: [
-                'Refogue cebola e alho',
-                'Adicione a lentilha',
-                'Acrescente legumes picados',
-                'Cubra com caldo',
-                'Cozinhe por 30 minutos',
-                'Ajuste sal e sirva quente'
-            ],
-        tips: [
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            dinner: '25% proteína, 50% carboidratos, 25% gorduras'
-        },
-        variations: [
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 27,
-        name: 'Barrinha de Proteína Caseira',
-        category: 'Lanches',
-        calories: 180,
-        protein: 12,
-        carbs: 22,
-        fats: 5,
-        fiber: 5,
-        time: 30,
-        servings: 8,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Lanche',
-                'Baixa caloria',
-                'Low carb',
-                'Energia sustentada',
-                'Proteína'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Oleaginosas',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://plus.unsplash.com/premium_photo-1726217054248-ba1b3494ee4d?q=80',
-        ingredients: [
-                '2 scoops de whey',
-                '100g de aveia',
-                '50g de pasta de amendoim',
-                'Mel',
-                'Gotas de chocolate 70%',
-                'Castanhas picadas'
-            ],
-        instructions: [
-                'Misture whey e aveia',
-                'Adicione pasta de amendoim e mel',
-                'Incorpore gotas de chocolate',
-                'Espalhe em forma forrada',
-                'Refrigere por 2 horas',
-                'Corte em barrinhas'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '27% proteína, 49% carboidratos, 25% gorduras'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 28,
-        name: 'Cookies Proteicos de Banana',
-        category: 'Sobremesas',
-        calories: 150,
-        protein: 10,
-        carbs: 18,
-        fats: 4,
-        fiber: 5,
-        time: 25,
-        servings: 10,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Sobremesa fit',
-                'Baixa caloria',
-                'Low carb',
-                'Energia sustentada',
-                'Proteína'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Oleaginosas',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800&q=80',
-        ingredients: [
-                '2 bananas maduras',
-                '1 scoop de whey',
-                '100g de aveia',
-                'Canela',
-                'Gotas de chocolate',
-                'Castanhas (opcional)'
-            ],
-        instructions: [
-                'Amasse as bananas',
-                'Misture com whey e aveia',
-                'Adicione canela e gotas de chocolate',
-                'Faça bolinhas e achate',
-                'Asse a 180°C por 15 minutos',
-                'Deixe esfriar antes de servir'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '27% proteína, 49% carboidratos, 24% gorduras'
-        },
-        variations: [
-                'Versão low carb: reduza a banana e use morango ou abacate',
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 29,
-        name: 'Chips de Batata Doce',
-        category: 'Lanches',
-        calories: 140,
-        protein: 3,
-        carbs: 23,
-        fats: 4,
-        fiber: 5,
-        time: 35,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Lanche',
-                'Baixa caloria',
-                'Low carb',
-                'Energia sustentada'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal'
-            ],
-        allergens: [],
-        image: 'https://images.unsplash.com/photo-1566847284565-a733fe649d7d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        ingredients: [
-                '1 batata doce grande',
-                'Azeite em spray',
-                'Sal rosa',
-                'Páprica',
-                'Alho em pó',
-                'Alecrim'
-            ],
-        instructions: [
-                'Corte a batata em fatias finas',
-                'Disponha em assadeira',
-                'Borrife azeite',
-                'Tempere com sal e especiarias',
-                'Asse a 180°C por 25-30 minutos',
-                'Vire na metade do tempo'
-            ],
-        tips: [
-                '🔥 Dica Pro: pré-aqueça o forno para garantir textura uniforme',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '9% proteína, 66% carboidratos, 26% gorduras'
-        },
-        variations: [
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 30,
-        name: 'Bolo de Caneca Proteico',
-        category: 'Sobremesas',
-        calories: 200,
-        protein: 18,
-        carbs: 18,
-        fats: 6,
-        fiber: 5,
-        time: 5,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Emagrecimento',
-                'Definição',
-                'Sobremesa fit',
-                'Baixa caloria',
-                'Low carb',
-                'Rápido'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Ovos',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1511938842055-c59f750525b4?q=80',
-        ingredients: [
-                '1 ovo',
-                '1 scoop de whey chocolate',
-                '1 col de cacau em pó',
-                '1 col de aveia',
-                'Fermento',
-                'Leite'
-            ],
-        instructions: [
-                'Misture todos ingredientes em uma caneca',
-                'Bata bem com garfo',
-                'Leve ao microondas por 90 segundos',
-                'Deixe esfriar 1 minuto',
-                'Desenforme ou coma na caneca',
-                'Decore a gosto'
-            ],
-        tips: [
-                '🔥 Dica Pro: pré-aqueça o forno para garantir textura uniforme',
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '36% proteína, 36% carboidratos, 27% gorduras'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 31,
-        name: 'Guacamole com Vegetais',
-        category: 'Lanches',
-        calories: 160,
-        protein: 4,
-        carbs: 22,
-        fats: 6,
-        fiber: 5,
-        time: 10,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Lanche',
-                'Baixa caloria',
-                'Low carb',
-                'Rápido'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal'
-            ],
-        allergens: [],
-        image: 'https://plus.unsplash.com/premium_photo-1681406689576-b5384bcfed64?q=80',
-        ingredients: [
-                '2 abacates maduros',
-                'Tomate picado',
-                'Cebola roxa',
-                'Limão',
-                'Coentro',
-                'Vegetais para servir'
-            ],
-        instructions: [
-                'Amasse os abacates',
-                'Adicione tomate e cebola picados',
-                'Tempere com limão e sal',
-                'Misture o coentro',
-                'Sirva com cenoura e pepino',
-                'Consuma no mesmo dia'
-            ],
-        tips: [
-                '🥑 Abacate no ponto: use bem maduro para cremosidade e melhor sabor',
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '10% proteína, 56% carboidratos, 34% gorduras'
-        },
-        variations: [
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 32,
-        name: 'Bolinho de Arroz Integral',
-        category: 'Lanches',
-        calories: 190,
-        protein: 8,
-        carbs: 28,
-        fats: 5,
-        fiber: 5,
-        time: 25,
-        servings: 6,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Lanche',
-                'Baixa caloria',
-                'Energia sustentada',
-                'Proteína'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Ovos',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1676037150357-4417246cd4ce?q=80',
-        ingredients: [
-                '2 xícaras de arroz integral cozido',
-                '2 ovos',
-                'Queijo ralado light',
-                'Cebolinha',
-                'Aveia',
-                'Temperos'
-            ],
-        instructions: [
-                'Misture arroz com ovos',
-                'Adicione queijo e cebolinha',
-                'Tempere a gosto',
-                'Modele bolinhos',
-                'Passe na aveia',
-                'Asse ou frite em pouco óleo'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '17% proteína, 59% carboidratos, 24% gorduras'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 33,
-        name: 'Pasta de Atum Fit',
-        category: 'Lanches',
-        calories: 120,
-        protein: 15,
-        carbs: 8,
-        fats: 3,
-        fiber: 3,
-        time: 5,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Emagrecimento',
-                'Definição',
-                'Lanche',
-                'Baixa caloria',
-                'Low carb',
-                'Rápido'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Peixe'
-            ],
-        image: 'https://images.unsplash.com/photo-1766302353690-fb2fef54f390?q=80',
-        ingredients: [
-                '1 lata de atum',
-                'Iogurte grego',
-                'Mostarda',
-                'Cebolinha',
-                'Suco de limão',
-                'Temperos'
-            ],
-        instructions: [
-                'Escorra bem o atum',
-                'Misture com iogurte grego',
-                'Adicione mostarda e limão',
-                'Tempere com cebolinha',
-                'Ajuste sal e pimenta',
-                'Sirva com torradas integrais'
-            ],
-        tips: [
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '50% proteína, 27% carboidratos, 23% gorduras'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 34,
-        name: 'Muffin de Banana com Aveia',
-        category: 'Sobremesas',
-        calories: 170,
-        protein: 9,
-        carbs: 22,
-        fats: 5,
-        fiber: 5,
-        time: 30,
-        servings: 8,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Sobremesa fit',
-                'Baixa caloria',
-                'Low carb',
-                'Energia sustentada',
-                'Proteína'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Ovos',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1694459257405-0bcf15515710?q=80',
-        ingredients: [
-                '3 bananas maduras',
-                '2 ovos',
-                '150g de aveia',
-                '1 scoop de whey',
-                'Canela',
-                'Fermento'
-            ],
-        instructions: [
-                'Amasse as bananas',
-                'Bata com ovos',
-                'Misture aveia, whey e canela',
-                'Adicione fermento',
-                'Distribua em forminhas',
-                'Asse a 180°C por 20 minutos'
-            ],
-        tips: [
-                '🔥 Dica Pro: pré-aqueça o forno para garantir textura uniforme',
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '21% proteína, 52% carboidratos, 27% gorduras'
-        },
-        variations: [
-                'Versão low carb: reduza a banana e use morango ou abacate',
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 35,
-        name: 'Mousse Proteica de Chocolate',
-        category: 'Sobremesas',
-        calories: 150,
-        protein: 20,
-        carbs: 8,
-        fats: 4,
-        fiber: 3,
-        time: 10,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Emagrecimento',
-                'Definição',
-                'Sobremesa fit',
-                'Baixa caloria',
-                'Low carb',
-                'Rápido'
-            ],
-        benefits: [
-                'Boa dose de proteína para saciedade e recuperação muscular',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios'
-            ],
-        image: 'https://images.unsplash.com/photo-1575234337239-4c6492d7df1c?q=80',
-        ingredients: [
-                '1 scoop de whey chocolate',
-                '200g de iogurte grego',
-                'Cacau em pó',
-                'Adoçante',
-                'Essência de baunilha',
-                'Raspas de chocolate 70%'
-            ],
-        instructions: [
-                'Misture whey com iogurte',
-                'Adicione cacau em pó',
-                'Adoce a gosto',
-                'Bata até ficar cremoso',
-                'Refrigere por 30 minutos',
-                'Sirva com raspas de chocolate'
-            ],
-        tips: [
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '54% proteína, 22% carboidratos, 24% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 36,
-        name: 'Brownie Fit de Chocolate',
-        category: 'Sobremesas',
-        calories: 180,
-        protein: 12,
-        carbs: 22,
-        fats: 5,
-        fiber: 3,
-        time: 35,
-        servings: 9,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Sobremesa fit',
-                'Baixa caloria',
-                'Low carb',
-                'Energia sustentada',
-                'Proteína'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Ovos'
-            ],
-        image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800&q=80',
-        ingredients: [
-                '3 ovos',
-                '100g de cacau em pó',
-                '1 scoop de whey chocolate',
-                'Banana madura',
-                'Adoçante',
-                'Fermento'
-            ],
-        instructions: [
-                'Bata ovos com banana',
-                'Adicione cacau e whey',
-                'Adoce a gosto',
-                'Acrescente fermento',
-                'Despeje em forma untada',
-                'Asse a 180°C por 25 minutos'
-            ],
-        tips: [
-                '🔥 Dica Pro: pré-aqueça o forno para garantir textura uniforme',
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '27% proteína, 49% carboidratos, 25% gorduras'
-        },
-        variations: [
-                'Versão low carb: reduza a banana e use morango ou abacate',
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 37,
-        name: 'Pudim de Chia com Frutas',
-        category: 'Sobremesas',
-        calories: 140,
-        protein: 8,
-        carbs: 18,
-        fats: 4,
-        fiber: 7,
-        time: 240,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Sobremesa fit',
-                'Baixa caloria',
-                'Low carb',
-                'Rico em fibras'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios'
-            ],
-        image: 'https://plus.unsplash.com/premium_photo-1663840225561-76ecde33143c?q=80',
-        ingredients: [
-                '3 col de sementes de chia',
-                '200ml de leite de coco',
-                'Adoçante',
-                'Essência de baunilha',
-                'Frutas vermelhas',
-                'Coco ralado'
-            ],
-        instructions: [
-                'Misture chia com leite',
-                'Adicione adoçante e baunilha',
-                'Refrigere por 4 horas',
-                'Mexa a cada hora',
-                'Sirva com frutas',
-                'Decore com coco ralado'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '23% proteína, 51% carboidratos, 26% gorduras'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 38,
-        name: 'Sorvete de Banana Fit',
-        category: 'Sobremesas',
-        calories: 120,
-        protein: 6,
-        carbs: 17,
-        fats: 3,
-        fiber: 3,
-        time: 5,
-        servings: 2,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Sobremesa fit',
-                'Baixa caloria',
-                'Low carb',
-                'Rápido',
-                'Energia sustentada',
-                'Proteína'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Oleaginosas'
-            ],
-        image: 'https://images.unsplash.com/photo-1657225953401-5f95007fc8e0?q=80',
-        ingredients: [
-                '3 bananas congeladas',
-                '1 scoop de whey baunilha',
-                'Cacau em pó (opcional)',
-                'Pasta de amendoim',
-                'Leite (se necessário)',
-                'Toppings a gosto'
-            ],
-        instructions: [
-                'Corte bananas em rodelas e congele',
-                'Bata no processador',
-                'Adicione whey',
-                'Bata até ficar cremoso',
-                'Sirva imediatamente',
-                'Decore com pasta de amendoim'
-            ],
-        tips: [
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '20% proteína, 57% carboidratos, 23% gorduras'
-        },
-        variations: [
-                'Versão low carb: reduza a banana e use morango ou abacate',
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 39,
-        name: 'Suco Verde Energético',
-        category: 'Lanches',
-        calories: 90,
-        protein: 4,
-        carbs: 12,
-        fats: 3,
-        fiber: 5,
-        time: 5,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Lanche',
-                'Baixa caloria',
-                'Low carb',
-                'Rápido'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [],
-        image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=800&q=80',
-        ingredients: [
-                '1 maçã verde',
-                '1 folha de couve',
-                'Gengibre',
-                'Limão',
-                'Água de coco',
-                'Hortelã'
-            ],
-        instructions: [
-                'Lave bem todos ingredientes',
-                'Corte a maçã',
-                'Bata tudo no liquidificador',
-                'Coe se preferir',
-                'Sirva com gelo',
-                'Consuma imediatamente'
-            ],
-        tips: [
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '18% proteína, 53% carboidratos, 30% gorduras'
-        },
-        variations: [
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 40,
-        name: 'Shake Proteico de Morango',
-        category: 'Lanches',
-        calories: 220,
-        protein: 28,
-        carbs: 14,
-        fats: 6,
-        fiber: 5,
-        time: 5,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Emagrecimento',
-                'Definição',
-                'Hipertrofia',
-                'Lanche',
-                'Alto teor proteico',
-                'Baixa caloria'
-            ],
-        benefits: [
-                'Boa dose de proteína para saciedade e recuperação muscular',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1589734575451-8ddc34c5752b?q=80',
-        ingredients: [
-                '1 scoop de whey morango',
-                '200ml de leite desnatado',
-                'Morangos frescos',
-                'Aveia',
-                'Gelo',
-                'Mel (opcional)'
-            ],
-        instructions: [
-                'Coloque todos ingredientes no liquidificador',
-                'Bata até ficar homogêneo',
-                'Ajuste consistência com mais leite',
-                'Prove e adoce se necessário',
-                'Sirva imediatamente',
-                'Ideal pós-treino'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '50% proteína, 25% carboidratos, 24% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 41,
-        name: 'Café Proteico Gelado',
-        category: 'Lanches',
-        calories: 180,
-        protein: 22,
-        carbs: 12,
-        fats: 5,
-        fiber: 3,
-        time: 5,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Emagrecimento',
-                'Definição',
-                'Lanche',
-                'Baixa caloria',
-                'Low carb',
-                'Rápido'
-            ],
-        benefits: [
-                'Boa dose de proteína para saciedade e recuperação muscular',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [
-                'Leite/Laticínios'
-            ],
-        image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=800&q=80',
-        ingredients: [
-                '1 dose de café expresso frio',
-                '1 scoop de whey baunilha',
-                '200ml de leite desnatado',
-                'Gelo',
-                'Canela',
-                'Adoçante'
-            ],
-        instructions: [
-                'Prepare café e deixe esfriar',
-                'Bata com whey e leite',
-                'Adicione gelo',
-                'Adoce a gosto',
-                'Polvilhe canela',
-                'Sirva gelado'
-            ],
-        tips: [
-                '💪 Ajuste o whey: use sem sabor para receitas salgadas e baunilha/choco para doces',
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '49% proteína, 27% carboidratos, 25% gorduras',
-            postWorkout: 'Bom para recuperação (até 1h pós-treino)'
-        },
-        variations: [
-                'Versão sem lactose: use iogurte/queijos sem lactose e whey isolado',
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 42,
-        name: 'Água Saborizada Detox',
-        category: 'Lanches',
-        calories: 15,
-        protein: 0,
-        carbs: 0,
-        fats: 2,
-        fiber: 5,
-        time: 5,
-        servings: 1,
-        difficulty: 'Fácil',
-        featured: false,
-        tags: [
-                'Lanche',
-                'Baixa caloria',
-                'Low carb',
-                'Rápido'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Baixa caloria: ajuda em estratégia de emagrecimento',
-                'Opção prática para manter dieta sem abrir mão do sabor'
-            ],
-        allergens: [],
-        image: 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=800&q=80',
-        ingredients: [
-                '500ml de água',
-                'Rodelas de limão',
-                'Folhas de hortelã',
-                'Gengibre',
-                'Pepino',
-                'Gelo'
-            ],
-        instructions: [
-                'Adicione água em uma jarra',
-                'Coloque rodelas de limão',
-                'Acrescente hortelã e gengibre',
-                'Adicione pepino fatiado',
-                'Refrigere por 30 minutos',
-                'Sirva gelado com gelo'
-            ],
-        tips: [
-                '⏱️ Versão express: deixe porções medidas para montar em 2-3 minutos',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '0% proteína, 0% carboidratos, 100% gorduras'
-        },
-        variations: [
-                'Versão vegana: substitua proteína animal por tofu/leguminosas quando possível'
-            ]
-    },
-    {
-        id: 44,
-        name: 'Hambúrguer de Grão de Bico',
-        category: 'Veganas',
-        calories: 280,
-        protein: 14,
-        carbs: 38,
-        fats: 8,
-        fiber: 6,
-        time: 30,
-        servings: 4,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Veganas',
-                'Rico em fibras',
-                'Energia sustentada'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Gorduras boas: apoio à saúde cardiovascular e hormonal',
-                'Fonte vegetal de nutrientes e micronutrientes essenciais'
-            ],
-        allergens: [
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1520072959219-c595dc870360?w=800&q=80',
-        ingredients: [
-                '2 xícaras de grão de bico cozido',
-                'Cebola e alho',
-                'Aveia',
-                'Cominho',
-                'Salsinha',
-                'Azeite'
-            ],
-        instructions: [
-                'Amasse o grão de bico',
-                'Refogue cebola e alho',
-                'Misture tudo com aveia',
-                'Tempere com cominho',
-                'Modele os hambúrgueres',
-                'Grelhe ou asse até dourar'
-            ],
-        tips: [
-                '🥣 Mais saciedade: acrescente 1 colher de chia ou linhaça',
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '20% proteína, 54% carboidratos, 26% gorduras'
-        },
-        variations: [],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 45,
-        name: 'Curry de Legumes com Tofu',
-        category: 'Veganas',
-        calories: 320,
-        protein: 18,
-        carbs: 42,
-        fats: 9,
-        fiber: 6,
-        time: 35,
-        servings: 3,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Veganas',
-                'Rico em fibras',
-                'Proteína'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Fonte vegetal de nutrientes e micronutrientes essenciais'
-            ],
-        allergens: [
-                'Leite/Laticínios',
-                'Soja'
-            ],
-        image: 'https://images.pexels.com/photos/6120232/pexels-photo-6120232.jpeg?_gl=1*1t3jenz*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDY0MjgkajQ2JGwwJGgw',
-        ingredients: [
-                '200g de tofu firme',
-                'Leite de coco',
-                'Curry em pó',
-                'Batata',
-                'Cenoura',
-                'Brócolis'
-            ],
-        instructions: [
-                'Corte o tofu em cubos',
-                'Refogue com curry',
-                'Adicione legumes picados',
-                'Cubra com leite de coco',
-                'Cozinhe até os legumes ficarem macios',
-                'Sirva com arroz basmati'
-            ],
-        tips: [
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '22% proteína, 52% carboidratos, 25% gorduras'
-        },
-        variations: [],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },
-    {
-        id: 46,
-        name: 'Wrap Vegano de Falafel',
-        category: 'Veganas',
-        calories: 350,
-        protein: 15,
-        carbs: 50,
-        fats: 10,
-        fiber: 6,
-        time: 40,
-        servings: 4,
-        difficulty: 'Médio',
-        featured: false,
-        tags: [
-                'Veganas',
-                'Rico em fibras'
-            ],
-        benefits: [
-                'Equilíbrio de macronutrientes para energia e saciedade',
-                'Rico em fibras: melhora digestão e aumenta saciedade',
-                'Fonte vegetal de nutrientes e micronutrientes essenciais'
-            ],
-        allergens: [
-                'Glúten (pode conter)'
-            ],
-        image: 'https://images.unsplash.com/photo-1666819615040-eff5e52c778a?q=80',
-        ingredients: [
-                'Grão de bico',
-                'Salsinha e coentro',
-                'Cominho',
-                'Alho',
-                'Tortilha integral',
-                'Molho tahine'
-            ],
-        instructions: [
-                'Processe grão de bico com temperos',
-                'Modele bolinhas de falafel',
-                'Asse a 200°C por 25 minutos',
-                'Aqueça as tortilhas',
-                'Monte com salada',
-                'Regue com molho tahine'
-            ],
-        tips: [
-                '🧂 Temperos: prefira ervas e especiarias para mais sabor com menos calorias'
-            ],
-        macros: {
-            snack: '17% proteína, 57% carboidratos, 26% gorduras'
-        },
-        variations: [],
-        mealPrepTips: [
-                'Armazene em potes bem fechados na geladeira (até 3-4 dias)',
-                'Separe molho/folhas para manter textura',
-                'Reaqueça em fogo baixo ou forno para preservar sabor'
-            ]
-    },		
-	
-	
+
 {
-    id: 48,
-    name: 'Vitamina Verde Detox',
+    id: 52,
+    name: 'Smoothie Verde Detox',
     category: 'Café da Manhã',
-    calories: 195,
+    calories: 180,
     protein: 8,
     carbs: 32,
     fats: 4,
@@ -2753,2053 +4034,2657 @@ const RECIPES = [
     time: 5,
     servings: 1,
     difficulty: 'Fácil',
-    featured: true,
-    description: 'Smoothie verde rico em nutrientes para desintoxicar e energizar',
+    featured: false,
+    description: 'Vitamina verde energizante com espinafre, abacaxi e gengibre',
     
-    tags: [
-        'Detox',
-        'Antioxidante',
-        'Alcalinizante',
-        'Anti-inflamatório'
-    ],
+    tags: ['Vegano', 'Detox', 'Energético', 'Antioxidante'],
     
     benefits: [
-        'Desintoxica o fígado naturalmente',
-        'Melhora digestão e trânsito intestinal',
-        'Aumenta disposição mental',
-        'Reduz inchaço abdominal'
+        'Desintoxica naturalmente o organismo',
+        'Rico em vitaminas A, C e K',
+        'Melhora digestão e imunidade',
+        'Hidratação e energia instantânea'
     ],
     
-    allergens: [],
+    allergens: ['Nenhum'],
     
-    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?q=80',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'leaf',
-            quantity: '1 xícara (30g)',
-            text: 'de espinafre fresco'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '3 folhas',
-            text: 'de couve manteiga'
-        },
-        { 
-            icon: 'banana',
-            quantity: '1 unidade média',
-            text: 'banana congelada'
-        },
-        { 
-            icon: 'apple',
-            quantity: '1/2 unidade',
-            text: 'maçã verde com casca'
-        },
-        { 
-            icon: 'citrus',
-            quantity: '1/2 unidade',
-            text: 'limão (suco)'
-        },
-        { 
-            icon: 'wheat',
-            quantity: '1 colher sopa',
-            text: 'de aveia em flocos'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '200ml',
-            text: 'de água de coco natural'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: '1 colher café',
-            text: 'de gengibre fresco ralado',
-            optional: true
-        }
+        { icon: 'leaf', quantity: '2 xícaras', text: 'de espinafre fresco' },
+        { icon: 'banana', quantity: '1 unidade', text: 'banana congelada' },
+        { icon: 'apple', quantity: '1 xícara', text: 'de abacaxi picado' },
+        { icon: 'leaf', quantity: '1 pedaço (2cm)', text: 'de gengibre fresco' },
+        { icon: 'droplet', quantity: '1 xícara', text: 'de água de coco' },
+        { icon: 'droplet', quantity: '1 colher sopa', text: 'de suco de limão' }
     ],
     
     instructions: [
-        'Lave bem as folhas verdes em água corrente',
-        'Corte a banana e maçã em pedaços',
         'Adicione todos os ingredientes no liquidificador',
-        'Bata por 40-60 segundos até ficar completamente liso',
-        'Se necessário, adicione mais água de coco para ajustar consistência',
-        'Sirva imediatamente em copo grande',
-        'Opcional: decore com sementes de chia'
+        'Comece com líquidos na base',
+        'Bata em potência alta por 60 segundos',
+        'Ajuste consistência com mais água de coco se necessário',
+        'Sirva imediatamente bem gelado'
     ],
     
     tips: [
-        '🌿 Folhas muito amargas? Use menos couve, mais espinafre',
-        '❄️ Congele espinafre em cubos para praticidade',
-        '💚 Adicione abacate para textura cremosa',
-        '⚡ Tome em jejum para melhor absorção',
-        '🍋 Limão é essencial - equilibra sabor verde'
+        'Banana congelada deixa cremoso sem gelo',
+        'Gengibre acelera o metabolismo',
+        'Adicione chia ou linhaça para mais fibras',
+        'Prepare na noite anterior e armazene na geladeira'
     ],
     
+	
+	
     images: {
-        hero: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?q=80',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
+	
+	
     
-    macros: {
-        breakfast: '16% proteína, 66% carboidratos, 18% gorduras',
-        detox: 'Rico em clorofila e antioxidantes'
+    searchMeta: {
+        mainIngredients: ['espinafre', 'abacaxi', 'banana', 'gengibre'],
+        objectives: ['detox', 'energia', 'saude'],
+        dishType: ['smoothie', 'vitamina'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: true,
+            lowCarb: false
+        },
+        mealTime: ['cafe-da-manha', 'lanche'],
+        keywords: ['smoothie', 'verde', 'detox', 'rapido', 'saudavel']
     }
 },
 
-
-
 {
-    id: 49,
-    name: 'Overnight Oats de Chocolate',
+    id: 53,
+    name: 'Overnight Oats Chocolate',
     category: 'Café da Manhã',
-    calories: 310,
-    protein: 18,
-    carbs: 45,
-    fats: 7,
-    fiber: 9,
+    calories: 340,
+    protein: 14,
+    carbs: 48,
+    fats: 12,
+    fiber: 10,
     time: 5,
     servings: 1,
     difficulty: 'Fácil',
     featured: false,
-    description: 'Aveia cremosa preparada de véspera com sabor de brownie',
+    description: 'Aveia preparada na noite anterior com cacau e manteiga de amendoim',
     
-    tags: [
-        'Preparo noturno',
-        'Rico em fibras',
-        'Sem cozimento',
-        'Prático'
-    ],
+    tags: ['Vegano', 'Preparo Antecipado', 'Rico em Fibras', 'Sem Cozimento'],
     
     benefits: [
-        'Preparo antecipado economiza tempo',
+        'Pronto ao acordar - zero preparo',
+        'Estabiliza açúcar no sangue',
         'Melhora saúde intestinal',
-        'Estabiliza níveis de açúcar no sangue',
-        'Satisfaz desejo por doces'
+        'Saciedade por horas'
     ],
     
-    allergens: [
-        'Leite',
-        'Glúten (aveia)'
-    ],
+    allergens: ['Aveia', 'Amendoim'],
     
-    image: 'https://images.pexels.com/photos/27850089/pexels-photo-27850089.jpeg?_gl=1*waesq7*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDMyODkkajEwJGwwJGgw',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'wheat',
-            quantity: '50g (1/2 xícara)',
-            text: 'de aveia em flocos'
-        },
-        { 
-            icon: 'milk',
-            quantity: '120ml',
-            text: 'de leite desnatado'
-        },
-        { 
-            icon: 'milk-off',
-            quantity: '100g',
-            text: 'de iogurte grego natural'
-        },
-        { 
-            icon: 'candy',
-            quantity: '1 colher sopa',
-            text: 'de cacau em pó 100%'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '1 colher chá',
-            text: 'de mel ou xilitol'
-        },
-        { 
-            icon: 'wheat',
-            quantity: '1 colher sopa',
-            text: 'de sementes de chia'
-        },
-        { 
-            icon: 'candy',
-            quantity: '10g',
-            text: 'de chocolate 70% cacau picado',
-            optional: true
-        }
+        { icon: 'wheat', quantity: '1/2 xícara (50g)', text: 'de aveia em flocos' },
+        { icon: 'milk', quantity: '3/4 xícara', text: 'de leite de amêndoas' },
+        { icon: 'candy', quantity: '2 colheres sopa', text: 'de cacau em pó 100%' },
+        { icon: 'nut', quantity: '1 colher sopa', text: 'de manteiga de amendoim' },
+        { icon: 'sparkles', quantity: '1 colher chá', text: 'de sementes de chia' },
+        { icon: 'droplet', quantity: '1 colher chá', text: 'de xarope de maple' }
     ],
     
     instructions: [
-        'Em um pote com tampa, misture aveia, cacau e chia',
-        'Adicione leite e iogurte, mexa bem até incorporar',
-        'Adoce com mel conforme preferência',
-        'Tampe e leve à geladeira por no mínimo 6 horas (ou durante a noite)',
-        'Pela manhã, mexa novamente',
-        'Se estiver muito grosso, adicione mais leite',
-        'Finalize com chocolate picado e frutas vermelhas'
+        'Em um pote de vidro, misture aveia, cacau e chia',
+        'Adicione leite vegetal e manteiga de amendoim',
+        'Mexa bem até incorporar tudo',
+        'Adicione adoçante natural a gosto',
+        'Tampe e leve à geladeira por 4-8 horas',
+        'Pela manhã, mexa e sirva gelado',
+        'Finalize com frutas e granola se desejar'
     ],
     
     tips: [
-        '🌙 Prepare 3 potes de uma vez para a semana',
-        '💪 Versão proteica: adicione 1/2 scoop de whey',
-        '🍓 Camadas: intercale com frutas no pote',
-        '❄️ Dura até 5 dias na geladeira',
-        '🥜 Adicione pasta de amendoim para mais gorduras boas'
+        'Prepare na noite anterior para manhãs práticas',
+        'Dura 3-4 dias na geladeira',
+        'Varie com frutas vermelhas ou banana',
+        'Adicione proteína vegetal em pó para mais proteína'
     ],
-    
+	
+	
     images: {
-        hero: 'https://images.pexels.com/photos/27850089/pexels-photo-27850089.jpeg?_gl=1*waesq7*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDMyODkkajEwJGwwJGgw',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
-    
-    macros: {
-        breakfast: '23% proteína, 58% carboidratos, 19% gorduras',
-        mealprep: 'Ideal para preparar domingo à noite'
+	
+	
+    searchMeta: {
+        mainIngredients: ['aveia', 'cacau', 'manteiga-amendoim'],
+        objectives: ['praticidade', 'saciedade', 'energia'],
+        dishType: ['overnight-oats'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: false,
+            raw: true,
+            lowCarb: false
+        },
+        mealTime: ['cafe-da-manha'],
+        keywords: ['overnight', 'aveia', 'chocolate', 'pratico']
     }
 },
 
-
-
-
 {
-    id: 50,
-    name: 'Omelete de Claras com Vegetais',
+    id: 54,
+    name: 'Torradas de Abacate com Tomate',
     category: 'Café da Manhã',
-    calories: 165,
-    protein: 24,
-    carbs: 8,
-    fats: 3,
-    fiber: 3,
+    calories: 280,
+    protein: 8,
+    carbs: 32,
+    fats: 15,
+    fiber: 9,
     time: 10,
     servings: 1,
     difficulty: 'Fácil',
     featured: true,
-    description: 'Omelete leve e proteico com vegetais coloridos',
+    description: 'Torradas crocantes com guacamole caseiro e tomates frescos',
     
-    tags: [
-        'Alto teor proteico',
-        'Baixa caloria',
-        'Rico em vitaminas',
-        'Sem lactose'
-    ],
+    tags: ['Vegano', 'Rico em Gorduras Boas', 'Rápido', 'Instagram Worthy'],
     
     benefits: [
-        'Máxima proteína com mínima gordura',
-        'Rico em vitaminas A, C e K',
-        'Fortalece músculos',
-        'Baixíssimo índice glicêmico'
+        'Gorduras boas para saciedade',
+        'Rico em fibras e antioxidantes',
+        'Vitaminas E, K e potássio',
+        'Melhora absorção de nutrientes'
     ],
     
-    allergens: [
-        'Ovos'
-    ],
+    allergens: ['Glúten (use pão sem glúten se necessário)'],
     
-    image: 'https://images.pexels.com/photos/89238/pexels-photo-89238.png?_gl=1*13ybdng*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDM0MTUkajMyJGwwJGgw',
-    
+image: 'image/',
     ingredients: [
-        { 
-            icon: 'egg',
-            quantity: '4 unidades',
-            text: 'claras de ovos'
-        },
-        { 
-            icon: 'egg',
-            quantity: '1 unidade',
-            text: 'gema (opcional para cremosidade)'
-        },
-        { 
-            icon: 'tomato',
-            quantity: '1/2 unidade',
-            text: 'tomate picado'
-        },
-        { 
-            icon: 'pepper-hot',
-            quantity: '1/4 unidade',
-            text: 'pimentão vermelho picado'
-        },
-        { 
-            icon: 'onion',
-            quantity: '2 colheres sopa',
-            text: 'de cebola picada'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '1 xícara',
-            text: 'de espinafre fresco'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'sal rosa, pimenta do reino, orégano'
-        },
-        { 
-            icon: 'droplets',
-            quantity: 'spray',
-            text: 'azeite em spray'
-        }
+        { icon: 'wheat', quantity: '2 fatias', text: 'de pão integral' },
+        { icon: 'leaf', quantity: '1 unidade', text: 'abacate maduro' },
+        { icon: 'circle-dot', quantity: '6 unidades', text: 'tomates cereja' },
+        { icon: 'droplet', quantity: '1/2 unidade', text: 'limão (suco)' },
+        { icon: 'flower-2', quantity: '1 dente', text: 'de alho picado' },
+        { icon: 'sparkles', quantity: 'a gosto', text: 'sal, pimenta e flocos de pimenta' }
     ],
     
     instructions: [
-        'Bata levemente as claras com um garfo (não faça espuma)',
-        'Tempere com sal, pimenta e orégano',
-        'Aqueça frigideira antiaderente em fogo médio com spray de azeite',
-        'Refogue cebola e pimentão por 2 minutos',
-        'Adicione tomate e espinafre, refogue por 1 minuto',
-        'Despeje as claras batidas por cima dos vegetais',
-        'Deixe cozinhar por 3-4 minutos até firmar embaixo',
-        'Dobre ao meio e sirva imediatamente'
+        'Torrar as fatias de pão até ficarem crocantes',
+        'Amassar o abacate com garfo em uma tigela',
+        'Adicionar suco de limão, alho, sal e pimenta',
+        'Misturar bem até formar um creme',
+        'Espalhar generosamente sobre as torradas',
+        'Cortar os tomates cereja ao meio',
+        'Distribuir sobre o abacate',
+        'Finalizar com sal marinho e flocos de pimenta'
     ],
     
     tips: [
-        '🥚 Use claras pasteurizadas de caixinha para praticidade',
-        '💪 Adicione queijo cottage para mais proteína',
-        '🌿 Varie os vegetais conforme disponibilidade',
-        '🔥 Fogo médio-baixo = omelete macio',
-        '📦 Prepare 3 porções e leve em marmita'
+        'Abacate maduro é essencial para cremosidade',
+        'Limão evita que o abacate escureça',
+        'Adicione gergelim ou sementes de girassol',
+        'Versão gourmet: adicione rúcula e azeite'
     ],
     
-    images: {
-        hero: 'https://images.pexels.com/photos/89238/pexels-photo-89238.png?_gl=1*13ybdng*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDM0MTUkajMyJGwwJGgw',
-        steps: []
-    },
-    
-    macros: {
-        breakfast: '58% proteína, 20% carboidratos, 22% gorduras',
-        cutting: 'Ideal para dietas de definição'
-    }
-},
 	
 	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
 	
 	
-	{
-    id: 51,
-    name: 'Tapioca Recheada Fit',
-    category: 'Café da Manhã',
-    calories: 245,
-    protein: 16,
-    carbs: 35,
-    fats: 5,
-    fiber: 2,
-    time: 10,
-    servings: 1,
-    difficulty: 'Fácil',
-    featured: false,
-    description: 'Tapioca leve recheada com frango desfiado e requeijão light',
     
-    tags: [
-        'Sem glúten',
-        'Brasileiro',
-        'Prático',
-        'Salgado'
-    ],
-    
-    benefits: [
-        'Naturalmente sem glúten',
-        'Energiza sem pesar',
-        'Digestão rápida e fácil',
-        'Versátil para recheios'
-    ],
-    
-    allergens: [
-        'Leite (requeijão)'
-    ],
-    
-    image: 'https://images.pexels.com/photos/3807512/pexels-photo-3807512.jpeg?_gl=1*1vs8y3a*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDM3MDkkajU5JGwwJGgw',
-    
-    ingredients: [
-        { 
-            icon: 'circle',
-            quantity: '4 colheres sopa',
-            text: 'de goma de tapioca hidratada'
+    searchMeta: {
+        mainIngredients: ['abacate', 'tomate', 'pao'],
+        objectives: ['saciedade', 'saude', 'praticidade'],
+        dishType: ['torrada', 'toast'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: false,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
         },
-        { 
-            icon: 'drumstick',
-            quantity: '80g',
-            text: 'de peito de frango desfiado'
-        },
-        { 
-            icon: 'cheese',
-            quantity: '2 colheres sopa',
-            text: 'de requeijão light'
-        },
-        { 
-            icon: 'tomato',
-            quantity: '3 fatias',
-            text: 'de tomate'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '3 folhas',
-            text: 'de manjericão fresco'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'sal e orégano'
-        }
-    ],
-    
-    instructions: [
-        'Aqueça frigideira antiaderente em fogo médio',
-        'Espalhe a goma uniformemente formando círculo',
-        'Deixe cozinhar por 2 minutos até firmar e desgrudar',
-        'Vire a tapioca com cuidado',
-        'Adicione o recheio em uma metade: frango, requeijão, tomate, manjericão',
-        'Dobre ao meio e cozinhe por mais 1 minuto',
-        'Retire do fogo e sirva quente'
-    ],
-    
-    tips: [
-        '💧 Goma muito seca? Borrife água antes de usar',
-        '🍗 Use frango da marmita do dia anterior',
-        '🧀 Versão vegana: substitua por pasta de grão de bico',
-        '🌶️ Adicione pimenta calabresa para dar sabor',
-        '❄️ Congele massas prontas por até 3 meses'
-    ],
-    
-    images: {
-        hero: 'https://images.pexels.com/photos/3807512/pexels-photo-3807512.jpeg?_gl=1*1vs8y3a*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDM3MDkkajU5JGwwJGgw',
-        steps: []
-    },
-    
-    macros: {
-        breakfast: '26% proteína, 57% carboidratos, 17% gorduras',
-        glutenfree: '100% sem glúten'
-    }
-},
-
-
-
-{
-    id: 52,
-    name: 'Buddha Bowl Vegano',
-    category: 'Veganas',
-    calories: 420,
-    protein: 18,
-    carbs: 58,
-    fats: 14,
-    fiber: 15,
-    time: 25,
-    servings: 1,
-    difficulty: 'Médio',
-    featured: false,
-    description: 'Bowl completo e colorido com proteína vegetal, grãos e vegetais assados',
-    
-    tags: [
-        'Veganas',
-        'Rico em fibras',
-        'Antioxidante',
-        'Completo'
-    ],
-    
-    benefits: [
-        'Proteína vegetal completa',
-        'Rico em ômega-3 vegetal',
-        'Melhora microbiota intestinal',
-        'Anti-inflamatório natural'
-    ],
-    
-    allergens: [
-        'Gergelim',
-        'Soja (opcional)'
-    ],
-    
-    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80',
-    
-    ingredients: [
-        { 
-            icon: 'wheat',
-            quantity: '80g (cozido)',
-            text: 'de quinoa tricolor'
-        },
-        { 
-            icon: 'circle',
-            quantity: '150g',
-            text: 'de grão de bico cozido'
-        },
-        { 
-            icon: 'potato',
-            quantity: '150g',
-            text: 'de batata doce em cubos'
-        },
-        { 
-            icon: 'broccoli',
-            quantity: '100g',
-            text: 'de brócolis em florzinhas'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '1 xícara',
-            text: 'de couve roxa ralada'
-        },
-        { 
-            icon: 'carrot',
-            quantity: '1 unidade média',
-            text: 'cenoura ralada'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '1/2 unidade',
-            text: 'abacate fatiado'
-        },
-        { 
-            icon: 'wheat',
-            quantity: '2 colheres sopa',
-            text: 'de tahine (pasta de gergelim)'
-        },
-        { 
-            icon: 'citrus',
-            quantity: '1 unidade',
-            text: 'limão (suco)'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: '1 colher sopa',
-            text: 'de sementes mistas (girassol, abóbora, chia)'
-        }
-    ],
-    
-    instructions: [
-        'Pré-aqueça o forno a 200°C',
-        'Tempere batata doce e grão de bico com páprica, cominho, sal e azeite',
-        'Asse por 25 minutos até dourar',
-        'Cozinhe quinoa em água (2:1) por 15 minutos',
-        'Cozinhe brócolis no vapor por 5 minutos',
-        'Prepare molho: tahine + limão + água + sal (consistência cremosa)',
-        'Monte o bowl: base de quinoa, vegetais em setores, abacate no centro',
-        'Regue com molho de tahine e finalize com sementes'
-    ],
-    
-    tips: [
-        '🌈 Quanto mais colorido, mais nutrientes',
-        '💪 Adicione tofu grelhado para mais proteína',
-        '🥜 Tahine caseiro: bata gergelim torrado com azeite',
-        '❄️ Congele grão de bico temperado assado',
-        '🌿 Varie vegetais conforme estação'
-    ],
-    
-    images: {
-        hero: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80',
-        steps: []
-    },
-    
-    macros: {
-        lunch: '17% proteína, 55% carboidratos, 28% gorduras',
-        vegan: '100% plant-based'
-    }
-},
-
-
-
-{
-    id: 53,
-    name: 'Estrogonofe de Cogumelos Vegano',
-    category: 'Veganas',
-    calories: 380,
-    protein: 14,
-    carbs: 48,
-    fats: 15,
-    fiber: 8,
-    time: 30,
-    servings: 2,
-    difficulty: 'Médio',
-    featured: false,
-    description: 'Estrogonofe cremoso feito com cogumelos e creme de castanha',
-    
-    tags: [
-        'Veganas',
-        'Comfort food',
-        'Rico em umami',
-        'Cremoso'
-    ],
-    
-    benefits: [
-        'Cogumelos fortalecem imunidade',
-        'Rico em vitaminas do complexo B',
-        'Gorduras boas do creme de castanha',
-        'Sem colesterol'
-    ],
-    
-    allergens: [
-        'Castanhas'
-    ],
-    
-    image: 'https://images.pexels.com/photos/6287494/pexels-photo-6287494.jpeg?_gl=1*yj38uz*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDU3MDUkajgkbDAkaDA.',
-    
-    ingredients: [
-        { 
-            icon: 'circle',
-            quantity: '400g',
-            text: 'de cogumelos variados (paris, shimeji, shiitake) fatiados'
-        },
-        { 
-            icon: 'onion',
-            quantity: '1 unidade grande',
-            text: 'cebola picada'
-        },
-        { 
-            icon: 'garlic',
-            quantity: '4 dentes',
-            text: 'de alho picados'
-        },
-        { 
-            icon: 'nut',
-            quantity: '100g',
-            text: 'de castanha de caju crua (hidratada 4h)'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '200ml',
-            text: 'de água filtrada'
-        },
-        { 
-            icon: 'tomato',
-            quantity: '2 colheres sopa',
-            text: 'de extrato de tomate'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '1 colher sopa',
-            text: 'de shoyu ou tamari'
-        },
-        { 
-            icon: 'droplets',
-            quantity: '2 colheres sopa',
-            text: 'de azeite extra virgem'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'páprica defumada, sal, pimenta do reino'
-        }
-    ],
-    
-    instructions: [
-        'Bata castanha hidratada + água no liquidificador até ficar cremoso (creme de castanha)',
-        'Em panela grande, aqueça azeite e refogue cebola até murchar',
-        'Adicione alho, refogue por 1 minuto',
-        'Acrescente cogumelos e sal, cozinhe em fogo alto por 5-7 minutos',
-        'Adicione extrato de tomate, páprica defumada e shoyu, misture',
-        'Despeje o creme de castanha, mexa bem',
-        'Cozinhe por 5 minutos em fogo baixo até engrossar',
-        'Ajuste sal e pimenta, sirva com arroz integral e batata palha'
-    ],
-    
-    tips: [
-        '🍄 Cogumelos devem estar secos - não lave, limpe com papel',
-        '💧 Guarde água do cozimento - rica em nutrientes',
-        '🥜 Sem castanha? Use creme de amendoim natural',
-        '🌿 Finalize com salsinha fresca picada',
-        '❄️ Congela muito bem por até 3 meses'
-    ],
-    
-    images: {
-        hero: 'https://images.pexels.com/photos/6287494/pexels-photo-6287494.jpeg?_gl=1*yj38uz*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDU3MDUkajgkbDAkaDA.',
-        steps: []
-    },
-    
-    macros: {
-        lunch: '15% proteína, 50% carboidratos, 35% gorduras',
-        vegan: 'Proteína completa de cogumelos'
-    }
-},
-
-
-{
-    id: 54,
-    name: 'Feijoada Vegana Completa',
-    category: 'Veganas',
-    calories: 465,
-    protein: 22,
-    carbs: 68,
-    fats: 10,
-    fiber: 18,
-    time: 90,
-    servings: 4,
-    difficulty: 'Médio',
-    featured: false,
-    description: 'Feijoada tradicional brasileira em versão 100% vegetal',
-    
-    tags: [
-        'Veganas',
-        'Brasileiro',
-        'Rico em ferro',
-        'Proteína vegetal'
-    ],
-    
-    benefits: [
-        'Alto teor de ferro vegetal',
-        'Proteínas completas',
-        'Rico em fibras solúveis',
-        'Fortalece músculos'
-    ],
-    
-    allergens: [
-        'Soja (proteína texturizada)'
-    ],
-    
-    image: 'https://images.pexels.com/photos/7265077/pexels-photo-7265077.png?_gl=1*1aiy1nm*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDIzODgkajI0JGwwJGgw',
-    
-    ingredients: [
-        { 
-            icon: 'circle',
-            quantity: '500g',
-            text: 'de feijão preto cozido'
-        },
-        { 
-            icon: 'circle',
-            quantity: '150g',
-            text: 'de proteína texturizada de soja (PTS) hidratada'
-        },
-        { 
-            icon: 'circle',
-            quantity: '200g',
-            text: 'de linguiça vegetal picada'
-        },
-        { 
-            icon: 'onion',
-            quantity: '2 unidades grandes',
-            text: 'cebolas picadas'
-        },
-        { 
-            icon: 'garlic',
-            quantity: '6 dentes',
-            text: 'de alho amassados'
-        },
-        { 
-            icon: 'pepper-hot',
-            quantity: '1 unidade',
-            text: 'pimenta calabresa'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '3 folhas',
-            text: 'de louro'
-        },
-        { 
-            icon: 'droplets',
-            quantity: '3 colheres sopa',
-            text: 'de azeite de dendê (ou oliva)'
-        },
-        { 
-            icon: 'orange',
-            quantity: '2 unidades',
-            text: 'laranjas (para acompanhar)'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'sal, pimenta do reino, cominho'
-        }
-    ],
-    
-    instructions: [
-        'Hidrate PTS em caldo de legumes quente por 15 minutos, esprema bem',
-        'Em panela grande, refogue cebola e alho no azeite até dourar',
-        'Adicione PTS hidratada e temperos, refogue por 5 minutos',
-        'Acrescente linguiça vegetal fatiada, doure por 3 minutos',
-        'Adicione feijão preto com caldo, louro e pimenta calabresa',
-        'Cozinhe em fogo baixo por 40 minutos (quanto mais, melhor o sabor)',
-        'Amasse alguns grãos de feijão para engrossar o caldo',
-        'Sirva com arroz branco, couve refogada, farofa e laranja'
-    ],
-    
-    tips: [
-        '🔥 Deixe descansar 30min antes de servir - sabor apura',
-        '💪 Adicione defumado líquido para sabor autêntico',
-        '🥘 Panela de pressão: 30 minutos depois de pegar pressão',
-        '❄️ Fica ainda melhor no dia seguinte',
-        '🌿 Finalize com coentro fresco se gostar'
-    ],
-    
-    images: {
-        hero: 'https://images.pexels.com/photos/7265077/pexels-photo-7265077.png?_gl=1*1aiy1nm*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDIzODgkajI0JGwwJGgw',
-        steps: []
-    },
-    
-    macros: {
-        lunch: '19% proteína, 58% carboidratos, 23% gorduras',
-        vegan: 'Ferro vegetal + vitamina C da laranja = absorção máxima'
+        mealTime: ['cafe-da-manha', 'lanche'],
+        keywords: ['abacate', 'toast', 'torrada', 'rapido', 'saudavel']
     }
 },
 
 {
     id: 55,
-    name: 'Lasanha de Berinjela Low Carb',
-    category: 'Veganas',
-    calories: 340,
-    protein: 28,
-    carbs: 22,
-    fats: 16,
-    fiber: 9,
-    time: 60,
-    servings: 4,
-    difficulty: 'Médio',
-    featured: false,
-    description: 'Lasanha sem massa, com fatias de berinjela e recheio proteico',
+    name: 'Bowl de Açaí Tropical',
+    category: 'Café da Manhã',
+    calories: 320,
+    protein: 10,
+    carbs: 52,
+    fats: 9,
+    fiber: 12,
+    time: 10,
+    servings: 1,
+    difficulty: 'Fácil',
+    featured: true,
+    description: 'Açaí cremoso com frutas tropicais e granola caseira',
     
-    tags: [
-        'Low carb',
-        'Alto teor proteico',
-        'Sem glúten',
-        'Rico em antioxidantes'
-    ],
+    tags: ['Vegano', 'Energético', 'Antioxidante', 'Pós-Treino'],
     
     benefits: [
-        'Reduz picos de insulina',
-        'Rico em antocianinas',
-        'Digestão facilitada',
-        'Baixa densidade calórica'
+        'Rico em antioxidantes naturais',
+        'Energia imediata e duradoura',
+        'Combate radicais livres',
+        'Fortalece o sistema imunológico'
     ],
     
-    allergens: [
-        'Leite',
-        'Queijo'
+    allergens: ['Oleaginosas (granola)'],
+    
+image: 'image/',
+    
+    ingredients: [
+        { icon: 'droplets', quantity: '200g', text: 'de polpa de açaí puro' },
+        { icon: 'banana', quantity: '1 unidade', text: 'banana congelada' },
+        { icon: 'apple', quantity: '1/2 xícara', text: 'de manga picada' },
+        { icon: 'apple', quantity: '1/2 xícara', text: 'de morango' },
+        { icon: 'wheat', quantity: '3 colheres sopa', text: 'de granola' },
+        { icon: 'circle', quantity: '2 colheres sopa', text: 'de coco ralado' }
     ],
     
-    image: 'https://images.pexels.com/photos/1707917/pexels-photo-1707917.jpeg?_gl=1*bab8cr*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDU1MTUkajQ2JGwwJGgw',
+    instructions: [
+        'Bata a polpa de açaí com banana congelada',
+        'Adicione 2-3 colheres de água se necessário',
+        'Bata até consistência cremosa (tipo sorvete)',
+        'Despeje em uma tigela',
+        'Decore metade com manga e metade com morango',
+        'Adicione granola por cima',
+        'Finalize com coco ralado',
+        'Sirva imediatamente'
+    ],
+    
+    tips: [
+        'Banana congelada dá cremosidade sem gelo',
+        'Não adicione muito líquido - deve ficar grosso',
+        'Varie as frutas: kiwi, abacaxi, maracujá',
+        'Adicione pasta de amendoim para mais proteína'
+    ],
+    
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
 	
     
-    ingredients: [
-        { 
-            icon: 'circle',
-            quantity: '3 unidades grandes',
-            text: 'berinjelas cortadas em fatias de 0,5cm'
+    searchMeta: {
+        mainIngredients: ['acai', 'banana', 'frutas'],
+        objectives: ['energia', 'pos-treino', 'antioxidante'],
+        dishType: ['bowl', 'acai'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: false,
+            raw: true,
+            lowCarb: false
         },
-        { 
-            icon: 'beef',
-            quantity: '500g',
-            text: 'de carne moída magra (patinho)'
-        },
-        { 
-            icon: 'tomato',
-            quantity: '500ml',
-            text: 'de molho de tomate caseiro'
-        },
-        { 
-            icon: 'cheese',
-            quantity: '200g',
-            text: 'de mussarela light ralada'
-        },
-        { 
-            icon: 'cheese',
-            quantity: '100g',
-            text: 'de queijo cottage'
-        },
-        { 
-            icon: 'onion',
-            quantity: '1 unidade',
-            text: 'cebola picada'
-        },
-        { 
-            icon: 'garlic',
-            quantity: '3 dentes',
-            text: 'de alho amassados'
-        },
-        { 
-            icon: 'leaf',
-            quantity: 'a gosto',
-            text: 'manjericão fresco, orégano, sal'
-        }
-    ],
-    
-    instructions: [
-        'Corte berinjelas em fatias, polvilhe sal e deixe 20min (remove amargor)',
-        'Lave bem, seque com papel toalha',
-        'Grelhe fatias de berinjela em frigideira antiaderente (2min cada lado)',
-        'Refogue cebola e alho, adicione carne moída até dourar',
-        'Acrescente molho de tomate, temperos, cozinhe por 10 minutos',
-        'Em refratário, monte camadas: berinjela, carne, cottage, mussarela',
-        'Repita até terminar ingredientes, finalize com queijo',
-        'Asse em forno 180°C por 30 minutos até gratinar'
-    ],
-    
-    tips: [
-        '🍆 Sal remove água e amargor da berinjela',
-        '🔥 Grelhe berinjela bem - não pode ficar crua',
-        '🧀 Cottage adiciona cremosidade com menos calorias',
-        '🌿 Molho caseiro: tomate + manjericão + alho',
-        '❄️ Congele porções prontas por até 2 meses'
-    ],
-    
-    images: {
-        hero: 'https://images.pexels.com/photos/1707917/pexels-photo-1707917.jpeg?_gl=1*bab8cr*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDU1MTUkajQ2JGwwJGgw',
-        steps: []
-    },
-    
-    macros: {
-        lunch: '33% proteína, 26% carboidratos, 41% gorduras',
-        lowcarb: '78% menos carboidratos que lasanha tradicional'
+        mealTime: ['cafe-da-manha', 'lanche'],
+        keywords: ['acai', 'bowl', 'tropical', 'energetico']
     }
 },
+
 {
     id: 56,
-    name: 'Wrap de Grão de Bico com Hummus',
-    category: 'Veganas',
-    calories: 385,
-    protein: 16,
-    carbs: 52,
-    fats: 12,
-    fiber: 12,
-    time: 20,
-    servings: 2,
-    difficulty: 'Fácil',
+    name: 'Tapioca Recheada de Cogumelos',
+    category: 'Café da Manhã',
+    calories: 240,
+    protein: 10,
+    carbs: 38,
+    fats: 6,
+    fiber: 4,
+    time: 15,
+    servings: 1,
+    difficulty: 'Médio',
     featured: false,
-    description: 'Wrap integral recheado com hummus caseiro e vegetais crocantes',
+    description: 'Tapioca quentinha com recheio salgado de cogumelos refogados',
     
-    tags: [
-        'Veganas',
-        'Prático',
-        'Rico em fibras',
-        'Mediterrâneo'
-    ],
+    tags: ['Vegano', 'Sem Glúten', 'Brasileiro', 'Salgado'],
     
     benefits: [
-        'Carboidratos complexos',
-        'Proteína vegetal completa',
-        'Gorduras insaturadas',
-        'Fortalece sistema digestivo'
+        'Sem glúten naturalmente',
+        'Fácil digestão',
+        'Baixo índice glicêmico',
+        'Versátil e saborosa'
     ],
     
-    allergens: [
-        'Glúten (tortilla)',
-        'Gergelim (tahine)'
-    ],
+    allergens: ['Nenhum'],
     
-    image: 'https://images.pexels.com/photos/11161337/pexels-photo-11161337.jpeg?_gl=1*mook9p*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDQ2MzUkajE4JGwwJGgw',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'circle',
-            quantity: '2 unidades',
-            text: 'tortillas integrais grandes'
-        },
-        { 
-            icon: 'circle',
-            quantity: '200g',
-            text: 'de grão de bico cozido'
-        },
-        { 
-            icon: 'wheat',
-            quantity: '2 colheres sopa',
-            text: 'de tahine (pasta de gergelim)'
-        },
-        { 
-            icon: 'citrus',
-            quantity: '1 unidade',
-            text: 'limão (suco)'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '1 xícara',
-            text: 'de alface roxa rasgada'
-        },
-        { 
-            icon: 'tomato',
-            quantity: '1 unidade',
-            text: 'tomate em cubos'
-        },
-        { 
-            icon: 'circle',
-            quantity: '1/2 unidade',
-            text: 'pepino em fatias finas'
-        },
-        { 
-            icon: 'carrot',
-            quantity: '1 unidade',
-            text: 'cenoura ralada'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'cominho, páprica, sal'
-        }
+        { icon: 'circle', quantity: '4 colheres sopa', text: 'de goma de tapioca' },
+        { icon: 'leaf', quantity: '200g', text: 'de cogumelos fatiados' },
+        { icon: 'circle', quantity: '1/2 unidade', text: 'de cebola picada' },
+        { icon: 'flower-2', quantity: '2 dentes', text: 'de alho' },
+        { icon: 'droplets', quantity: '1 colher sopa', text: 'de azeite' },
+        { icon: 'sparkles', quantity: 'a gosto', text: 'sal, pimenta e salsinha' }
     ],
     
     instructions: [
-        'HUMMUS: Bata no processador grão de bico + tahine + limão + alho + sal + água até cremoso',
-        'Ajuste consistência adicionando água aos poucos',
-        'Aqueça tortilla em frigideira por 30 segundos cada lado',
-        'Espalhe hummus generosamente sobre a tortilla',
-        'Distribua vegetais no centro em linha',
-        'Dobre as laterais e enrole firme como charuto',
-        'Corte ao meio na diagonal',
-        'Sirva imediatamente ou embrulhe em papel alumínio'
+        'Refogue cebola e alho no azeite até dourar',
+        'Adicione os cogumelos e cozinhe até soltarem água',
+        'Tempere com sal, pimenta e salsinha',
+        'Reserve o recheio',
+        'Aqueça frigideira antiaderente em fogo médio',
+        'Espalhe a goma formando disco fino',
+        'Quando as bordas soltarem, vire a tapioca',
+        'Coloque o recheio em uma metade',
+        'Dobre ao meio e sirva quente'
     ],
     
     tips: [
-        '🥙 Hummus caseiro dura 5 dias na geladeira',
-        '💪 Adicione falafel para mais proteína',
-        '🌶️ Molho picante opcional: harissa ou sriracha',
-        '📦 Ideal para marmita - não murcha',
-        '🥒 Tsatsiki Veganas: iogurte de coco + pepino'
+        'Tapioca hidratada fica mais macia',
+        'Fogo médio evita queimar',
+        'Adicione tomate e rúcula para variar',
+        'Versão doce: banana com canela'
     ],
-    
+	
+	
     images: {
-        hero: 'https://images.pexels.com/photos/11161337/pexels-photo-11161337.jpeg?_gl=1*mook9p*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDQ2MzUkajE4JGwwJGgw',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
-    
-    macros: {
-        lunch: '17% proteína, 54% carboidratos, 29% gorduras',
-        vegan: 'Proteína completa de leguminosa'
+	
+	
+    searchMeta: {
+        mainIngredients: ['tapioca', 'cogumelos'],
+        objectives: ['praticidade', 'sem-gluten'],
+        dishType: ['tapioca', 'salgado'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['cafe-da-manha', 'lanche', 'jantar'],
+        keywords: ['tapioca', 'cogumelos', 'sem-gluten', 'brasileiro']
     }
 },
 
 {
     id: 57,
-    name: 'Sopa Detox de Legumes',
-    category: 'Veganas',
-    calories: 185,
-    protein: 8,
-    carbs: 32,
-    fats: 3,
-    fiber: 9,
-    time: 35,
-    servings: 3,
+    name: 'Mingau de Aveia com Frutas Vermelhas',
+    category: 'Café da Manhã',
+    calories: 260,
+    protein: 10,
+    carbs: 42,
+    fats: 6,
+    fiber: 8,
+    time: 10,
+    servings: 1,
     difficulty: 'Fácil',
     featured: false,
-    description: 'Sopa leve e nutritiva com variedade de vegetais detoxificantes',
+    description: 'Mingau cremoso e reconfortante com antioxidantes das frutas vermelhas',
     
-    tags: [
-        'Veganas',
-        'Detox',
-        'Baixa caloria',
-        'Reconfortante'
-    ],
+    tags: ['Vegano', 'Reconfortante', 'Rico em Fibras', 'Antioxidante'],
     
     benefits: [
-        'Hidratação profunda',
-        'Desintoxica fígado',
-        'Melhora retenção de líquidos',
-        'Facilita digestão noturna'
+        'Regula colesterol naturalmente',
+        'Melhora trânsito intestinal',
+        'Rico em antioxidantes',
+        'Aquece e satisfaz'
     ],
     
-    allergens: [],
+    allergens: ['Aveia'],
     
-    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'carrot',
-            quantity: '2 unidades',
-            text: 'cenouras picadas'
-        },
-        { 
-            icon: 'potato',
-            quantity: '1 unidade média',
-            text: 'batata doce picada'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '2 xícaras',
-            text: 'de couve picada'
-        },
-        { 
-            icon: 'onion',
-            quantity: '1 unidade',
-            text: 'cebola picada'
-        },
-        { 
-            icon: 'garlic',
-            quantity: '3 dentes',
-            text: 'de alho'
-        },
-        { 
-            icon: 'tomato',
-            quantity: '2 unidades',
-            text: 'tomates maduros'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '1 litro',
-            text: 'de caldo de legumes caseiro'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: '1 colher café',
-            text: 'de cúrcuma em pó'
-        },
-        { 
-            icon: 'leaf',
-            quantity: 'a gosto',
-            text: 'gengibre fresco, sal, pimenta'
-        }
+        { icon: 'wheat', quantity: '1/2 xícara (50g)', text: 'de aveia em flocos' },
+        { icon: 'milk', quantity: '1 xícara', text: 'de leite vegetal' },
+        { icon: 'apple', quantity: '1/2 xícara', text: 'de frutas vermelhas mistas' },
+        { icon: 'droplet', quantity: '1 colher sopa', text: 'de xarope de agave' },
+        { icon: 'sparkles', quantity: '1 pitada', text: 'de canela' },
+        { icon: 'droplet', quantity: '1 colher chá', text: 'de essência de baunilha' }
     ],
     
     instructions: [
-        'Em panela grande, refogue cebola e alho em fio de azeite',
-        'Adicione cenoura e batata doce, refogue por 3 minutos',
-        'Acrescente tomates picados, cozinhe até amolecer',
-        'Despeje caldo de legumes, adicione cúrcuma e gengibre',
-        'Cozinhe em fogo médio por 20 minutos',
-        'Adicione couve picada, cozinhe por mais 5 minutos',
-        'Ajuste sal e pimenta',
-        'Sirva quente, pode bater metade no liquidificador para cremosidade'
+        'Em uma panela, aqueça o leite vegetal',
+        'Adicione a aveia e mexa bem',
+        'Cozinhe em fogo médio por 5-7 minutos mexendo',
+        'Adicione essência de baunilha e canela',
+        'Ajuste consistência com mais leite se necessário',
+        'Adoce com agave a gosto',
+        'Sirva em tigela',
+        'Finalize com frutas vermelhas por cima'
     ],
     
     tips: [
-        '🥕 Varie legumes: abóbora, abobrinha, chuchu',
-        '💚 Couve no final preserva nutrientes',
-        '🌶️ Gengibre potencializa efeito detox',
-        '❄️ Congele em porções individuais',
-        '🍋 Finalize com suco de limão antes de servir'
+        'Aveia em flocos finos cozinha mais rápido',
+        'Mexa constantemente para não grudar',
+        'Frutas congeladas funcionam perfeitamente',
+        'Adicione sementes de chia para mais fibras'
     ],
-    
+	
+	
     images: {
-        hero: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
-    
-    macros: {
-        dinner: '17% proteína, 69% carboidratos, 14% gorduras',
-        detox: 'Alcalinizante e anti-inflamatório'
+	
+	
+    searchMeta: {
+        mainIngredients: ['aveia', 'frutas-vermelhas'],
+        objectives: ['saciedade', 'saude', 'conforto'],
+        dishType: ['mingau', 'porridge'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['cafe-da-manha'],
+        keywords: ['mingau', 'aveia', 'frutas-vermelhas', 'cremoso']
     }
 },
 
 {
     id: 58,
-    name: 'Salmão Grelhado com Aspargos',
-    category: 'Jantar',
-    calories: 395,
-    protein: 42,
-    carbs: 12,
-    fats: 20,
-    fiber: 5,
-    time: 25,
+    name: 'Crepioca de Espinafre',
+    category: 'Café da Manhã',
+    calories: 220,
+    protein: 12,
+    carbs: 32,
+    fats: 5,
+    fiber: 4,
+    time: 12,
     servings: 1,
-    difficulty: 'Médio',
-    featured: true,
-    description: 'Salmão suculento com aspargos e molho de limão siciliano',
+    difficulty: 'Fácil',
+    featured: false,
+    description: 'Crepe de tapioca e grão-de-bico com espinafre - proteico e sem glúten',
     
-    tags: [
-        'Alto teor proteico',
-        'Ômega-3',
-        'Low carb',
-        'Anti-inflamatório'
-    ],
+    tags: ['Vegano', 'Sem Glúten', 'Alto em Proteína', 'Verde'],
     
     benefits: [
-        'Rico em ômega-3 EPA e DHA',
-        'Melhora saúde cardiovascular',
-        'Fortalece função cerebral',
-        'Proteína de altíssima qualidade'
+        'Combina proteína e carboidrato',
+        'Rico em ferro e cálcio',
+        'Sem glúten e lactose',
+        'Energia sustentada'
     ],
     
-    allergens: [
-        'Peixe'
-    ],
+    allergens: ['Nenhum'],
     
-    image: 'https://images.pexels.com/photos/16845479/pexels-photo-16845479.jpeg?_gl=1*16oy9x2*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDM1MzMkajMxJGwwJGgw',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'fish',
-            quantity: '180g',
-            text: 'de filé de salmão fresco'
-        },
-        { 
-            icon: 'carrot',
-            quantity: '200g',
-            text: 'de aspargos frescos'
-        },
-        { 
-            icon: 'citrus',
-            quantity: '1 unidade',
-            text: 'limão siciliano (suco e raspas)'
-        },
-        { 
-            icon: 'garlic',
-            quantity: '2 dentes',
-            text: 'de alho laminados'
-        },
-        { 
-            icon: 'droplets',
-            quantity: '2 colheres sopa',
-            text: 'de azeite extra virgem'
-        },
-        { 
-            icon: 'leaf',
-            quantity: 'a gosto',
-            text: 'dill (endro) fresco ou seco'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'sal rosa, pimenta do reino'
-        }
+        { icon: 'circle', quantity: '3 colheres sopa', text: 'de goma de tapioca' },
+        { icon: 'circle', quantity: '2 colheres sopa', text: 'de farinha de grão-de-bico' },
+        { icon: 'leaf', quantity: '1/2 xícara', text: 'de espinafre picado' },
+        { icon: 'droplet', quantity: '4 colheres sopa', text: 'de água' },
+        { icon: 'sparkles', quantity: 'a gosto', text: 'sal e orégano' },
+        { icon: 'circle-dot', quantity: '1/2 unidade', text: 'tomate picado' }
     ],
     
     instructions: [
-        'Tempere salmão com sal, pimenta, suco de limão e dill, deixe 10 minutos',
-        'Corte a base dura dos aspargos (2-3cm)',
-        'Em frigideira antiaderente quente, adicione 1 colher de azeite',
-        'Grelhe salmão com pele para baixo por 4 minutos sem mexer',
-        'Vire delicadamente, cozinhe por mais 3 minutos (centro rosado)',
-        'Reserve salmão coberto',
-        'Na mesma frigideira, refogue alho + aspargos por 5 minutos',
-        'Finalize com raspas de limão, sirva salmão sobre aspargos'
+        'Em uma tigela, misture tapioca e farinha de grão-de-bico',
+        'Adicione água aos poucos até formar massa lisa',
+        'Adicione espinafre picado, sal e orégano',
+        'Mexa bem para distribuir o espinafre',
+        'Aqueça frigideira antiaderente',
+        'Despeje a massa formando disco fino',
+        'Cozinhe por 2-3 minutos de cada lado',
+        'Recheie com tomate picado e dobre',
+        'Sirva quente'
     ],
     
     tips: [
-        '🐟 Salmão fresco não tem cheiro forte',
-        '🔥 Não vire antes dos 4min - cria crosta dourada',
-        '🌡️ Centro levemente rosado = ponto perfeito',
-        '🥦 Substitua aspargos por brócolis se necessário',
-        '🍋 Raspas de limão no final = explosão de sabor'
+        'Farinha de grão-de-bico adiciona proteína',
+        'Espinafre fresco é melhor que congelado',
+        'Recheie com hummus para mais sabor',
+        'Versão fitness: adicione proteína vegetal em pó'
     ],
     
+	
+	
     images: {
-        hero: 'https://images.pexels.com/photos/16845479/pexels-photo-16845479.jpeg?_gl=1*16oy9x2*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDM1MzMkajMxJGwwJGgw',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
+	
+	
     
-    macros: {
-        dinner: '42% proteína, 12% carboidratos, 46% gorduras',
-        omega3: '2.5g de ômega-3 por porção'
+    searchMeta: {
+        mainIngredients: ['tapioca', 'grao-de-bico', 'espinafre'],
+        objectives: ['proteina', 'sem-gluten', 'verde'],
+        dishType: ['crepioca', 'crepe'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['cafe-da-manha', 'lanche'],
+        keywords: ['crepioca', 'espinafre', 'proteico', 'sem-gluten']
     }
 },
 
 {
     id: 59,
-    name: 'Omelete Noturno com Queijo',
-    category: 'Jantar',
-    calories: 280,
-    protein: 26,
-    carbs: 6,
-    fats: 17,
-    fiber: 2,
-    time: 10,
-    servings: 1,
+    name: 'Granola Caseira Crocante',
+    category: 'Café da Manhã',
+    calories: 350,
+    protein: 10,
+    carbs: 45,
+    fats: 16,
+    fiber: 7,
+    time: 40,
+    servings: 10,
     difficulty: 'Fácil',
     featured: false,
-    description: 'Omelete proteico e leve perfeito para jantares rápidos',
+    description: 'Granola artesanal assada com mel, castanhas e frutas secas',
     
-    tags: [
-        'Alto teor proteico',
-        'Low carb',
-        'Rápido',
-        'Saciedade'
-    ],
+    tags: ['Vegano', 'Meal Prep', 'Sem Açúcar Refinado', 'Crocante'],
     
     benefits: [
-        'Digestão facilitada à noite',
-        'Caseína para recuperação noturna',
-        'Baixo índice glicêmico',
-        'Preparo em 10 minutos'
+        'Dura 1 mês em pote fechado',
+        'Sem conservantes artificiais',
+        'Rico em gorduras boas',
+        'Energia de qualidade'
     ],
     
-    allergens: [
-        'Ovos',
-        'Leite'
-    ],
+    allergens: ['Oleaginosas', 'Aveia'],
     
-    image: 'https://images.pexels.com/photos/6529924/pexels-photo-6529924.jpeg?_gl=1*1ffgfxr*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDM5MzckajQwJGwwJGgw',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'egg',
-            quantity: '3 unidades',
-            text: 'ovos inteiros'
-        },
-        { 
-            icon: 'cheese',
-            quantity: '30g',
-            text: 'de queijo muçarela light ralado'
-        },
-        { 
-            icon: 'tomato',
-            quantity: '1/2 unidade',
-            text: 'tomate cereja picado'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '5 folhas',
-            text: 'de manjericão fresco'
-        },
-        { 
-            icon: 'milk',
-            quantity: '2 colheres sopa',
-            text: 'de leite desnatado'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'sal, pimenta do reino, orégano'
-        },
-        { 
-            icon: 'droplets',
-            quantity: 'spray',
-            text: 'azeite ou óleo de coco'
-        }
+        { icon: 'wheat', quantity: '3 xícaras', text: 'de aveia em flocos' },
+        { icon: 'nut', quantity: '1 xícara', text: 'de mix de castanhas picadas' },
+        { icon: 'droplet', quantity: '1/3 xícara', text: 'de mel ou xarope de maple' },
+        { icon: 'droplets', quantity: '1/4 xícara', text: 'de óleo de coco derretido' },
+        { icon: 'sparkles', quantity: '1 colher chá', text: 'de canela' },
+        { icon: 'circle', quantity: '1/2 xícara', text: 'de frutas secas picadas' }
     ],
     
     instructions: [
-        'Bata ovos + leite + sal + pimenta com garfo (não faça espuma)',
-        'Aqueça frigideira antiaderente em fogo médio-baixo com spray',
-        'Despeje mistura de ovos na frigideira',
-        'Quando começar a firmar nas bordas (1min), adicione queijo em uma metade',
-        'Distribua tomate e manjericão sobre o queijo',
-        'Quando quase firme embaixo (2-3min), dobre ao meio',
-        'Deixe por mais 1 minuto para derreter queijo',
-        'Deslize para o prato e sirva imediatamente'
+        'Preaqueça o forno a 160°C',
+        'Misture aveia, castanhas e canela',
+        'Em outra tigela, misture mel e óleo de coco',
+        'Despeje sobre a aveia e mexa bem',
+        'Espalhe em assadeira forrada',
+        'Asse por 25-30min mexendo a cada 10min',
+        'Deixe esfriar completamente (fica crocante)',
+        'Adicione frutas secas após esfriar',
+        'Guarde em pote hermético'
     ],
     
     tips: [
-        '🔥 Fogo médio-baixo = omelete macio e cremoso',
-        '🧀 Queijo derrete melhor se ralado fino',
-        '💪 Adicione peito de peru para mais proteína',
-        '🌿 Varie ervas: cebolinha, salsinha, tomilho',
-        '🥗 Acompanhe com salada verde simples'
+        'Mexa durante o cozimento para dourar uniforme',
+        'Esfria completamente antes de guardar',
+        'Varie as castanhas: amêndoas, nozes, macadâmia',
+        'Dura 1 mês em temperatura ambiente'
     ],
-    
+	
+	
     images: {
-        hero: 'https://images.pexels.com/photos/6529924/pexels-photo-6529924.jpeg?_gl=1*1ffgfxr*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDM5MzckajQwJGwwJGgw',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
-    
-    macros: {
-        dinner: '37% proteína, 9% carboidratos, 54% gorduras',
-        nightmeal: 'Proteína de digestão lenta (caseína)'
+	
+	
+    searchMeta: {
+        mainIngredients: ['aveia', 'castanhas', 'mel'],
+        objectives: ['meal-prep', 'praticidade'],
+        dishType: ['granola', 'cereal'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: false,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['cafe-da-manha', 'lanche'],
+        keywords: ['granola', 'caseira', 'crocante', 'meal-prep']
     }
 },
 
 {
     id: 60,
-    name: 'Curry de Lentilha com Espinafre',
-    category: 'Veganas',
-    calories: 365,
-    protein: 20,
-    carbs: 58,
-    fats: 6,
-    fiber: 16,
-    time: 40,
-    servings: 3,
-    difficulty: 'Médio',
+    name: 'Wrap de Hummus e Vegetais',
+    category: 'Café da Manhã',
+    calories: 290,
+    protein: 12,
+    carbs: 40,
+    fats: 10,
+    fiber: 8,
+    time: 10,
+    servings: 1,
+    difficulty: 'Fácil',
     featured: false,
-    description: 'Curry aromático indiano com lentilhas e espinafre fresco',
+    description: 'Wrap vegano recheado com hummus cremoso e vegetais frescos',
     
-    tags: [
-        'Veganas',
-        'Rico em ferro',
-        'Proteína vegetal',
-        'Especiarias'
-    ],
+    tags: ['Vegano', 'Proteico', 'Fresco', 'Portátil'],
     
     benefits: [
-        'Altíssimo teor de ferro vegetal',
-        'Proteína completa',
-        'Anti-inflamatório natural',
-        'Fortalece sistema imunológico'
+        'Proteína completa do grão-de-bico',
+        'Rico em vegetais crus',
+        'Fácil de transportar',
+        'Refeição balanceada'
     ],
     
-    allergens: [],
+    allergens: ['Glúten', 'Gergelim (tahine)'],
     
-    image: 'https://images.pexels.com/photos/8625813/pexels-photo-8625813.jpeg?_gl=1*1n3r81i*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDU4MTgkajQxJGwwJGgw',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'circle',
-            quantity: '200g',
-            text: 'de lentilha vermelha (ou marrom)'
-        },
-        { 
-            icon: 'leaf',
-            quantity: '3 xícaras',
-            text: 'de espinafre fresco'
-        },
-        { 
-            icon: 'tomato',
-            quantity: '3 unidades',
-            text: 'tomates maduros picados'
-        },
-        { 
-            icon: 'onion',
-            quantity: '1 unidade grande',
-            text: 'cebola picada'
-        },
-        { 
-            icon: 'garlic',
-            quantity: '4 dentes',
-            text: 'de alho picados'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: '1 colher sopa',
-            text: 'de gengibre fresco ralado'
-        },
-        { 
-            icon: 'milk',
-            quantity: '200ml',
-            text: 'de leite de coco light'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: '2 colheres chá',
-            text: 'de curry em pó'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: '1 colher chá cada',
-            text: 'de cominho, cúrcuma, coentro em pó'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '500ml',
-            text: 'de água ou caldo de legumes'
-        }
+        { icon: 'wheat', quantity: '1 unidade', text: 'de tortilha integral' },
+        { icon: 'circle', quantity: '4 colheres sopa', text: 'de hummus' },
+        { icon: 'leaf', quantity: '1/2 xícara', text: 'de mix de folhas' },
+        { icon: 'circle-dot', quantity: '1/2 unidade', text: 'tomate fatiado' },
+        { icon: 'circle', quantity: '1/4 unidade', text: 'pepino em tiras' },
+        { icon: 'circle', quantity: '1/4 unidade', text: 'cenoura ralada' }
     ],
     
     instructions: [
-        'Lave lentilhas em água corrente até água sair limpa',
-        'Refogue cebola, alho e gengibre em fio de azeite por 3 minutos',
-        'Adicione especiarias (curry, cominho, cúrcuma, coentro), torre por 1 minuto',
-        'Acrescente tomate picado, cozinhe até desmanchar (5min)',
-        'Adicione lentilha e caldo, cozinhe tampado por 25 minutos',
-        'Mexa ocasionalmente, adicione mais água se necessário',
-        'Quando lentilha estiver macia, adicione leite de coco',
-        'Por último, acrescente espinafre, cozinhe por 2 minutos até murchar',
-        'Ajuste sal, sirva com arroz basmati ou naan'
+        'Aqueça levemente a tortilha (opcional)',
+        'Espalhe hummus generosamente',
+        'Distribua as folhas verdes',
+        'Adicione tomate, pepino e cenoura',
+        'Tempere com sal e pimenta',
+        'Enrole firmemente dobrando as laterais',
+        'Corte ao meio na diagonal',
+        'Sirva imediatamente ou embrulhe para viagem'
     ],
     
     tips: [
-        '🌶️ Ajuste picância com pimenta caiena',
-        '💚 Espinafre no final = preserva nutrientes',
-        '🥥 Leite de coco dá cremosidade sem lácteos',
-        '❄️ Sabor apura no dia seguinte',
-        '🍋 Finalize com suco de limão antes de servir'
+        'Hummus caseiro fica mais saboroso',
+        'Seque bem os vegetais para não encharcar',
+        'Adicione abacate para cremosidade',
+        'Embrulhe em papel alumínio para transportar'
     ],
     
+	
+	
     images: {
-        hero: 'https://images.pexels.com/photos/8625813/pexels-photo-8625813.jpeg?_gl=1*1n3r81i*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDU4MTgkajQxJGwwJGgw',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
+	
+	
     
-    macros: {
-        dinner: '22% proteína, 64% carboidratos, 14% gorduras',
-        vegan: 'Ferro + vitamina C do tomate = absorção máxima'
+    searchMeta: {
+        mainIngredients: ['hummus', 'vegetais', 'tortilha'],
+        objectives: ['proteina', 'praticidade', 'leve'],
+        dishType: ['wrap', 'sanduiche'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: false,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['cafe-da-manha', 'lanche', 'almoco'],
+        keywords: ['wrap', 'hummus', 'vegetais', 'portatil']
     }
 },
 
 {
     id: 61,
-    name: 'Wrap de Alface com Frango',
-    category: 'Jantar',
-    calories: 245,
-    protein: 32,
-    carbs: 8,
-    fats: 10,
-    fiber: 3,
-    time: 15,
-    servings: 1,
-    difficulty: 'Fácil',
-    featured: false,
-    description: 'Wrap sem carboidratos usando folhas de alface como tortilla',
+    name: 'Buddha Bowl Mediterrâneo',
+    category: 'Almoço',
+    calories: 420,
+    protein: 18,
+    carbs: 52,
+    fats: 16,
+    fiber: 12,
+    time: 30,
+    servings: 2,
+    difficulty: 'Médio',
+    featured: true,
+    description: 'Bowl completo com quinoa, grão-de-bico assado, vegetais e molho tahine',
     
-    tags: [
-        'Low carb',
-        'Alto teor proteico',
-        'Sem glúten',
-        'Leve'
-    ],
+    tags: ['Vegano', 'Sem Glúten', 'Completo', 'Mediterrâneo'],
     
     benefits: [
-        'Zero carboidratos processados',
-        'Alta densidade proteica',
-        'Digestão ultra-rápida',
-        'Ideal para cutting'
+        'Refeição nutricionalmente completa',
+        'Alto teor de fibras',
+        'Proteína completa',
+        'Antioxidantes abundantes'
     ],
     
-    allergens: [],
+    allergens: ['Gergelim (tahine)'],
     
-    image: 'https://images.unsplash.com/photo-1600335895229-6e75511892c8?q=80',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'leaf',
-            quantity: '4 folhas grandes',
-            text: 'de alface americana'
-        },
-        { 
-            icon: 'drumstick',
-            quantity: '150g',
-            text: 'de peito de frango grelhado desfiado'
-        },
-        { 
-            icon: 'tomato',
-            quantity: '1/2 unidade',
-            text: 'tomate em cubinhos'
-        },
-        { 
-            icon: 'circle',
-            quantity: '2 colheres sopa',
-            text: 'de milho verde'
-        },
-        { 
-            icon: 'carrot',
-            quantity: '1/4 unidade',
-            text: 'cenoura ralada'
-        },
-        { 
-            icon: 'milk',
-            quantity: '2 colheres sopa',
-            text: 'de iogurte grego natural'
-        },
-        { 
-            icon: 'citrus',
-            quantity: '1/2 unidade',
-            text: 'limão (suco)'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'sal, pimenta, cominho'
-        }
+        { icon: 'wheat', quantity: '1 xícara', text: 'de quinoa cozida' },
+        { icon: 'circle', quantity: '1 xícara', text: 'de grão-de-bico cozido' },
+        { icon: 'leaf', quantity: '2 xícaras', text: 'de mix de folhas' },
+        { icon: 'circle-dot', quantity: '1/2 xícara', text: 'tomates cereja' },
+        { icon: 'circle', quantity: '1/2 unidade', text: 'pepino em cubos' },
+        { icon: 'leaf', quantity: '1/4 xícara', text: 'azeitonas pretas' },
+        { icon: 'droplets', quantity: '3 colheres sopa', text: 'molho tahine' }
     ],
     
     instructions: [
-        'Lave e seque bem as folhas de alface',
-        'Tempere frango desfiado com sal, pimenta e cominho',
-        'Misture iogurte + limão + sal = molho cremoso',
-        'Sobre cada folha de alface, distribua frango',
-        'Adicione tomate, milho e cenoura',
-        'Regue com molho de iogurte',
-        'Enrole como wrap, começando pela base',
-        'Sirva imediatamente (não murcha)'
+        'Asse grão-de-bico: tempere com cominho, páprica e azeite, asse 25min a 200°C',
+        'Cozinhe quinoa conforme embalagem',
+        'Prepare molho tahine: 3 col tahine + suco 1 limão + 2 col água + 1 dente alho',
+        'Monte bowl: base de folhas verdes',
+        'Adicione quinoa de um lado',
+        'Distribua grão-de-bico, tomates, pepino e azeitonas',
+        'Regue com molho tahine',
+        'Finalize com azeite e ervas frescas'
     ],
     
     tips: [
-        '🥬 Alface americana é mais resistente que crespa',
-        '💪 Use frango da marmita do dia anterior',
-        '🌶️ Adicione molho picante se gostar',
-        '🥑 Abacate deixa mais cremoso',
-        '📦 Ótimo para marmita - não encharca'
+        'Grão-de-bico bem seco assa mais crocante',
+        'Tahine grosso? Adicione água até cremoso',
+        'Meal prep: componentes separados, monte na hora',
+        'Adicione hortelã fresca para toque autêntico'
     ],
-    
+	
+	
     images: {
-        hero: 'https://images.unsplash.com/photo-1600335895229-6e75511892c8?q=80',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
+	
+	
     
-    macros: {
-        dinner: '52% proteína, 13% carboidratos, 35% gorduras',
-        lowcarb: 'Apenas 8g de carboidratos'
+    searchMeta: {
+        mainIngredients: ['quinoa', 'grao-de-bico', 'tahine'],
+        objectives: ['refeicao-completa', 'saciedade'],
+        dishType: ['bowl', 'salada'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar'],
+        keywords: ['buddha-bowl', 'mediterraneo', 'completo', 'saudavel']
     }
 },
 
-
 {
     id: 62,
-    name: 'Energy Balls de Tâmaras',
-    category: 'Lanches',
-    calories: 125,
-    protein: 4,
-    carbs: 18,
-    fats: 5,
-    fiber: 3,
-    time: 10,
-    servings: 12,
-    difficulty: 'Fácil',
-    featured: false,
-    description: 'Bolinhas energéticas sem açúcar feitas com tâmaras e castanhas',
+    name: 'Curry de Lentilha e Coco',
+    category: 'Almoço',
+    calories: 380,
+    protein: 16,
+    carbs: 48,
+    fats: 14,
+    fiber: 12,
+    time: 35,
+    servings: 4,
+    difficulty: 'Médio',
+    featured: true,
+    description: 'Curry indiano aromático com lentilha, leite de coco e especiarias',
     
-    tags: [
-        'Veganas',
-        'Sem açúcar',
-        'Energético',
-        'Pré-treino'
-    ],
+    tags: ['Vegano', 'Sem Glúten', 'Indiano', 'Reconfortante'],
     
     benefits: [
-        'Energia imediata de carboidratos naturais',
-        'Rico em potássio e magnésio',
-        'Saciedade prolongada',
-        'Sem açúcar refinado'
+        'Rico em proteína vegetal',
+        'Anti-inflamatório natural',
+        'Ferro e fibras abundantes',
+        'Aquece e satisfaz'
     ],
     
-    allergens: [
-        'Castanhas',
-        'Amendoim'
-    ],
+    allergens: ['Nenhum'],
     
-    image: 'http://images.pexels.com/photos/27850069/pexels-photo-27850069.jpeg?_gl=1*13r8cwo*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDQyODgkajE3JGwwJGgw',
-    
+image: 'image/',
     ingredients: [
-        { 
-            icon: 'circle',
-            quantity: '200g (1 xícara)',
-            text: 'de tâmaras medjool sem caroço'
-        },
-        { 
-            icon: 'nut',
-            quantity: '100g (3/4 xícara)',
-            text: 'de castanhas mistas (amêndoas, castanha de caju, nozes)'
-        },
-        { 
-            icon: 'candy',
-            quantity: '2 colheres sopa',
-            text: 'de cacau em pó 100%'
-        },
-        { 
-            icon: 'wheat',
-            quantity: '2 colheres sopa',
-            text: 'de aveia em flocos'
-        },
-        { 
-            icon: 'nut',
-            quantity: '1 colher sopa',
-            text: 'de pasta de amendoim natural'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: '1 pitada',
-            text: 'de sal marinho'
-        },
-        { 
-            icon: 'candy',
-            quantity: 'para decorar',
-            text: 'cacau em pó ou coco ralado',
-            optional: true
-        }
+        { icon: 'circle', quantity: '1 xícara', text: 'de lentilha vermelha' },
+        { icon: 'milk', quantity: '1 lata (400ml)', text: 'leite de coco' },
+        { icon: 'circle', quantity: '1 unidade', text: 'cebola picada' },
+        { icon: 'flower-2', quantity: '4 dentes', text: 'alho picado' },
+        { icon: 'leaf', quantity: '2 col sopa', text: 'gengibre ralado' },
+        { icon: 'circle-dot', quantity: '2 unidades', text: 'tomates picados' },
+        { icon: 'sparkles', quantity: '2 col sopa', text: 'curry em pó' },
+        { icon: 'droplets', quantity: '2 col sopa', text: 'óleo de coco' }
     ],
     
     instructions: [
-        'Se tâmaras estiverem muito secas, hidrate em água morna por 10 minutos',
-        'No processador, bata castanhas até virarem farinha grossa',
-        'Adicione tâmaras, cacau, aveia, pasta de amendoim e sal',
-        'Processe até formar massa homogênea que gruda nas mãos',
-        'Se muito seca, adicione 1 colher de água; se muito úmida, adicione aveia',
-        'Com as mãos, forme bolinhas de 2-3cm de diâmetro',
-        'Role em cacau ou coco ralado',
-        'Leve à geladeira por 1 hora antes de consumir'
+        'Refogue cebola em óleo de coco até dourar',
+        'Adicione alho e gengibre, refogue 1min',
+        'Adicione curry em pó, mexa por 30seg',
+        'Adicione tomates, cozinhe 5min',
+        'Adicione lentilha e 2 xícaras de água',
+        'Cozinhe 20min até lentilha amolecer',
+        'Adicione leite de coco, cozinhe mais 5min',
+        'Ajuste sal e pimenta',
+        'Sirva com arroz basmati ou naan'
     ],
     
     tips: [
-        '❄️ Armazene em geladeira por até 2 semanas',
-        '🥜 Varie castanhas conforme preferência',
-        '💪 Pré-treino: coma 2 bolinhas 30min antes',
-        '🍫 Adicione nibs de cacau para crocância',
-        '📦 Congele por até 3 meses'
+        'Lentilha vermelha cozinha rápido (20min)',
+        'Leite de coco integral fica mais cremoso',
+        'Adicione espinafre nos últimos minutos',
+        'Congela perfeitamente - faça lote grande'
     ],
     
+	
+	
     images: {
-        hero: 'https://images.pexels.com/photos/27850069/pexels-photo-27850069.jpeg?_gl=1*13r8cwo*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDQyODgkajE3JGwwJGgw',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
+	
+	
     
-    macros: {
-        snack: '13% proteína, 58% carboidratos, 29% gorduras',
-        natural: 'Adoçado apenas com tâmaras'
+    searchMeta: {
+        mainIngredients: ['lentilha', 'leite-coco', 'curry'],
+        objectives: ['refeicao-completa', 'conforto'],
+        dishType: ['curry', 'indiano'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar'],
+        keywords: ['curry', 'lentilha', 'indiano', 'cremoso']
     }
 },
 
 {
     id: 63,
-    name: 'Pasta de Grão de Bico com Vegetais',
-    category: 'Veganas',
-    calories: 195,
-    protein: 10,
-    carbs: 28,
-    fats: 5,
-    fiber: 8,
-    time: 10,
+    name: 'Macarrão ao Pesto de Manjericão',
+    category: 'Almoço',
+    calories: 450,
+    protein: 14,
+    carbs: 58,
+    fats: 18,
+    fiber: 6,
+    time: 20,
     servings: 2,
     difficulty: 'Fácil',
     featured: false,
-    description: 'Pasta proteica servida com palitos de cenoura e pepino',
+    description: 'Massa integral com pesto caseiro vegano de manjericão e castanhas',
     
-    tags: [
-        'Veganas',
-        'Rico em proteína',
-        'Sem glúten',
-        'Prático'
-    ],
+    tags: ['Vegano', 'Italiano', 'Aromático', 'Rápido'],
     
     benefits: [
-        'Proteína vegetal completa',
-        'Rico em fibras solúveis',
-        'Baixo índice glicêmico',
-        'Melhora saciedade'
+        'Rico em gorduras boas',
+        'Antioxidantes do manjericão',
+        'Energia sustentada',
+        'Sabor intenso e fresco'
     ],
     
-    allergens: [
-        'Gergelim (tahine)'
-    ],
+    allergens: ['Glúten', 'Castanhas'],
     
-    image: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'circle',
-            quantity: '200g (1 xícara)',
-            text: 'de grão de bico cozido'
-        },
-        { 
-            icon: 'wheat',
-            quantity: '2 colheres sopa',
-            text: 'de tahine'
-        },
-        { 
-            icon: 'citrus',
-            quantity: '1 unidade',
-            text: 'limão (suco)'
-        },
-        { 
-            icon: 'garlic',
-            quantity: '1 dente',
-            text: 'de alho'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '3 colheres sopa',
-            text: 'de água gelada'
-        },
-        { 
-            icon: 'carrot',
-            quantity: '2 unidades',
-            text: 'cenouras em palitos'
-        },
-        { 
-            icon: 'circle',
-            quantity: '1 unidade',
-            text: 'pepino em palitos'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'cominho, páprica, sal'
-        }
+        { icon: 'wheat', quantity: '200g', text: 'de macarrão integral' },
+        { icon: 'leaf', quantity: '2 xícaras', text: 'de manjericão fresco' },
+        { icon: 'nut', quantity: '1/3 xícara', text: 'de castanhas do Pará' },
+        { icon: 'flower-2', quantity: '2 dentes', text: 'de alho' },
+        { icon: 'droplets', quantity: '1/3 xícara', text: 'de azeite extra-virgem' },
+        { icon: 'droplet', quantity: '2 col sopa', text: 'de suco de limão' },
+        { icon: 'sparkles', quantity: 'a gosto', text: 'sal e pimenta' }
     ],
     
     instructions: [
-        'No processador ou liquidificador, adicione grão de bico, tahine, limão, alho e sal',
-        'Bata adicionando água aos poucos até consistência cremosa',
-        'Deve ficar liso e aveludado (pode adicionar mais água se necessário)',
-        'Ajuste tempero com cominho, páprica e sal',
-        'Transfira para bowl, faça redemoinhos com colher',
-        'Finalize com fio de azeite e páprica por cima',
-        'Corte vegetais em palitos',
-        'Sirva pasta no centro com vegetais ao redor'
+        'Cozinhe a massa conforme embalagem',
+        'No liquidificador: manjericão, castanhas, alho',
+        'Bata adicionando azeite aos poucos',
+        'Adicione limão, sal e pimenta',
+        'Bata até consistência cremosa',
+        'Escorra a massa reservando 1/2 xícara da água',
+        'Misture o pesto na massa',
+        'Adicione água do cozimento se necessário',
+        'Sirva com tomates cereja e manjericão fresco'
     ],
     
     tips: [
-        '💧 Água gelada = pasta mais cremosa',
-        '🧊 Use cubos de gelo do cozimento do grão',
-        '🌿 Finalize com salsinha fresca picada',
-        '🥖 Sirva com torradas integrais também',
-        '❄️ Dura 5 dias na geladeira'
+        'Manjericão fresco faz toda diferença',
+        'Castanhas podem ser substituídas por pinhões',
+        'Pesto dura 5 dias na geladeira',
+        'Congele pesto em forminhas de gelo'
     ],
     
+	
+	
     images: {
-        hero: 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
+	
+	
     
-    macros: {
-        snack: '21% proteína, 57% carboidratos, 22% gorduras',
-        vegan: 'Hummus caseiro é 100% vegetal'
+    searchMeta: {
+        mainIngredients: ['massa', 'manjericao', 'castanhas'],
+        objectives: ['praticidade', 'sabor'],
+        dishType: ['massa', 'italiano'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: false,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: false,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar'],
+        keywords: ['macarrao', 'pesto', 'italiano', 'rapido']
     }
 },
 
 {
     id: 64,
-    name: 'Iogurte Proteico com Granola',
-    category: 'Lanches',
-    calories: 265,
-    protein: 22,
-    carbs: 32,
-    fats: 6,
-    fiber: 4,
-    time: 5,
-    servings: 1,
-    difficulty: 'Fácil',
-    featured: false,
-    description: 'Iogurte grego natural com granola caseira e frutas vermelhas',
+    name: 'Falafel Assado com Salada Árabe',
+    category: 'Almoço',
+    calories: 390,
+    protein: 16,
+    carbs: 48,
+    fats: 14,
+    fiber: 14,
+    time: 40,
+    servings: 3,
+    difficulty: 'Médio',
+    featured: true,
+    description: 'Bolinhos crocantes de grão-de-bico assados com salada fresca',
     
-    tags: [
-        'Alto teor proteico',
-        'Probiótico',
-        'Rápido',
-        'Nutritivo'
-    ],
+    tags: ['Vegano', 'Sem Glúten', 'Árabe', 'Proteico'],
     
     benefits: [
-        'Probióticos naturais',
-        'Alta concentração de proteína',
-        'Fortalece sistema digestivo',
-        'Melhora absorção de cálcio'
+        'Versão assada - menos gordura',
+        'Rica em proteína vegetal',
+        'Fibras abundantes',
+        'Sabor autêntico árabe'
     ],
     
-    allergens: [
-        'Leite',
-        'Oleaginosas (granola)'
-    ],
+    allergens: ['Gergelim'],
     
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'milk-off',
-            quantity: '200g',
-            text: 'de iogurte grego natural 0% gordura'
-        },
-        { 
-            icon: 'wheat',
-            quantity: '40g (1/4 xícara)',
-            text: 'de granola sem açúcar'
-        },
-        { 
-            icon: 'cherry',
-            quantity: '80g',
-            text: 'de mix de frutas vermelhas (morango, framboesa, mirtilo)'
-        },
-        { 
-            icon: 'wheat',
-            quantity: '1 colher sopa',
-            text: 'de sementes de chia'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '1 colher chá',
-            text: 'de mel puro',
-            optional: true
-        },
-        { 
-            icon: 'sparkles',
-            quantity: '1 pitada',
-            text: 'de canela em pó'
-        }
+        { icon: 'circle', quantity: '2 xícaras', text: 'grão-de-bico cru (deixe de molho 12h)' },
+        { icon: 'circle', quantity: '1 unidade', text: 'cebola picada' },
+        { icon: 'flower-2', quantity: '4 dentes', text: 'alho' },
+        { icon: 'leaf', quantity: '1 xícara', text: 'salsinha e coentro' },
+        { icon: 'sparkles', quantity: '2 col chá', text: 'cominho' },
+        { icon: 'sparkles', quantity: '1 col chá', text: 'coentro em pó' },
+        { icon: 'wheat', quantity: '3 col sopa', text: 'farinha de grão-de-bico' }
     ],
     
     instructions: [
-        'Em bowl ou copo alto, coloque metade do iogurte',
-        'Adicione camada de frutas vermelhas',
-        'Cubra com restante do iogurte',
-        'Finalize com granola por cima',
-        'Polvilhe chia e canela',
-        'Se desejar, regue com mel em fio',
-        'Sirva imediatamente para granola manter crocância'
+        'Escorra grão-de-bico e seque bem',
+        'No processador: grão-de-bico, cebola, alho, ervas',
+        'Pulse até textura granulada (não vire pasta)',
+        'Adicione especiarias, farinha, sal',
+        'Pulse mais algumas vezes',
+        'Refrigere 30min',
+        'Modele bolinhas e achate levemente',
+        'Disponha em assadeira forrada',
+        'Pincele com azeite e asse 25min a 200°C',
+        'Vire na metade do tempo',
+        'Sirva com molho tahine e salada'
     ],
     
     tips: [
-        '🥣 Monte em pote de vidro para levar',
-        '💪 Iogurte grego tem 2x mais proteína',
-        '❄️ Congele frutas vermelhas para ter sempre',
-        '🍯 Mel apenas se treinou intenso',
-        '🥜 Adicione pasta de amendoim para saciedade'
+        'Grão-de-bico CRU é essencial (não use cozido)',
+        'Textura deve ser granulada, não pastosa',
+        'Refrigerar antes ajuda a firmar',
+        'Congele crus e asse quando quiser'
     ],
-    
+	
+	
     images: {
-        hero: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
-    
-    macros: {
-        snack: '33% proteína, 48% carboidratos, 19% gorduras',
-        probiotic: 'Rico em bactérias benéficas'
+	
+	
+    searchMeta: {
+        mainIngredients: ['grao-de-bico', 'ervas', 'especiarias'],
+        objectives: ['proteina', 'sabor', 'tradicional'],
+        dishType: ['falafel', 'arabe'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar'],
+        keywords: ['falafel', 'grao-de-bico', 'arabe', 'assado']
     }
 },
 
 {
     id: 65,
-    name: 'Mousse de Chocolate Proteico',
-    category: 'Sobremesas',
-    calories: 185,
-    protein: 18,
-    carbs: 16,
-    fats: 6,
-    fiber: 3,
-    time: 10,
+    name: 'Risoto de Cogumelos',
+    category: 'Almoço',
+    calories: 360,
+    protein: 10,
+    carbs: 54,
+    fats: 12,
+    fiber: 4,
+    time: 40,
     servings: 2,
-    difficulty: 'Fácil',
-    featured: true,
-    description: 'Mousse cremoso de chocolate com alto teor de proteína',
+    difficulty: 'Médio',
+    featured: false,
+    description: 'Risoto cremoso vegano com mix de cogumelos e vinho branco',
     
-    tags: [
-        'Alto teor proteico',
-        'Baixa caloria',
-        'Sem açúcar',
-        'Cremoso'
-    ],
+    tags: ['Vegano', 'Italiano', 'Gourmet', 'Cremoso'],
     
     benefits: [
-        'Satisfaz desejo por doce',
-        'Alta densidade proteica',
-        'Antioxidantes do cacau',
-        'Baixo índice glicêmico'
+        'Cremoso sem laticínios',
+        'Rico em umami natural',
+        'Fonte de vitamina D',
+        'Conforto gastronômico'
     ],
     
-    allergens: [
-        'Leite',
-        'Ovos'
-    ],
+    allergens: ['Nenhum'],
     
-    image: 'https://images.pexels.com/photos/3026810/pexels-photo-3026810.jpeg?_gl=1*12726aw*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDQ0MzMkajEwJGwwJGgw',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'milk-off',
-            quantity: '200g',
-            text: 'de iogurte grego natural 0%'
-        },
-        { 
-            icon: 'zap',
-            quantity: '1 scoop (30g)',
-            text: 'de whey protein sabor chocolate'
-        },
-        { 
-            icon: 'candy',
-            quantity: '2 colheres sopa',
-            text: 'de cacau em pó 100%'
-        },
-        { 
-            icon: 'droplet',
-            quantity: '2 colheres sopa',
-            text: 'de adoçante culinário (xilitol ou eritritol)'
-        },
-        { 
-            icon: 'milk',
-            quantity: '50ml',
-            text: 'de leite desnatado gelado'
-        },
-        { 
-            icon: 'sparkles',
-            quantity: '1 pitada',
-            text: 'de sal marinho'
-        },
-        { 
-            icon: 'candy',
-            quantity: 'para decorar',
-            text: 'raspas de chocolate 70%',
-            optional: true
-        }
+        { icon: 'wheat', quantity: '1 xícara', text: 'arroz arbóreo' },
+        { icon: 'leaf', quantity: '300g', text: 'mix de cogumelos' },
+        { icon: 'circle', quantity: '1 unidade', text: 'cebola picada' },
+        { icon: 'flower-2', quantity: '3 dentes', text: 'alho picado' },
+        { icon: 'droplet', quantity: '1/2 xícara', text: 'vinho branco seco' },
+        { icon: 'droplet', quantity: '4 xícaras', text: 'caldo de legumes quente' },
+        { icon: 'droplets', quantity: '3 col sopa', text: 'azeite' },
+        { icon: 'leaf', quantity: 'a gosto', text: 'tomilho e salsinha' }
     ],
     
     instructions: [
-        'No liquidificador ou processador, adicione iogurte, whey, cacau e adoçante',
-        'Adicione sal (realça sabor do chocolate)',
-        'Bata até ficar completamente liso',
-        'Adicione leite aos poucos até atingir consistência cremosa',
-        'Prove e ajuste doçura se necessário',
-        'Distribua em taças individuais',
-        'Leve à geladeira por no mínimo 2 horas',
-        'Decore com raspas de chocolate antes de servir'
+        'Refogue cogumelos no azeite até dourar, reserve',
+        'Na mesma panela, refogue cebola até transparente',
+        'Adicione alho e arroz, torre 2min mexendo',
+        'Adicione vinho, mexa até evaporar',
+        'Adicione 1 concha de caldo, mexa até absorver',
+        'Continue adicionando caldo aos poucos',
+        'Mexa constantemente por 18-20min',
+        'Quando cremoso, adicione cogumelos reservados',
+        'Finalize com azeite, ervas e pimenta',
+        'Sirva imediatamente'
     ],
     
     tips: [
-        '❄️ Quanto mais gelado, mais firme fica',
-        '🍫 Use whey de chocolate de boa qualidade',
-        '💪 Pós-treino: sirva logo após fazer',
-        '🥄 Congele em forminha de picolé',
-        '🌿 Adicione essência de menta para variação'
+        'Paciência é essencial - mexa constantemente',
+        'Caldo sempre quente para não interromper cozimento',
+        'Arroz deve ficar al dente no centro',
+        'Adicione fermento nutricional para sabor queijo'
     ],
     
+	
+	
     images: {
-        hero: 'https://images.pexels.com/photos/3026810/pexels-photo-3026810.jpeg?_gl=1*12726aw*_ga*OTcxMDE3MTI1LjE3Njg0MDIzNTI.*_ga_8JE65Q40S6*czE3Njg0MDIzNTIkbzEkZzEkdDE3Njg0MDQ0MzMkajEwJGwwJGgw',
-        steps: []
+      hero: 'image/',
+      steps: [ ]
     },
+	
+	
     
-    macros: {
-        dessert: '39% proteína, 35% carboidratos, 26% gorduras',
-        guilt_free: 'Sobremesa com proteína de refeição'
+    searchMeta: {
+        mainIngredients: ['arroz-arboreo', 'cogumelos', 'vinho'],
+        objectives: ['gourmet', 'cremoso', 'especial'],
+        dishType: ['risoto', 'italiano'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar'],
+        keywords: ['risoto', 'cogumelos', 'cremoso', 'gourmet']
     }
 },
+
 {
     id: 66,
-    name: 'Sorvete de Banana Nice Cream',
-    category: 'Sobremesas',
-    calories: 145,
-    protein: 2,
-    carbs: 35,
-    fats: 1,
-    fiber: 4,
-    time: 5,
-    servings: 1,
+    name: 'Strogonoff de Palmito',
+    category: 'Almoço',
+    calories: 320,
+    protein: 8,
+    carbs: 38,
+    fats: 14,
+    fiber: 6,
+    time: 25,
+    servings: 3,
     difficulty: 'Fácil',
     featured: false,
-    description: 'Sorvete cremoso feito apenas com banana congelada',
+    description: 'Strogonoff vegano cremoso com palmito e champignon',
     
-    tags: [
-        'Veganas',
-        'Sem açúcar',
-        '2 ingredientes',
-        'Sem lactose'
-    ],
+    tags: ['Vegano', 'Brasileiro', 'Cremoso', 'Clássico Veganizado'],
     
     benefits: [
-        'Zero açúcar adicionado',
-        'Rico em potássio',
-        'Sem laticínios',
-        'Naturalmente adocicado'
+        'Versão vegana do clássico',
+        'Baixo em calorias',
+        'Rico em fibras',
+        'Sabor nostálgico'
     ],
     
-    allergens: [],
+    allergens: ['Nenhum'],
     
-    image: 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?q=80',
+image: 'image/',
     
     ingredients: [
-        { 
-            icon: 'banana',
-            quantity: '3 unidades grandes',
-            text: 'bananas maduras congeladas em rodelas'
-        },
-        { 
-            icon: 'candy',
-            quantity: '1 colher sopa',
-            text: 'de cacau em pó 100%',
-            optional: true
-        },
-        { 
-            icon: 'nut',
-            quantity: '1 colher sopa',
-            text: 'de pasta de amendoim',
-            optional: true
-        },
-        { 
-            icon: 'sparkles',
-            quantity: 'a gosto',
-            text: 'canela em pó',
-            optional: true
-        },
-        { 
-            icon: 'cherry',
-            quantity: 'para decorar',
-            text: 'frutas vermelhas frescas',
-            optional: true
-        }
+        { icon: 'circle', quantity: '2 vidros (300g)', text: 'palmito em rodelas' },
+        { icon: 'leaf', quantity: '200g', text: 'champignon fatiado' },
+        { icon: 'circle', quantity: '1 unidade', text: 'cebola picada' },
+        { icon: 'flower-2', quantity: '2 dentes', text: 'alho picado' },
+        { icon: 'circle-dot', quantity: '3 col sopa', text: 'molho de tomate' },
+        { icon: 'milk', quantity: '1 lata', text: 'creme de leite de coco' },
+        { icon: 'droplet', quantity: '1 col sopa', text: 'mostarda' },
+        { icon: 'droplets', quantity: '2 col sopa', text: 'azeite' }
     ],
     
     instructions: [
-        'Congele bananas maduras cortadas em rodelas por no mínimo 4 horas',
-        'No processador de alimentos potente, adicione banana congelada',
-        'Processe por 1 minuto, pare e raspe as laterais',
-        'Continue processando até virar purê cremoso (3-5 minutos total)',
-        'Textura ideal: cremosa como sorvete soft',
-        'Se desejar sabor chocolate, adicione cacau e processe mais 30 segundos',
-        'Sirva imediatamente (consistência soft) ou congele por 1h (mais firme)',
-        'Decore com frutas vermelhas e granola'
+        'Refogue cebola e alho no azeite',
+        'Adicione champignon, cozinhe até murchar',
+        'Adicione palmito em rodelas',
+        'Refogue por 3 minutos',
+        'Adicione molho de tomate e mostarda',
+        'Cozinhe 5 minutos',
+        'Adicione creme de leite de coco',
+        'Mexa bem e aqueça sem ferver',
+        'Ajuste sal e pimenta',
+        'Sirva com arroz e batata palha'
     ],
     
     tips: [
-        '🍌 Bananas MUITO maduras = mais doces',
-        '⚡ Processador potente é essencial',
-        '🍫 Variações: cacau, café, morango congelado',
-        '🥜 Pasta de amendoim adiciona cremosidade',
-        '❄️ Congele porções em forminha de muffin'
+        'Creme de leite de coco não pode ferver',
+        'Palmito em rodelas tem melhor textura',
+        'Adicione páprica defumada para mais sabor',
+        'Batata palha vegana finaliza perfeitamente'
     ],
     
-    images: {
-        hero: 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?q=80',
-        steps: []
-    },
-    
-    macros: {
-        dessert: '6% proteína, 91% carboidratos, 3% gorduras',
-        vegan: '100% vegetal e natural'
-    }
-}
 	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    
+    searchMeta: {
+        mainIngredients: ['palmito', 'cogumelos', 'creme-coco'],
+        objectives: ['praticidade', 'sabor', 'tradicional'],
+        dishType: ['strogonoff', 'brasileiro'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar'],
+        keywords: ['strogonoff', 'palmito', 'cremoso', 'brasileiro']
+    }
+},
+
+{
+    id: 67,
+    name: 'Burrito Bowl Mexicano',
+    category: 'Almoço',
+    calories: 440,
+    protein: 16,
+    carbs: 58,
+    fats: 14,
+    fiber: 14,
+    time: 30,
+    servings: 2,
+    difficulty: 'Médio',
+    featured: true,
+    description: 'Bowl completo com arroz, feijão preto, guacamole e pico de gallo',
+    
+    tags: ['Vegano', 'Sem Glúten', 'Mexicano', 'Completo'],
+    
+    benefits: [
+        'Proteína completa (arroz + feijão)',
+        'Altíssimo teor de fibras',
+        'Rico em antioxidantes',
+        'Refeição balanceada'
+    ],
+    
+    allergens: ['Nenhum'],
+    
+image: 'image/',
+    
+    ingredients: [
+        { icon: 'wheat', quantity: '1 xícara', text: 'arroz integral cozido' },
+        { icon: 'circle', quantity: '1 xícara', text: 'feijão preto temperado' },
+        { icon: 'leaf', quantity: '1 unidade', text: 'abacate (guacamole)' },
+        { icon: 'circle-dot', quantity: '1/2 xícara', text: 'tomate picado' },
+        { icon: 'circle', quantity: '1/4', text: 'cebola roxa picada' },
+        { icon: 'leaf', quantity: '1/2 xícara', text: 'milho cozido' },
+        { icon: 'droplet', quantity: '1', text: 'limão' },
+        { icon: 'leaf', quantity: 'a gosto', text: 'coentro fresco' }
+    ],
+    
+    instructions: [
+        'Prepare guacamole: amasse abacate com limão, sal, coentro',
+        'Prepare pico de gallo: tomate, cebola, limão, coentro, sal',
+        'Aqueça feijão preto temperado',
+        'Monte bowl: base de arroz integral',
+        'Adicione feijão de um lado',
+        'Distribua milho, guacamole e pico de gallo',
+        'Finalize com molho de pimenta (opcional)',
+        'Decore com coentro fresco'
+    ],
+    
+    tips: [
+        'Abacate maduro é essencial para guacamole',
+        'Feijão caseiro é mais saboroso',
+        'Adicione jalapeños para picante',
+        'Sirva com chips de tortilha'
+    ],
+    
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    
+    searchMeta: {
+        mainIngredients: ['arroz', 'feijao', 'abacate'],
+        objectives: ['refeicao-completa', 'proteina'],
+        dishType: ['bowl', 'mexicano'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: true,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar'],
+        keywords: ['burrito-bowl', 'mexicano', 'completo', 'colorido']
+    }
+},
+
+{
+    id: 68,
+    name: 'Pad Thai Vegano',
+    category: 'Almoço',
+    calories: 410,
+    protein: 12,
+    carbs: 62,
+    fats: 12,
+    fiber: 6,
+    time: 25,
+    servings: 2,
+    difficulty: 'Médio',
+    featured: false,
+    description: 'Macarrão tailandês com tofu, broto de feijão e molho tamarindo',
+    
+    tags: ['Vegano', 'Tailandês', 'Asiático', 'Agridoce'],
+    
+    benefits: [
+        'Equilíbrio de sabores (doce, salgado, azedo)',
+        'Rica em vegetais',
+        'Proteína do tofu',
+        'Autêntico sabor asiático'
+    ],
+    
+    allergens: ['Soja', 'Amendoim'],
+    
+image: 'image/',
+    
+    ingredients: [
+        { icon: 'wheat', quantity: '200g', text: 'macarrão de arroz' },
+        { icon: 'square', quantity: '200g', text: 'tofu firme em cubos' },
+        { icon: 'leaf', quantity: '1 xícara', text: 'broto de feijão' },
+        { icon: 'circle', quantity: '2 unidades', text: 'cebolinha picada' },
+        { icon: 'nut', quantity: '1/4 xícara', text: 'amendoim torrado' },
+        { icon: 'droplet', quantity: '3 col sopa', text: 'molho de soja (shoyu)' },
+        { icon: 'droplet', quantity: '2 col sopa', text: 'açúcar de coco' },
+        { icon: 'droplet', quantity: '2 col sopa', text: 'suco de limão' }
+    ],
+    
+    instructions: [
+        'Deixe macarrão de arroz de molho em água quente 10min',
+        'Prepare molho: shoyu, açúcar, limão, 1 col água',
+        'Frite tofu em wok ou frigideira até dourar',
+        'Reserve tofu',
+        'No mesmo wok, salteie broto de feijão',
+        'Escorra macarrão e adicione ao wok',
+        'Adicione molho e misture bem',
+        'Adicione tofu e cebolinha',
+        'Salteie por 2-3min',
+        'Sirva com amendoim e limão'
+    ],
+    
+    tips: [
+        'Não deixe macarrão de molho demais (fica mole)',
+        'Wok bem quente é essencial',
+        'Tamarindo pode substituir limão (mais autêntico)',
+        'Adicione pimenta a gosto'
+    ],
+    
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    
+    searchMeta: {
+        mainIngredients: ['macarrao-arroz', 'tofu', 'amendoim'],
+        objectives: ['sabor', 'internacional'],
+        dishType: ['pad-thai', 'asiatico'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: false,
+            nutFree: false,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar'],
+        keywords: ['pad-thai', 'tailandes', 'asiatico', 'tofu']
+    }
+},
+
+{
+    id: 69,
+    name: 'Quiche de Brócolis Sem Glúten',
+    category: 'Almoço',
+    calories: 280,
+    protein: 14,
+    carbs: 28,
+    fats: 12,
+    fiber: 6,
+    time: 50,
+    servings: 6,
+    difficulty: 'Médio',
+    featured: false,
+    description: 'Quiche vegana com massa de grão-de-bico e recheio cremoso',
+    
+    tags: ['Vegano', 'Sem Glúten', 'Proteico', 'Meal Prep'],
+    
+    benefits: [
+        'Ideal para meal prep',
+        'Rica em proteína',
+        'Sem glúten e lactose',
+        'Dura 4 dias na geladeira'
+    ],
+    
+    allergens: ['Nenhum'],
+    
+image: 'image/',
+    
+    ingredients: [
+        { icon: 'wheat', quantity: '1 xícara', text: 'farinha de grão-de-bico' },
+        { icon: 'droplets', quantity: '3 col sopa', text: 'azeite' },
+        { icon: 'leaf', quantity: '2 xícaras', text: 'brócolis picado' },
+        { icon: 'square', quantity: '200g', text: 'tofu silken' },
+        { icon: 'milk', quantity: '1/2 xícara', text: 'leite vegetal' },
+        { icon: 'sparkles', quantity: '2 col sopa', text: 'fermento nutricional' },
+        { icon: 'sparkles', quantity: '1 col chá', text: 'cúrcuma' }
+    ],
+    
+    instructions: [
+        'Massa: misture farinha, azeite, sal, 4 col água',
+        'Amasse até formar bola',
+        'Abra em forma untada',
+        'Preaqueça forno 180°C',
+        'Cozinhe brócolis no vapor 5min',
+        'Bata tofu, leite, fermento, cúrcuma, sal',
+        'Distribua brócolis na massa',
+        'Despeje mistura de tofu',
+        'Asse 35-40min até firmar',
+        'Deixe esfriar 10min antes de cortar'
+    ],
+    
+    tips: [
+        'Tofu silken deixa mais cremoso',
+        'Cúrcuma dá cor amarela',
+        'Fermento nutricional imita sabor queijo',
+        'Congele fatias e reaqueça'
+    ],
+    
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    
+    searchMeta: {
+        mainIngredients: ['grao-de-bico', 'brocolis', 'tofu'],
+        objectives: ['meal-prep', 'proteina', 'sem-gluten'],
+        dishType: ['quiche', 'torta'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: false,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar', 'lanche'],
+        keywords: ['quiche', 'brocolis', 'sem-gluten', 'meal-prep']
+    }
+},
+
+{
+    id: 70,
+    name: 'Escondidinho de Mandioca com Proteína de Soja',
+    category: 'Almoço',
+    calories: 380,
+    protein: 20,
+    carbs: 48,
+    fats: 12,
+    fiber: 8,
+    time: 45,
+    servings: 4,
+    difficulty: 'Médio',
+    featured: true,
+    description: 'Escondidinho vegano com purê cremoso e proteína texturizada',
+    
+    tags: ['Vegano', 'Sem Glúten', 'Brasileiro', 'Proteico'],
+    
+    benefits: [
+        'Alto teor de proteína (20g)',
+        'Receita reconfortante',
+        'Sem glúten naturalmente',
+        'Ótimo para família'
+    ],
+    
+    allergens: ['Soja'],
+    
+image: 'image/',
+    
+    ingredients: [
+        { icon: 'circle', quantity: '1kg', text: 'mandioca descascada' },
+        { icon: 'square', quantity: '1 xícara', text: 'proteína de soja texturizada' },
+        { icon: 'circle', quantity: '1 unidade', text: 'cebola picada' },
+        { icon: 'circle-dot', quantity: '3 col sopa', text: 'molho de tomate' },
+        { icon: 'milk', quantity: '1/2 xícara', text: 'leite de coco' },
+        { icon: 'droplets', quantity: '3 col sopa', text: 'azeite' },
+        { icon: 'sparkles', quantity: 'a gosto', text: 'sal, alho, cominho' }
+    ],
+    
+    instructions: [
+        'Hidrate proteína de soja em caldo quente 15min',
+        'Cozinhe mandioca até macia',
+        'Refogue cebola e alho',
+        'Esprema proteína e adicione à panela',
+        'Tempere com cominho, sal, pimenta',
+        'Adicione molho de tomate, cozinhe 10min',
+        'Amasse mandioca com leite de coco',
+        'Em refratário: camada de proteína',
+        'Cubra com purê de mandioca',
+        'Asse 20min a 200°C até dourar'
+    ],
+    
+    tips: [
+        'Mandioca cozida deve estar bem macia',
+        'Esprema bem a proteína para tirar excesso',
+        'Leite de coco deixa purê cremoso',
+        'Rende bem e pode congelar'
+    ],
+    
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+    
+    searchMeta: {
+        mainIngredients: ['mandioca', 'proteina-soja'],
+        objectives: ['proteina', 'conforto', 'familia'],
+        dishType: ['escondidinho', 'brasileiro'],
+        dietary: {
+            vegetarian: true,
+            vegan: true,
+            glutenFree: true,
+            dairyFree: true,
+            soyFree: false,
+            nutFree: true,
+            raw: false,
+            lowCarb: false
+        },
+        mealTime: ['almoco', 'jantar'],
+        keywords: ['escondidinho', 'mandioca', 'proteina-soja', 'brasileiro']
+    }
+},
+
+
+
+{
+  id: 73,
+  name: 'Bowl de Frutas com Pasta de Amendoim',
+  category: 'Café da Manhã',
+  calories: 420,
+  protein: 14,
+  carbs: 52,
+  fats: 18,
+  fiber: 10,
+  time: 8,
+  servings: 1,
+  difficulty: 'Fácil',
+  featured: true,
+  description: 'Bowl cremoso de frutas com pasta de amendoim, granola e sementes. Perfeito para energia e saciedade.',
+  tags: ['Rápido', 'Energético', 'Fibras', 'Sem lactose'],
+  benefits: ['Boa saciedade', 'Ótimo pré/pós-treino', 'Rico em micronutrientes'],
+  allergens: ['Amendoim (pasta)', 'Oleaginosas (se usar granola)'],
+  
+  
+image: 'image/',
+
+
+
+  ingredients: [
+    { icon: 'banana', quantity: '1 unidade', text: 'banana' },
+    { icon: 'strawberry', quantity: '1/2 xícara', text: 'frutas (morango/manga/uva)' },
+    { icon: 'droplets', quantity: '2 colheres sopa', text: 'pasta de amendoim' },
+    { icon: 'circle', quantity: '2 colheres sopa', text: 'granola', optional: true },
+    { icon: 'sparkles', quantity: '1 colher sopa', text: 'chia ou linhaça', optional: true }
+  ],
+  instructions: [
+    'Amasse a banana (ou bata com as frutas para ficar mais cremoso).',
+    'Coloque em uma tigela.',
+    'Finalize com pasta de amendoim por cima.',
+    'Adicione granola e sementes (opcional).',
+    'Sirva na hora.'
+  ],
+  tips: [
+    '🧊 Banana congelada deixa textura tipo sorvete.',
+    '🥜 Use pasta 100% amendoim para melhor perfil nutricional.',
+    '🍯 Se precisar adoçar, use tâmara ou um fio de melado.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { breakfast: '13% proteína, 50% carboidratos, 37% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 74,
+  name: 'Mingau de Aveia com Canela',
+  category: 'Café da Manhã',
+  calories: 320,
+  protein: 12,
+  carbs: 50,
+  fats: 8,
+  fiber: 9,
+  time: 10,
+  servings: 1,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Mingau cremoso de aveia com canela e fruta. Conforto e saciedade em poucos minutos.',
+  tags: ['Reconfortante', 'Rápido', 'Fibras', 'Sem lactose'],
+  benefits: ['Ajuda na saciedade', 'Boa energia para manhã', 'Ótimo para dias frios'],
+  allergens: ['Aveia'],
+  
+  
+image: 'image/',
+  
+  
+  
+  ingredients: [
+    { icon: 'wheat', quantity: '1/2 xícara', text: 'aveia em flocos' },
+    { icon: 'milk', quantity: '250ml', text: 'leite vegetal' },
+    { icon: 'sparkles', quantity: '1/2 colher chá', text: 'canela' },
+    { icon: 'banana', quantity: '1/2 unidade', text: 'banana fatiada (opcional)', optional: true },
+    { icon: 'circle', quantity: '1 colher chá', text: 'melado (opcional)', optional: true }
+  ],
+  instructions: [
+    'Aqueça o leite vegetal em uma panela.',
+    'Adicione a aveia e mexa por 5–7 minutos.',
+    'Tempere com canela.',
+    'Finalize com banana e/ou melado (opcional).',
+    'Sirva quente.'
+  ],
+  tips: [
+    '🥣 Mexer sempre evita grudar.',
+    '🍎 Maçã picada cozinha junto e fica ótimo.',
+    '💪 Dá pra adicionar 1 colher de pasta de amendoim para mais proteína.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { breakfast: '15% proteína, 62% carboidratos, 23% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 75,
+  name: 'Smoothie de Banana com Amendoim',
+  category: 'Café da Manhã',
+  calories: 380,
+  protein: 16,
+  carbs: 46,
+  fats: 14,
+  fiber: 7,
+  time: 5,
+  servings: 1,
+  difficulty: 'Fácil',
+  featured: true,
+  description: 'Smoothie cremoso de banana com pasta de amendoim. Rápido, saciante e perfeito para treino.',
+  tags: ['Rápido', 'Cremoso', 'Proteico', 'Pós-treino'],
+  benefits: ['Boa proteína', 'Energia rápida', 'Prático para rotina'],
+  allergens: ['Amendoim'],
+  
+  
+image: 'image/',
+  
+  
+  
+  ingredients: [
+    { icon: 'banana', quantity: '1 unidade', text: 'banana congelada' },
+    { icon: 'milk', quantity: '250ml', text: 'leite vegetal' },
+    { icon: 'droplets', quantity: '1 a 2 colheres sopa', text: 'pasta de amendoim' },
+    { icon: 'sparkles', quantity: '1 colher sopa', text: 'chia (opcional)', optional: true },
+    { icon: 'snowflake', quantity: 'a gosto', text: 'gelo (opcional)', optional: true }
+  ],
+  instructions: [
+    'Coloque tudo no liquidificador.',
+    'Bata por 45–60 segundos até ficar liso.',
+    'Ajuste a textura com mais leite vegetal, se necessário.',
+    'Sirva imediatamente.'
+  ],
+  tips: [
+    '🧊 Banana congelada dispensa gelo.',
+    '🍫 Cacau em pó combina muito.',
+    '💪 Se quiser mais proteína, adicione proteína vegetal em pó.'
+  ],
+  images: { hero: 'image/smoothie-de-banana-com-amendoim', steps: [] },
+  macros: { breakfast: '17% proteína, 48% carboidratos, 33% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 76,
+  name: 'Iogurte Vegano com Granola e Frutas',
+  category: 'Lanches',
+  calories: 290,
+  protein: 10,
+  carbs: 38,
+  fats: 10,
+  fiber: 7,
+  time: 4,
+  servings: 1,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Lanche prático com iogurte vegetal, frutas e granola crocante.',
+  tags: ['Prático', 'Rápido', 'Fibras', 'Leve'],
+  benefits: ['Boa saciedade', 'Ótimo para tarde', 'Fácil de montar'],
+  allergens: ['Pode conter soja (iogurte)', 'Oleaginosas (granola)'],
+  
+  
+  image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'droplets', quantity: '170g', text: 'iogurte vegetal' },
+    { icon: 'strawberry', quantity: '1/2 xícara', text: 'frutas picadas' },
+    { icon: 'wheat', quantity: '2 colheres sopa', text: 'granola' },
+    { icon: 'sparkles', quantity: '1 colher sopa', text: 'chia/linhaça (opcional)', optional: true }
+  ],
+  instructions: [
+    'Coloque o iogurte em um pote ou tigela.',
+    'Adicione as frutas.',
+    'Finalize com granola.',
+    'Acrescente sementes (opcional) e sirva.'
+  ],
+  tips: [
+    '🫐 Frutas vermelhas deixam mais “premium”.',
+    '❄️ Pode usar fruta congelada.',
+    '🍯 Se precisar, adoçe com um fio de melado.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { snack: '14% proteína, 52% carboidratos, 31% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 77,
+  name: 'Torrada Integral com Guacamole',
+  category: 'Café da Manhã',
+  calories: 330,
+  protein: 9,
+  carbs: 36,
+  fats: 18,
+  fiber: 11,
+  time: 10,
+  servings: 1,
+  difficulty: 'Fácil',
+  featured: true,
+  description: 'Torrada integral crocante com guacamole temperado e tomate. Simples e muito gostoso.',
+  tags: ['Rápido', 'Gorduras boas', 'Salgado', 'Fibras'],
+  benefits: ['Saciedade alta', 'Gorduras boas', 'Ótimo para manhã'],
+  allergens: ['Glúten (pão)'],
+  
+  
+image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'wheat', quantity: '2 fatias', text: 'pão integral' },
+    { icon: 'leaf', quantity: '1/2 unidade', text: 'abacate' },
+    { icon: 'droplets', quantity: '1/2 unidade', text: 'limão espremido' },
+    { icon: 'circle', quantity: 'a gosto', text: 'sal e pimenta' },
+    { icon: 'circle-dot', quantity: '6 unidades', text: 'tomates-cereja (opcional)', optional: true }
+  ],
+  instructions: [
+    'Torre o pão até ficar crocante.',
+    'Amasse o abacate com limão, sal e pimenta.',
+    'Espalhe o guacamole nas torradas.',
+    'Finalize com tomates (opcional) e sirva.'
+  ],
+  tips: [
+    '🌶️ Flocos de pimenta dão um toque ótimo.',
+    '🥒 Pepino fatiado combina muito.',
+    '🍋 Limão evita escurecer.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { breakfast: '11% proteína, 43% carboidratos, 46% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 78,
+  name: 'Salada Morna de Quinoa e Legumes',
+  category: 'Almoço/Janta',
+  calories: 460,
+  protein: 18,
+  carbs: 62,
+  fats: 14,
+  fiber: 12,
+  time: 25,
+  servings: 2,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Salada morna com quinoa, legumes salteados e molho de limão. Leve e completa.',
+  tags: ['Completa', 'Fibras', 'Marmita', 'Sem glúten'],
+  benefits: ['Boa proteína vegetal', 'Ótima para meal prep', 'Leve e nutritiva'],
+  allergens: [],
+  
+  
+image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'wheat', quantity: '1 xícara', text: 'quinoa cozida' },
+    { icon: 'carrot', quantity: '1/2 unidade', text: 'cenoura em cubos' },
+    { icon: 'circle', quantity: '1 xícara', text: 'brócolis' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'abobrinha em cubos' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite' },
+    { icon: 'droplets', quantity: '1 unidade', text: 'limão (suco)' }
+  ],
+  instructions: [
+    'Cozinhe a quinoa e reserve.',
+    'Salteie os legumes no azeite por 5–7 minutos.',
+    'Misture quinoa com os legumes.',
+    'Tempere com limão, sal e pimenta.',
+    'Sirva morna ou fria.'
+  ],
+  tips: [
+    '🌿 Hortelã ou salsinha elevam o sabor.',
+    '🥗 Ótima base: dá pra variar legumes sempre.',
+    '❄️ Dura 3 dias na geladeira.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '16% proteína, 54% carboidratos, 27% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 79,
+  name: 'Feijoada Vegana Fit',
+  category: 'Almoço/Janta',
+  calories: 540,
+  protein: 22,
+  carbs: 78,
+  fats: 14,
+  fiber: 18,
+  time: 40,
+  servings: 3,
+  difficulty: 'Médio',
+  featured: true,
+  description: 'Feijoada vegana mais leve com feijão preto, legumes e defumado vegetal. Sabor de domingo, sem pesar.',
+  tags: ['Brasileira', 'Conforto', 'Rica em fibras', 'Marmita'],
+  benefits: ['Saciedade alta', 'Ótimo custo-benefício', 'Rende bem'],
+  allergens: ['Pode conter soja (defumado vegetal)'],
+  
+  
+  image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'beans', quantity: '2 xícaras', text: 'feijão preto cozido' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'cebola picada' },
+    { icon: 'flower-2', quantity: '2 dentes', text: 'alho picado' },
+    { icon: 'carrot', quantity: '1/2 unidade', text: 'cenoura em cubos (opcional)', optional: true },
+    { icon: 'leaf', quantity: '1 xícara', text: 'couve fatiada' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'páprica defumada, louro, sal e pimenta' }
+  ],
+  instructions: [
+    'Refogue cebola e alho.',
+    'Adicione temperos (louro e páprica) e misture.',
+    'Junte o feijão cozido e cozinhe 15–20 minutos para engrossar.',
+    'Ajuste sal e pimenta.',
+    'Finalize com couve refogada à parte ou misturada no final.',
+    'Sirva com arroz e laranja (opcional).'
+  ],
+  tips: [
+    '🔥 Páprica defumada é o segredo do sabor.',
+    '🥓 Se usar proteína vegetal defumada, adicione no refogado.',
+    '❄️ Congela muito bem em porções.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '16% proteína, 58% carboidratos, 24% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 80,
+  name: 'Moqueca Vegana de Banana-da-Terra',
+  category: 'Almoço/Janta',
+  calories: 510,
+  protein: 8,
+  carbs: 66,
+  fats: 24,
+  fiber: 10,
+  time: 25,
+  servings: 3,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Moqueca cremosa com banana-da-terra, pimentões e leite de coco. Sabor marcante e brasileiro.',
+  tags: ['Brasileira', 'Sem lactose', 'Saborosa', 'Rápida'],
+  benefits: ['Conforto', 'Boa saciedade', 'Ótima para almoço em família'],
+  allergens: [],
+  
+  
+image: 'image/',
+  
+  
+  
+  ingredients: [
+    { icon: 'circle', quantity: '2 unidades', text: 'banana-da-terra em rodelas' },
+    { icon: 'circle', quantity: '1 unidade', text: 'tomate em rodelas' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'pimentão fatiado' },
+    { icon: 'droplets', quantity: '200ml', text: 'leite de coco' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite de dendê (opcional)', optional: true },
+    { icon: 'leaf', quantity: 'a gosto', text: 'coentro (opcional)', optional: true }
+  ],
+  instructions: [
+    'Em uma panela, faça camadas de tomate, pimentão e banana-da-terra.',
+    'Tempere com sal e pimenta.',
+    'Adicione o leite de coco e (se quiser) o dendê.',
+    'Cozinhe tampado por 10–12 minutos em fogo baixo.',
+    'Finalize com coentro (opcional) e sirva com arroz.'
+  ],
+  tips: [
+    '🍋 Limão no final realça MUITO.',
+    '🌶️ Pimenta dedo-de-moça é opcional.',
+    '🍚 Vai muito bem com arroz integral.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '6% proteína, 52% carboidratos, 42% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 81,
+  name: 'Hambúrguer de Grão-de-Bico',
+  category: 'Almoço/Janta',
+  calories: 430,
+  protein: 18,
+  carbs: 62,
+  fats: 12,
+  fiber: 14,
+  time: 25,
+  servings: 2,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Hambúrguer vegano firme e saboroso de grão-de-bico. Ótimo para congelar e montar sanduíches.',
+  tags: ['Proteico', 'Meal prep', 'Sanduíche', 'Sem lactose'],
+  benefits: ['Boa fibra e proteína', 'Congela bem', 'Ótimo custo-benefício'],
+  allergens: [],
+  
+  
+  
+image: 'image/',
+  
+  
+  
+  ingredients: [
+    { icon: 'beans', quantity: '1 e 1/2 xícara', text: 'grão-de-bico cozido e amassado' },
+    { icon: 'circle', quantity: '1/4 unidade', text: 'cebola picada' },
+    { icon: 'flower-2', quantity: '1 dente', text: 'alho (opcional)', optional: true },
+    { icon: 'wheat', quantity: '3 colheres sopa', text: 'farinha de aveia' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'sal, cominho e páprica' },
+    { icon: 'droplets', quantity: '1 colher chá', text: 'azeite (para grelhar)' }
+  ],
+  instructions: [
+    'Amasse o grão-de-bico (deixe alguns pedacinhos).',
+    'Misture cebola, temperos e farinha até dar liga.',
+    'Modele 2 hambúrgueres.',
+    'Grelhe 4–5 min de cada lado em frigideira antiaderente.',
+    'Sirva no pão ou com salada.'
+  ],
+  tips: [
+    '❄️ Congele separando com papel manteiga.',
+    '🔥 Se a massa estiver mole, adicione mais 1 colher de farinha.',
+    '🥗 No prato, fica ótimo com salada e molho de tahine.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '17% proteína, 58% carboidratos, 25% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 82,
+  name: 'Macarrão Integral ao Pesto Vegano',
+  category: 'Almoço/Janta',
+  calories: 610,
+  protein: 18,
+  carbs: 78,
+  fats: 24,
+  fiber: 9,
+  time: 20,
+  servings: 2,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Macarrão integral com pesto vegano de manjericão e castanhas. Rápido e com cara de prato gourmet.',
+  tags: ['Italiano', 'Rápido', 'Cremoso', 'Sem lactose'],
+  benefits: ['Gorduras boas', 'Sabor marcante', 'Boa energia'],
+  allergens: ['Glúten', 'Oleaginosas (castanhas)'],
+  
+  
+  
+image: 'image/',
+  
+  
+  
+  ingredients: [
+    { icon: 'circle', quantity: '180g', text: 'macarrão integral' },
+    { icon: 'leaf', quantity: '2 xícaras', text: 'manjericão fresco' },
+    { icon: 'nut', quantity: '1/3 xícara', text: 'castanhas (caju/pará)' },
+    { icon: 'flower-2', quantity: '1 dente', text: 'alho (opcional)', optional: true },
+    { icon: 'droplets', quantity: '3 colheres sopa', text: 'azeite' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'limão (suco)' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'sal e pimenta' }
+  ],
+  instructions: [
+    'Cozinhe o macarrão e reserve um pouco da água do cozimento.',
+    'Bata manjericão, castanhas, azeite, limão, sal e pimenta até virar pesto.',
+    'Misture o pesto no macarrão.',
+    'Ajuste cremosidade com 2–4 colheres da água do cozimento.',
+    'Sirva.'
+  ],
+  tips: [
+    '🍅 Tomate-cereja por cima fica perfeito.',
+    '🧄 Alho assado deixa mais suave.',
+    '❄️ Pesto dura 4–5 dias na geladeira.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '12% proteína, 51% carboidratos, 35% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 83,
+  name: 'Risoto Fit de Cogumelos',
+  category: 'Almoço/Janta',
+  calories: 520,
+  protein: 18,
+  carbs: 74,
+  fats: 16,
+  fiber: 9,
+  time: 30,
+  servings: 2,
+  difficulty: 'Médio',
+  featured: true,
+  description: 'Risoto cremoso e leve com cogumelos e temperos, com textura de restaurante e preparo simples.',
+  tags: ['Cremoso', 'Conforto', 'Sem carne', 'Gourmet'],
+  benefits: ['Boa saciedade', 'Sabor marcante', 'Ótimo para ocasiões especiais'],
+  allergens: ['Pode conter glúten (dependendo do caldo)'],
+  
+  
+image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'circle', quantity: '1 xícara', text: 'arroz arbóreo (ou arroz comum)' },
+    { icon: 'circle', quantity: '200g', text: 'cogumelos (champignon/shiitake)' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'cebola picada' },
+    { icon: 'flower-2', quantity: '2 dentes', text: 'alho picado' },
+    { icon: 'droplets', quantity: '700ml', text: 'caldo de legumes quente' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'sal, pimenta e ervas' }
+  ],
+  instructions: [
+    'Refogue cebola e alho no azeite.',
+    'Adicione os cogumelos e refogue até dourar.',
+    'Junte o arroz e mexa por 1 minuto.',
+    'Adicione caldo aos poucos, mexendo até ficar cremoso.',
+    'Ajuste sal e pimenta e finalize com ervas.'
+  ],
+  tips: [
+    '🍄 Misture 2 tipos de cogumelos para mais sabor.',
+    '🥄 Mexer bastante deixa mais cremoso.',
+    '🌿 Salsinha e cebolinha combinam muito.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '14% proteína, 57% carboidratos, 29% gorduras', vegan: 'Pode ser vegano' }
+},
+
+{
+  id: 84,
+  name: 'Bowl de Lentilha com Vegetais',
+  category: 'Almoço/Janta',
+  calories: 470,
+  protein: 22,
+  carbs: 64,
+  fats: 12,
+  fiber: 16,
+  time: 25,
+  servings: 2,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Bowl nutritivo com lentilha, legumes e tempero cítrico. Excelente para marmita e rotina.',
+  tags: ['Marmita', 'Proteico', 'Vegano', 'Fibras'],
+  benefits: ['Alta saciedade', 'Boa proteína vegetal', 'Ótimo custo-benefício'],
+  allergens: [],
+  
+  
+  
+image: 'image/',
+  
+  
+  
+  ingredients: [
+    { icon: 'beans', quantity: '1 e 1/2 xícara', text: 'lentilha cozida' },
+    { icon: 'carrot', quantity: '1/2 unidade', text: 'cenoura ralada' },
+    { icon: 'leaf', quantity: '1 xícara', text: 'folhas (alface/rúcula)' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'tomate picado' },
+    { icon: 'droplets', quantity: '1 unidade', text: 'limão (suco)' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'sal, pimenta e cominho' }
+  ],
+  instructions: [
+    'Misture a lentilha com o tomate e a cenoura.',
+    'Tempere com limão, azeite, sal e pimenta.',
+    'Monte o bowl com folhas por baixo.',
+    'Finalize com a lentilha temperada por cima.',
+    'Sirva morno ou frio.'
+  ],
+  tips: [
+    '🌶️ Páprica ou pimenta calabresa dá um toque ótimo.',
+    '🥒 Pepino combina muito bem.',
+    '❄️ Dura até 3 dias na geladeira.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '19% proteína, 55% carboidratos, 23% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 85,
+  name: 'Curry de Grão-de-Bico Fit',
+  category: 'Almoço/Janta',
+  calories: 560,
+  protein: 20,
+  carbs: 74,
+  fats: 18,
+  fiber: 14,
+  time: 30,
+  servings: 3,
+  difficulty: 'Fácil',
+  featured: true,
+  description: 'Curry cremoso e aromático de grão-de-bico com leite de coco e especiarias.',
+  tags: ['Cremoso', 'Temperado', 'Vegano', 'Conforto'],
+  benefits: ['Rende bem', 'Sabor intenso', 'Ótimo para marmitas'],
+  allergens: [],
+  
+  
+  
+image: 'image/',
+  
+  
+  
+  ingredients: [
+    { icon: 'beans', quantity: '2 xícaras', text: 'grão-de-bico cozido' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'cebola picada' },
+    { icon: 'flower-2', quantity: '2 dentes', text: 'alho picado' },
+    { icon: 'droplets', quantity: '200ml', text: 'leite de coco' },
+    { icon: 'circle', quantity: '1/2 xícara', text: 'molho de tomate' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'curry, cúrcuma, sal e pimenta' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite' }
+  ],
+  instructions: [
+    'Refogue cebola e alho no azeite.',
+    'Adicione curry e cúrcuma e mexa por 30 segundos.',
+    'Junte molho de tomate e leite de coco.',
+    'Adicione o grão-de-bico e cozinhe 10–12 minutos.',
+    'Ajuste temperos e sirva com arroz.'
+  ],
+  tips: [
+    '🍚 Arroz integral combina demais.',
+    '🥦 Pode adicionar brócolis no final.',
+    '🌿 Coentro ou cebolinha dão frescor.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '14% proteína, 52% carboidratos, 34% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 86,
+  name: 'Tofu Grelhado com Legumes',
+  category: 'Almoço/Janta',
+  calories: 440,
+  protein: 26,
+  carbs: 32,
+  fats: 22,
+  fiber: 8,
+  time: 20,
+  servings: 2,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Tofu bem temperado e grelhado com legumes salteados. Refeição leve e proteica.',
+  tags: ['Proteico', 'Leve', 'Sem carne', 'Rápido'],
+  benefits: ['Boa proteína', 'Boa saciedade', 'Ótimo para dieta'],
+  allergens: ['Soja (tofu)'],
+  
+  
+image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'square', quantity: '250g', text: 'tofu firme' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'shoyu (ou sal)', optional: true },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite' },
+    { icon: 'circle', quantity: '1 xícara', text: 'brócolis' },
+    { icon: 'carrot', quantity: '1/2 unidade', text: 'cenoura fatiada' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'abobrinha em tiras' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'pimenta, limão e ervas' }
+  ],
+  instructions: [
+    'Corte o tofu em fatias e tempere.',
+    'Grelhe o tofu até dourar dos dois lados.',
+    'Salteie os legumes rapidamente no azeite.',
+    'Sirva tofu com os legumes.',
+    'Finalize com limão e pimenta.'
+  ],
+  tips: [
+    '🔥 Tofu douradinho = fogo médio e paciência.',
+    '🍋 Limão no final muda tudo.',
+    '🧄 Alho em pó ajuda muito no sabor.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '24% proteína, 29% carboidratos, 45% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 87,
+  name: 'Wrap Integral de Falafel Fit',
+  category: 'Lanches',
+  calories: 480,
+  protein: 18,
+  carbs: 62,
+  fats: 18,
+  fiber: 12,
+  time: 20,
+  servings: 1,
+  difficulty: 'Fácil',
+  featured: true,
+  description: 'Wrap integral recheado com falafel assado, folhas e molho leve. Lanche completo e prático.',
+  tags: ['Sanduíche', 'Proteico', 'Fibras', 'Marmita'],
+  benefits: ['Completo e equilibrado', 'Boa proteína vegetal', 'Ótimo para levar'],
+  allergens: ['Glúten (wrap)', 'Gergelim (se usar tahine)', 'Grão-de-bico'],
+  
+  
+image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'wheat', quantity: '1 unidade', text: 'wrap integral' },
+    { icon: 'circle', quantity: '4 unidades', text: 'falafel assado' },
+    { icon: 'leaf', quantity: '1 xícara', text: 'folhas verdes' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'tomate em rodelas' },
+    { icon: 'droplets', quantity: '2 colheres sopa', text: 'molho (iogurte vegano ou tahine)', optional: true }
+  ],
+  instructions: [
+    'Aqueça o wrap rapidamente.',
+    'Coloque folhas e tomate.',
+    'Adicione os falafels.',
+    'Finalize com molho (opcional).',
+    'Enrole e sirva.'
+  ],
+  tips: [
+    '🌯 Enrolar com papel manteiga facilita comer.',
+    '🥒 Pepino dá crocância.',
+    '🔥 Falafel na airfryer fica perfeito.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { snack: '15% proteína, 52% carboidratos, 33% gorduras', vegan: 'Pode ser vegano' }
+},
+
+{
+  id: 88,
+  name: 'Sopa Detox de Abóbora',
+  category: 'Almoço/Janta',
+  calories: 320,
+  protein: 8,
+  carbs: 46,
+  fats: 12,
+  fiber: 9,
+  time: 25,
+  servings: 3,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Sopa cremosa de abóbora com temperos simples e nutritivos. Leve e perfeita para a noite.',
+  tags: ['Leve', 'Conforto', 'Sem lactose', 'Rápida'],
+  benefits: ['Boa digestão', 'Leve para jantar', 'Ajuda na saciedade'],
+  allergens: [],
+  
+  
+image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'circle', quantity: '3 xícaras', text: 'abóbora em cubos' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'cebola picada' },
+    { icon: 'flower-2', quantity: '2 dentes', text: 'alho' },
+    { icon: 'droplets', quantity: '700ml', text: 'água ou caldo de legumes' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'sal, pimenta e cúrcuma' }
+  ],
+  instructions: [
+    'Refogue cebola e alho no azeite.',
+    'Adicione a abóbora e mexa por 2 minutos.',
+    'Coloque água/caldo e cozinhe até amaciar.',
+    'Bata tudo até ficar cremoso.',
+    'Ajuste os temperos e sirva.'
+  ],
+  tips: [
+    '🥥 Um pouco de leite de coco deixa mais cremoso (opcional).',
+    '🌶️ Pimenta dá um toque ótimo.',
+    '🍞 Combina com torrada integral.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { dinner: '10% proteína, 57% carboidratos, 33% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 89,
+  name: 'Salada Caesar Vegana Fit',
+  category: 'Almoço/Janta',
+  calories: 410,
+  protein: 16,
+  carbs: 34,
+  fats: 22,
+  fiber: 10,
+  time: 15,
+  servings: 2,
+  difficulty: 'Fácil',
+  featured: true,
+  description: 'Salada Caesar vegana com molho cremoso e crocante. Leve, gostosa e com cara de restaurante.',
+  tags: ['Leve', 'Cremosa', 'Sem carne', 'Rápida'],
+  benefits: ['Boa saciedade', 'Ótimo para almoço leve', 'Molho irresistível'],
+  allergens: ['Oleaginosas (se usar castanhas)', 'Glúten (croutons)'],
+  
+  
+image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'leaf', quantity: '1 pé', text: 'alface romana' },
+    { icon: 'wheat', quantity: '1/2 xícara', text: 'croutons integrais (opcional)', optional: true },
+    { icon: 'droplets', quantity: '2 colheres sopa', text: 'molho caesar vegano' },
+    { icon: 'circle', quantity: '1/2 xícara', text: 'grão-de-bico crocante (opcional)', optional: true },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'sal e pimenta' }
+  ],
+  instructions: [
+    'Lave e rasgue a alface.',
+    'Misture o molho caesar vegano.',
+    'Adicione croutons (opcional).',
+    'Finalize com grão-de-bico crocante (opcional).',
+    'Sirva na hora.'
+  ],
+  tips: [
+    '🧄 Molho com alho e limão fica incrível.',
+    '🥗 Melhor montar na hora pra não murchar.',
+    '🔥 Grão-de-bico na airfryer vira “crouton proteico”.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '16% proteína, 33% carboidratos, 48% gorduras', vegan: 'Pode ser vegano' }
+},
+
+{
+  id: 90,
+  name: 'Strogonoff Vegano de Cogumelos',
+  category: 'Almoço/Janta',
+  calories: 540,
+  protein: 18,
+  carbs: 62,
+  fats: 22,
+  fiber: 10,
+  time: 25,
+  servings: 3,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Strogonoff cremoso com cogumelos e molho leve. Sabor de comida afetiva sem pesar.',
+  tags: ['Cremoso', 'Conforto', 'Marmita', 'Sem carne'],
+  benefits: ['Muito sabor', 'Rende bastante', 'Ótimo para congelar'],
+  allergens: ['Pode conter soja (creme vegetal)'],
+  
+  
+image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'circle', quantity: '300g', text: 'cogumelos fatiados' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'cebola picada' },
+    { icon: 'flower-2', quantity: '2 dentes', text: 'alho picado' },
+    { icon: 'circle', quantity: '1/2 xícara', text: 'molho de tomate' },
+    { icon: 'droplets', quantity: '200ml', text: 'creme vegetal (ou leite de coco leve)' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'sal, pimenta e páprica' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite' }
+  ],
+  instructions: [
+    'Refogue cebola e alho no azeite.',
+    'Adicione os cogumelos e doure bem.',
+    'Junte molho de tomate e tempere.',
+    'Adicione o creme vegetal e cozinhe 5 minutos.',
+    'Sirva com arroz e batata palha (opcional).'
+  ],
+  tips: [
+    '🍄 Dourar bem o cogumelo deixa o sabor “carneado”.',
+    '🥔 Batata palha fit: assada na airfryer.',
+    '❄️ Congela por até 30 dias.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '13% proteína, 46% carboidratos, 37% gorduras', vegan: 'Pode ser vegano' }
+},
+
+{
+  id: 91,
+  name: 'Bolinho Assado de Quinoa',
+  category: 'Lanches',
+  calories: 360,
+  protein: 16,
+  carbs: 44,
+  fats: 12,
+  fiber: 8,
+  time: 30,
+  servings: 2,
+  difficulty: 'Fácil',
+  featured: false,
+  description: 'Bolinho assado de quinoa com temperos e legumes. Ótimo para lanche ou acompanhamento.',
+  tags: ['Assado', 'Marmita', 'Sem fritura', 'Proteico'],
+  benefits: ['Boa proteína', 'Prático', 'Congela bem'],
+  allergens: [],
+  
+  
+image: 'image/',
+  
+  
+  
+  ingredients: [
+    { icon: 'wheat', quantity: '1 xícara', text: 'quinoa cozida' },
+    { icon: 'carrot', quantity: '1/2 unidade', text: 'cenoura ralada' },
+    { icon: 'circle', quantity: '1/4 unidade', text: 'cebola picada' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'sal, pimenta e ervas' },
+    { icon: 'wheat', quantity: '2 colheres sopa', text: 'farinha de aveia (para dar liga)' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite' }
+  ],
+  instructions: [
+    'Misture quinoa, cenoura, cebola e temperos.',
+    'Adicione farinha até dar ponto de modelar.',
+    'Modele bolinhos pequenos.',
+    'Asse a 200°C por 18–22 minutos.',
+    'Vire na metade do tempo para dourar.'
+  ],
+  tips: [
+    '🔥 Airfryer também funciona muito bem.',
+    '🧄 Alho em pó dá um toque ótimo.',
+    '❄️ Congele antes de assar e faça depois.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { snack: '18% proteína, 49% carboidratos, 30% gorduras', vegan: '100% vegetal' }
+},
+
+{
+  id: 92,
+  name: 'Chili Vegano Fit',
+  category: 'Almoço/Janta',
+  calories: 590,
+  protein: 24,
+  carbs: 78,
+  fats: 18,
+  fiber: 18,
+  time: 35,
+  servings: 3,
+  difficulty: 'Fácil',
+  featured: true,
+  description: 'Chili vegano encorpado com feijão, milho e temperos. Perfeito para marmita e muito saciante.',
+  tags: ['Temperado', 'Marmita', 'Rico em fibras', 'Sem carne'],
+  benefits: ['Alta saciedade', 'Ótimo para semana', 'Rende bastante'],
+  allergens: [],
+  
+  
+image: 'image/',
+  
+  
+  ingredients: [
+    { icon: 'beans', quantity: '2 xícaras', text: 'feijão cozido (vermelho/preto)' },
+    { icon: 'circle', quantity: '1/2 xícara', text: 'milho' },
+    { icon: 'circle', quantity: '1/2 unidade', text: 'cebola picada' },
+    { icon: 'flower-2', quantity: '2 dentes', text: 'alho picado' },
+    { icon: 'circle', quantity: '1 xícara', text: 'molho de tomate' },
+    { icon: 'sparkles', quantity: 'a gosto', text: 'cominho, páprica, pimenta e sal' },
+    { icon: 'droplets', quantity: '1 colher sopa', text: 'azeite' }
+  ],
+  instructions: [
+    'Refogue cebola e alho no azeite.',
+    'Adicione os temperos e mexa por 30 segundos.',
+    'Junte o molho de tomate, feijão e milho.',
+    'Cozinhe por 15–20 minutos até encorpar.',
+    'Sirva com arroz ou tortilla (opcional).'
+  ],
+  tips: [
+    '🌶️ Ajuste a pimenta ao seu gosto.',
+    '🥑 Abacate por cima fica incrível.',
+    '❄️ Congela perfeito em porções.'
+  ],
+	
+	
+    images: {
+      hero: 'image/',
+      steps: [ ]
+    },
+	
+	
+  macros: { lunch: '16% proteína, 52% carboidratos, 27% gorduras', vegan: '100% vegetal' }
+}
+
+
+
+
+
 ];
 
 window.RECIPES = RECIPES;
-
-// Código premium válido - ALTERE AQUI PARA MUDAR O CÓDIGO
-//const VALID_PREMIUM_CODE = 'FITPRO2024';
-
 
