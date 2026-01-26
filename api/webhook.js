@@ -32,6 +32,9 @@ function generateCode(plan) {
   return `${prefix}-${random}`;
 }
 
+// handler()
+// - Webhook do Mercado Pago
+// - Processa pagamento aprovado, salva Firestore e envia e-mail com código
 export default async function handler(req, res) {
   // Log de debug
   console.log('[WEBHOOK] Método:', req.method);
@@ -61,6 +64,16 @@ export default async function handler(req, res) {
 
     console.log('[WEBHOOK] 📋 Payment ID:', paymentId);
 
+    // ✅ IDEMPOTÊNCIA (não processa o mesmo paymentId 2x)
+    // - Mercado Pago pode reenviar webhook
+    const webhookRef = db.collection('webhook_logs').doc(String(paymentId));
+    const webhookSnap = await webhookRef.get();
+
+    if (webhookSnap.exists) {
+      console.log('[WEBHOOK] ♻️ Webhook já processado para paymentId:', paymentId);
+      return res.status(200).json({ ok: true, message: 'Webhook já processado' });
+    }
+
     // ✅ BUSCA DETALHES DO PAGAMENTO
     const payment = await mercadopago.payment.get(paymentId);
     console.log('[WEBHOOK] 💰 Status do pagamento:', payment.body.status);
@@ -69,9 +82,9 @@ export default async function handler(req, res) {
     // ✅ SÓ PROCESSA SE APROVADO
     if (payment.body.status !== 'approved') {
       console.log('[WEBHOOK] ⚠️ Pagamento não aprovado, ignorando');
-      return res.status(200).json({ 
-        ok: true, 
-        message: 'Pagamento não aprovado ainda' 
+      return res.status(200).json({
+        ok: true,
+        message: 'Pagamento não aprovado ainda'
       });
     }
 
@@ -106,10 +119,10 @@ export default async function handler(req, res) {
 
     // ✅ SALVA USUÁRIO NO FIRESTORE
     const usersRef = db.collection('users');
-    
+
     // Verifica se usuário já existe
     const existingUser = await usersRef.where('email', '==', email).get();
-    
+
     if (existingUser.empty) {
       // Cria novo usuário
       await usersRef.add({
@@ -158,21 +171,18 @@ export default async function handler(req, res) {
 
     // ✅ ENVIA EMAIL AUTOMATICAMENTE
     try {
-      const baseUrl = process.env.VERCEL_URL 
-        ? `https://${process.env.VERCEL_URL}` 
-        : 'http://localhost:3000';
-      
+      // ✅ BaseURL robusto (não depende de VERCEL_URL)
+      const baseUrl = `https://${req.headers.host}`;
+
       console.log('[WEBHOOK] 📧 Enviando email para:', email);
-      
+
       const emailResponse = await fetch(`${baseUrl}/api/send-premium-email`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: email,
           name: name,
-          code: code,
+          codigo: code, // ✅ CORRIGIDO (antes era "code")
           plan: plan,
           expiresAt: expiresAt
         })
@@ -190,8 +200,18 @@ export default async function handler(req, res) {
       // Não falha o webhook por causa do email
     }
 
-    return res.status(200).json({ 
-      ok: true, 
+    // ✅ Marca este paymentId como "processado" (idempotência)
+    await webhookRef.set({
+      paymentId: String(paymentId),
+      processedAt: admin.firestore.FieldValue.serverTimestamp(),
+      status: payment.body.status,
+      email: email,
+      plan: plan,
+      expiresAt: expiresAt
+    });
+
+    return res.status(200).json({
+      ok: true,
       code: code,
       email: email,
       plan: plan,
@@ -201,9 +221,11 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('[WEBHOOK] ❌ Erro:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Erro no webhook',
-      details: error.message 
+      details: error.message
     });
   }
 }
+
+// (próxima função, se existir no arquivo, começa abaixo)
