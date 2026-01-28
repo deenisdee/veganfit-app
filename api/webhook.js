@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import mercadopago from 'mercadopago';
+import { MercadoPagoConfig, Payment } from 'mercadopago';
 
 /**
  * Lê credenciais do Firebase de forma robusta:
@@ -8,60 +8,37 @@ import mercadopago from 'mercadopago';
  */
 function getFirebaseServiceAccount() {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (!raw) {
-    throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY não está definida na Vercel.');
-  }
+  if (!raw) throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY não está definida na Vercel.');
 
   const trimmed = raw.trim();
 
-  // Caso 1: JSON puro
+  // JSON puro
   if (trimmed.startsWith('{')) {
-    try {
-      return JSON.parse(trimmed);
-    } catch (e) {
-      throw new Error(
-        'FIREBASE_SERVICE_ACCOUNT_KEY parece JSON, mas falhou ao fazer JSON.parse(). ' +
-        'Verifique aspas/escape de quebras de linha.'
-      );
-    }
+    return JSON.parse(trimmed);
   }
 
-  // Caso 2: Base64
-  try {
-    const decoded = Buffer.from(trimmed, 'base64').toString('utf-8').trim();
-    return JSON.parse(decoded);
-  } catch (e) {
-    throw new Error(
-      'FIREBASE_SERVICE_ACCOUNT_KEY não é um Base64 válido de JSON. ' +
-      'Gere novamente o Base64 em uma única linha e cole sem aspas.'
-    );
-  }
+  // Base64
+  const decoded = Buffer.from(trimmed, 'base64').toString('utf-8').trim();
+  return JSON.parse(decoded);
 }
 
 function ensureFirebase() {
   if (admin.apps.length) return;
-
   const serviceAccount = getFirebaseServiceAccount();
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
 }
 
-const db = (() => {
-  // Não cria db aqui ainda, só quando garantir initializeApp
-  return {
-    get firestore() {
-      ensureFirebase();
-      return admin.firestore();
-    }
-  };
-})();
+function ensureMercadoPagoClient() {
+  const token = process.env.MERCADO_PAGO_ACCESS_TOKEN;
+  if (!token) throw new Error('MERCADO_PAGO_ACCESS_TOKEN não está definido na Vercel.');
 
-// Mercado Pago
-mercadopago.configure({
-  access_token: process.env.MERCADO_PAGO_ACCESS_TOKEN,
-});
+  const client = new MercadoPagoConfig({ accessToken: token });
+  return {
+    payment: new Payment(client),
+  };
+}
 
 // Gera código
 function generateCode(plan) {
@@ -76,12 +53,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Garante Firebase só quando a rota for chamada
     ensureFirebase();
+    const mp = ensureMercadoPagoClient();
 
     const body = req.body;
 
-    // Mercado Pago manda vários tipos
+    // MP manda vários tipos
     if (body?.type !== 'payment') {
       return res.status(200).json({ ok: true, message: 'Tipo ignorado' });
     }
@@ -91,18 +68,20 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Payment ID não encontrado' });
     }
 
-    const payment = await mercadopago.payment.get(paymentId);
-    const status = payment?.body?.status;
+    // ✅ SDK novo: buscar pagamento por ID
+    const paymentResponse = await mp.payment.get({ id: paymentId });
+    const payment = paymentResponse;
+    const status = payment?.status;
 
     if (status !== 'approved') {
       return res.status(200).json({ ok: true, message: 'Pagamento não aprovado ainda' });
     }
 
-    const metadata = payment.body.metadata || {};
+    const metadata = payment.metadata || {};
     const plan = metadata.plan || 'monthly';
-    const name = metadata.name || payment.body.payer?.first_name || 'Cliente';
-    const email = metadata.email || payment.body.payer?.email;
-    const phone = metadata.phone || payment.body.payer?.phone?.number || '';
+    const name = metadata.name || payment.payer?.first_name || 'Cliente';
+    const email = metadata.email || payment.payer?.email;
+    const phone = metadata.phone || payment.payer?.phone?.number || '';
 
     if (!email) {
       return res.status(400).json({ error: 'Email não encontrado' });
@@ -118,10 +97,10 @@ export default async function handler(req, res) {
 
     const expiresAt = Date.now() + expirationDays * 24 * 60 * 60 * 1000;
 
-    // Firestore
-    const firestore = db.firestore;
-    const usersRef = firestore.collection('users');
+    const db = admin.firestore();
 
+    // users
+    const usersRef = db.collection('users');
     const existingUser = await usersRef.where('email', '==', email).get();
 
     if (existingUser.empty) {
@@ -133,7 +112,7 @@ export default async function handler(req, res) {
         code,
         expiresAt,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        paymentId: payment.body.id,
+        paymentId: payment.id,
         paymentStatus: status,
       });
     } else {
@@ -143,12 +122,13 @@ export default async function handler(req, res) {
         code,
         expiresAt,
         lastPaymentAt: admin.firestore.FieldValue.serverTimestamp(),
-        paymentId: payment.body.id,
+        paymentId: payment.id,
         paymentStatus: status,
       });
     }
 
-    const codesRef = firestore.collection('premium_codes');
+    // premium_codes
+    const codesRef = db.collection('premium_codes');
     await codesRef.add({
       code,
       plan,
@@ -158,16 +138,17 @@ export default async function handler(req, res) {
       used: false,
       usedBy: null,
       usedAt: null,
-      paymentId: payment.body.id,
+      paymentId: payment.id,
       paymentStatus: status,
-      mercadoPagoPayerId: payment.body.payer?.id || null,
+      mercadoPagoPayerId: payment.payer?.id || null,
     });
 
-    // Envia email
+    // Envio de e-mail
     try {
-      const baseUrl = process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : 'http://localhost:3000';
+      // Melhor: usar o domínio real em produção (você já tem)
+      const baseUrl =
+        process.env.PUBLIC_BASE_URL ||
+        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
       const emailResponse = await fetch(`${baseUrl}/api/send-premium-email`, {
         method: 'POST',
