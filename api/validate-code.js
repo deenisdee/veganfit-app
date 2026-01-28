@@ -1,17 +1,53 @@
 const admin = require('firebase-admin');
 
-// Inicializa Firebase Admin
-if (!admin.apps.length) {
+/**
+ * getFirebaseServiceAccount()
+ * - Lê credencial do Firebase via ENV FIREBASE_SERVICE_ACCOUNT_KEY
+ * - Aceita JSON puro ou Base64 de JSON
+ */
+function getFirebaseServiceAccount() {
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (!raw) return null;
+
+  const trimmed = String(raw).trim();
+  if (!trimmed) return null;
+
+  // JSON puro
+  if (trimmed.startsWith('{')) {
+    return JSON.parse(trimmed);
+  }
+
+  // Base64
+  const decoded = Buffer.from(trimmed, 'base64').toString('utf-8').trim();
+  return JSON.parse(decoded);
+}
+
+/**
+ * initFirebase()
+ * - Inicializa Firebase Admin (preferindo FIREBASE_SERVICE_ACCOUNT_KEY)
+ * - Fallback para FIREBASE_PROJECT_ID/CLIENT_EMAIL/PRIVATE_KEY (se existir)
+ */
+function initFirebase() {
+  if (admin.apps.length) return;
+
+  const sa = getFirebaseServiceAccount();
+
+  if (sa) {
+    admin.initializeApp({
+      credential: admin.credential.cert(sa),
+    });
+    return;
+  }
+
+  // Fallback (se você ainda usar essas envs em outros endpoints)
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-    })
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
   });
 }
-
-const db = admin.firestore();
 
 module.exports = async (req, res) => {
   // CORS
@@ -19,7 +55,7 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -29,119 +65,129 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { code, email } = req.body;
+    initFirebase();
+    const db = admin.firestore();
 
-    if (!code || typeof code !== 'string') {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Código ausente' 
-      });
+    const body = req.body || {};
+
+    // ✅ code obrigatório
+    const codeRaw = typeof body.code === 'string' ? body.code : '';
+    const normalized = codeRaw.trim().toUpperCase();
+
+    if (!normalized) {
+      return res.status(400).json({ ok: false, error: 'Código ausente' });
     }
 
-    if (!email || typeof email !== 'string') {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Email ausente' 
-      });
+    // ✅ email opcional (aceita várias chaves)
+    const emailRaw =
+      (typeof body.email === 'string' ? body.email : '') ||
+      (typeof body.userEmail === 'string' ? body.userEmail : '') ||
+      (typeof body.to === 'string' ? body.to : '');
+
+    const normalizedEmail = String(emailRaw || '').trim().toLowerCase();
+
+    console.log('🔍 Validando:', {
+      code: normalized,
+      email: normalizedEmail || '(não enviado no body)',
+    });
+
+    // ✅ Compatível com premium_codes salvos por .add()
+    // Procura pelo campo "code" == normalized
+    const qSnap = await db
+      .collection('premium_codes')
+      .where('code', '==', normalized)
+      .limit(1)
+      .get();
+
+    if (qSnap.empty) {
+      return res.status(401).json({ ok: false, error: 'Código inválido ou expirado' });
     }
 
-    // Normaliza código e email
-    const normalized = code.trim().toUpperCase();
-    const normalizedEmail = email.trim().toLowerCase();
-    
-    console.log('🔍 Validando:', { code: normalized, email: normalizedEmail });
-    
-    // Busca código no Firestore
-    const docRef = db.collection('premium_codes').doc(normalized);
-    const doc = await docRef.get();
+    const doc = qSnap.docs[0];
+    const subscription = doc.data() || {};
 
-    if (!doc.exists) {
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Código inválido ou expirado' 
-      });
+    // expiresAt pode estar em Timestamp ou número
+    const expiresAt =
+      subscription.expiresAt?.toDate
+        ? subscription.expiresAt.toDate().getTime()
+        : Number(subscription.expiresAt || 0);
+
+    if (!Number.isFinite(expiresAt) || expiresAt <= 0) {
+      return res.status(401).json({ ok: false, error: 'Código inválido (expiração ausente)' });
     }
 
-    const subscription = doc.data();
-    const expiresAt = subscription.expiresAt.toDate().getTime();
+    // ✅ Se não veio email, usa o email do Firestore
+    const codeEmail = String(subscription.email || '').trim().toLowerCase();
+    const finalEmail = normalizedEmail || codeEmail;
 
-    // ✅ VALIDA SE EMAIL É O MESMO QUE COMPROU
-    if (subscription.email.toLowerCase() !== normalizedEmail) {
+    // ✅ Se ainda não tem email, não dá pra ativar com segurança
+    if (!finalEmail || !finalEmail.includes('@')) {
+      return res.status(400).json({ ok: false, error: 'Email ausente (envie email junto do código)' });
+    }
+
+    // ✅ Se veio email no body, valida que é o mesmo email que comprou
+    if (normalizedEmail && codeEmail && codeEmail !== normalizedEmail) {
       console.log('❌ Email não corresponde:', {
-        emailCodigo: subscription.email,
-        emailDigitado: normalizedEmail
+        emailCodigo: codeEmail,
+        emailDigitado: normalizedEmail,
       });
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Este código pertence a outro email' 
-      });
+
+      return res.status(401).json({ ok: false, error: 'Este código pertence a outro email' });
     }
 
-    // ✅ VALIDA SE JÁ FOI USADO
-    if (subscription.usedBy && subscription.usedBy !== normalizedEmail) {
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Este código já foi ativado em outra conta' 
-      });
+    // ✅ status: se não existir, consideramos ativo (para compatibilidade)
+    const status = String(subscription.status || 'active').toLowerCase();
+    if (status !== 'active') {
+      return res.status(401).json({ ok: false, error: 'Código inativo' });
     }
 
-    // Verifica expiração
+    // ✅ expiração
     if (Date.now() > expiresAt) {
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Código expirado' 
-      });
+      return res.status(401).json({ ok: false, error: 'Código expirado' });
     }
 
-    // Verifica status
-    if (subscription.status !== 'active') {
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Código inativo' 
-      });
+    // ✅ já usado
+    const usedBy = String(subscription.usedBy || '').trim().toLowerCase();
+    if (usedBy && usedBy !== finalEmail) {
+      return res.status(401).json({ ok: false, error: 'Este código já foi ativado em outra conta' });
     }
 
-    // ✅ MARCA CÓDIGO COMO USADO
-    if (!subscription.usedBy) {
-      await docRef.update({
-        usedBy: normalizedEmail,
-        usedAt: admin.firestore.FieldValue.serverTimestamp()
+    // ✅ marca como usado (se ainda não foi)
+    if (!usedBy) {
+      await doc.ref.update({
+        usedBy: finalEmail,
+        usedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
-      console.log('✅ Código marcado como usado por:', normalizedEmail);
+      console.log('✅ Código marcado como usado por:', finalEmail);
     }
 
-    // Calcula dias restantes
+    // dias restantes
     const expiresInDays = Math.ceil((expiresAt - Date.now()) / (1000 * 60 * 60 * 24));
 
-    // Gera token
-    const tokenData = {
-      code: normalized,
-      activated: Date.now(),
-      expires: expiresAt
-    };
-    
+    // token
+    const tokenData = { code: normalized, activated: Date.now(), expires: expiresAt };
     const token = Buffer.from(JSON.stringify(tokenData)).toString('base64');
 
     console.log('[VALIDATE] Código validado com sucesso:', {
       code: normalized,
-      email: normalizedEmail,
-      expiresInDays
+      email: finalEmail,
+      expiresInDays,
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       ok: true,
       premium: true,
-      token: token,
-      expiresInDays: expiresInDays,
-      expiresAt: expiresAt,
-      message: `Premium ativado por ${expiresInDays} dias!`
+      token,
+      expiresInDays,
+      expiresAt,
+      email: finalEmail,
+      message: `Premium ativado por ${expiresInDays} dias!`,
     });
-
   } catch (error) {
     console.error('Erro ao validar código:', error);
-    res.status(500).json({ 
-      ok: false,
-      error: 'Erro ao validar código' 
-    });
+    return res.status(500).json({ ok: false, error: 'Erro ao validar código' });
   }
 };
+
+// (fim do arquivo)
+// nextFunction()  // <- primeira linha da próxima função (se houver no seu arquivo)
