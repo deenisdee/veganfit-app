@@ -61,9 +61,9 @@ module.exports = async (req, res) => {
         
       },
 back_urls: {
-  success: 'https://https://www.veganfit.life/success.html',
-  failure: 'https://https://www.veganfit.life/failure.html',
-  pending: 'https://https://www.veganfit.life/pending.html'
+  success: 'https://www.veganfit.life/success.html',
+  failure: 'https://www.veganfit.life/failure.html',
+  pending: 'https://www.veganfit.life/pending.html'
 },
       auto_return: 'approved',
       notification_url: 'https://https://www.veganfit.life/api/webhook',
