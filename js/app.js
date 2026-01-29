@@ -5111,7 +5111,7 @@ async function activateTrial() {
     closePremiumModal();
     
     showNotification(
-      '🎉 Trial Ativado!',
+      'Trial Ativado!',
       'Você tem 5 dias de acesso premium grátis!'
     );
     
@@ -5235,7 +5235,7 @@ async function activatePremiumWithCode() {
     closePremiumModal();
 
     showNotification(
-      'Premium Ativado! 🎉',
+      'Premium Ativado! ',
       `Você tem acesso ilimitado por ${data.expiresInDays} dias!`
     );
 
@@ -5248,6 +5248,87 @@ async function activatePremiumWithCode() {
     showNotification('Erro', 'Erro ao validar código. Tente novamente.');
   }
 }
+
+
+
+
+// startCheckout(plan)
+// - PASSO 2: cria preferência no Mercado Pago e abre o checkout
+// - Salva o Passo 1 no localStorage antes de pagar (pra não perder ao voltar do MP)
+async function startCheckout(plan) {
+  try {
+    // ✅ AJUSTE AQUI se seus ids forem diferentes:
+    const nameEl = document.getElementById('premiumName');
+    const emailEl = document.getElementById('premiumEmail');
+    const phoneEl = document.getElementById('premiumPhone');
+
+    const name = (nameEl?.value || localStorage.getItem('vf_checkout_name') || '').trim();
+    const email = (emailEl?.value || localStorage.getItem('vf_checkout_email') || '').trim();
+    const phone = (phoneEl?.value || localStorage.getItem('vf_checkout_phone') || '').trim();
+
+    // ✅ valida mínimo
+    if (!name) {
+      alert('Preencha seu nome (Passo 1) para continuar.');
+      return;
+    }
+
+    if (!email || !email.includes('@')) {
+      alert('Preencha um e-mail válido (Passo 1) para continuar.');
+      return;
+    }
+
+    // ✅ persiste sempre antes de pagar
+    localStorage.setItem('vf_checkout_name', name);
+    localStorage.setItem('vf_checkout_email', email.toLowerCase());
+    localStorage.setItem('vf_checkout_phone', phone);
+
+    // ✅ salva "última tentativa de compra" (recuperação do Step 3)
+    localStorage.setItem('vf_last_purchase_email', email.toLowerCase());
+    localStorage.setItem('vf_last_purchase_plan', String(plan || 'monthly'));
+    localStorage.setItem('vf_last_purchase_at', String(Date.now()));
+
+    console.log('[CHECKOUT] Criando preferência...', { plan, email });
+
+    const resp = await fetch('/api/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        plan,
+        email,
+        name,
+        phone
+      }),
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      console.error('[CHECKOUT] Erro create-preference:', data);
+      alert(data?.error || 'Erro ao iniciar pagamento. Tente novamente.');
+      return;
+    }
+
+    const initPoint = data?.initPoint;
+    if (!initPoint) {
+      console.error('[CHECKOUT] initPoint ausente:', data);
+      alert('Não foi possível abrir o pagamento (initPoint ausente).');
+      return;
+    }
+
+    // ✅ abre checkout do Mercado Pago
+    window.location.href = initPoint;
+
+  } catch (err) {
+    console.error('[CHECKOUT] Erro:', err);
+    alert('Erro ao iniciar pagamento. Tente novamente.');
+  }
+}
+
+// activatePremiumCode()
+
+
+
+
 
 
 
