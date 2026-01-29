@@ -1,50 +1,66 @@
 const admin = require('firebase-admin');
+const { MercadoPagoConfig, Payment } = require('mercadopago');
 
 /**
- * Firebase Admin init
- * - Aceita FIREBASE_SERVICE_ACCOUNT_KEY como JSON direto OU base64
+ * getFirebaseServiceAccount()
+ * - Aceita JSON puro (string começando com "{")
+ * - Aceita Base64 de JSON
+ */
+function getFirebaseServiceAccount() {
+  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (!raw) return null;
+
+  const trimmed = String(raw).trim();
+  if (!trimmed) return null;
+
+  if (trimmed.startsWith('{')) {
+    return JSON.parse(trimmed);
+  }
+
+  const decoded = Buffer.from(trimmed, 'base64').toString('utf-8').trim();
+  return JSON.parse(decoded);
+}
+
+/**
+ * initFirebase()
+ * - Inicializa Firebase Admin uma única vez
  */
 function initFirebase() {
   if (admin.apps.length) return;
 
-  const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-  if (!raw) {
-    throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY não está definido na Vercel.');
+  const sa = getFirebaseServiceAccount();
+  if (sa) {
+    admin.initializeApp({
+      credential: admin.credential.cert(sa),
+    });
+    return;
   }
 
-  let serviceAccount;
-
-  // Se já parece JSON
-  if (raw.trim().startsWith('{')) {
-    serviceAccount = JSON.parse(raw);
-  } else {
-    // Senão, tenta base64
-    const decoded = Buffer.from(raw, 'base64').toString('utf-8');
-    serviceAccount = JSON.parse(decoded);
-  }
-
+  // Fallback (se você ainda tiver envs antigas)
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    }),
   });
 }
 
-function getAccessToken() {
-  // Preferir MERCADO_PAGO_ACCESS_TOKEN, mas aceitar MP_ACCESS_TOKEN como fallback
-  const token =
+/**
+ * ensureMercadoPagoClient()
+ * - Usa MERCADO_PAGO_ACCESS_TOKEN como padrão
+ * - Aceita MP_ACCESS_TOKEN como fallback
+ */
+function ensureMercadoPagoClient() {
+  const accessToken =
     process.env.MERCADO_PAGO_ACCESS_TOKEN ||
     process.env.MP_ACCESS_TOKEN;
 
-  if (!token) {
+  if (!accessToken) {
     throw new Error('MERCADO_PAGO_ACCESS_TOKEN não está definido na Vercel.');
   }
 
-  return token;
-}
-
-function generateCode(plan) {
-  const prefix = plan === 'trial' ? 'TRIAL' : 'VFP';
-  const random = Math.random().toString(36).substring(2, 10).toUpperCase();
-  return `${prefix}-${random}`;
+  return new MercadoPagoConfig({ accessToken });
 }
 
 function normalizeEmail(email) {
@@ -59,29 +75,38 @@ function safeJsonParse(str) {
   }
 }
 
-async function fetchPayment(paymentId, accessToken) {
-  const resp = await fetch(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    },
-  });
-
-  const data = await resp.json();
-
-  if (!resp.ok) {
-    const err = new Error(data?.message || 'Erro ao buscar payment no Mercado Pago');
-    err.details = data;
-    err.status = resp.status;
-    throw err;
-  }
-
-  return data;
+// ✅ GERA CÓDIGO ÚNICO
+function generateCode(plan) {
+  const prefix = plan === 'trial' ? 'TRIAL' : 'VFP';
+  const random = Math.random().toString(36).substring(2, 10).toUpperCase();
+  return `${prefix}-${random}`;
 }
 
-async function sendEmail({ baseUrl, email, name, code, plan, expiresAt }) {
-  const resp = await fetch(`${baseUrl}/api/send-premium-email`, {
+/**
+ * computeExpiresAtMs(plan)
+ * - trial: 5 dias
+ * - monthly: 30
+ * - quarterly: 90
+ * - annual: 365
+ */
+function computeExpiresAtMs(plan) {
+  let days = 30;
+  if (plan === 'trial') days = 5;
+  else if (plan === 'monthly') days = 30;
+  else if (plan === 'quarterly') days = 90;
+  else if (plan === 'annual') days = 365;
+
+  return Date.now() + days * 24 * 60 * 60 * 1000;
+}
+
+/**
+ * sendPremiumEmail()
+ * - Chama seu endpoint /api/send-premium-email (Resend)
+ */
+async function sendPremiumEmail({ baseUrl, email, name, code, plan, expiresAt }) {
+  const url = `${baseUrl.replace(/\/$/, '')}/api/send-premium-email`;
+
+  const resp = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, name, code, plan, expiresAt }),
@@ -89,156 +114,153 @@ async function sendEmail({ baseUrl, email, name, code, plan, expiresAt }) {
 
   if (!resp.ok) {
     const txt = await resp.text();
-    const err = new Error(`Falha ao enviar e-mail: ${txt}`);
-    err.status = resp.status;
-    throw err;
+    throw new Error(`Falha ao enviar email (${resp.status}): ${txt}`);
   }
 
   return resp.json();
 }
 
-module.exports = async (req, res) => {
-  // CORS básico (webhook do MP não precisa, mas não atrapalha)
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+module.exports = async function handler(req, res) {
+  console.log('[WEBHOOK] Método:', req.method);
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') {
+    console.log('[WEBHOOK] ❌ Método não permitido');
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   try {
-    console.log('[WEBHOOK] Método:', req.method);
-    console.log('[WEBHOOK] Body:', JSON.stringify(req.body, null, 2));
-
-    // Inicializa Firebase
     initFirebase();
     const db = admin.firestore();
 
-    // Pega paymentId (suporta formatos comuns do MP)
     const body = req.body || {};
+    console.log('[WEBHOOK] Body:', JSON.stringify(body, null, 2));
 
-    // Formato típico: { type: 'payment', data: { id: '123' } }
-    let paymentId = body?.data?.id || body?.id;
+    // ✅ Aceita formato padrão do MP: { type:'payment', data:{id} }
+    const type = body.type || body.topic || null;
+    const paymentId = body?.data?.id || body?.id;
 
-    // Se vier como string num payload diferente, tenta converter
-    if (typeof paymentId === 'string' && paymentId.includes('payment')) {
-      // não faz nada especial, só mantém
+    if (type && type !== 'payment') {
+      console.log('[WEBHOOK] ⚠️ Tipo de notificação ignorado:', type);
+      return res.status(200).json({ ok: true, message: 'Tipo ignorado' });
     }
 
     if (!paymentId) {
-      console.log('[WEBHOOK] ⚠️ Payment ID não encontrado no body');
-      return res.status(200).json({ ok: true, ignored: true });
+      console.log('[WEBHOOK] ⚠️ paymentId ausente (ignorando)');
+      return res.status(200).json({ ok: true, message: 'paymentId ausente' });
     }
 
-    const accessToken = getAccessToken();
-
-    // Busca payment
-    const payment = await fetchPayment(paymentId, accessToken);
-
-    console.log('[WEBHOOK] payment.status:', payment.status);
-
-    // Só processa se aprovado
-    if (payment.status !== 'approved') {
-      return res.status(200).json({ ok: true, message: 'Pagamento não aprovado ainda', status: payment.status });
-    }
-
-    // ✅ Extrair dados do comprador
-    // Prioridade: external_reference (que você está setando na preference) -> payer.email
-    const ext = typeof payment.external_reference === 'string'
-      ? safeJsonParse(payment.external_reference)
-      : null;
-
-    const plan = ext?.plan || payment.metadata?.plan || 'monthly';
-    const name = ext?.name || payment.metadata?.name || payment.payer?.first_name || 'Cliente';
-    const email = normalizeEmail(ext?.email || payment.metadata?.email || payment.payer?.email);
-    const phone = ext?.phone || payment.metadata?.phone || payment.payer?.phone?.number || '';
-
-    if (!email) {
-      console.log('[WEBHOOK] ❌ Email não encontrado no payment/external_reference');
-      return res.status(400).json({ error: 'Email não encontrado' });
-    }
-
-    // ✅ Idempotência: não duplicar processamento do mesmo payment
-    const paymentRef = db.collection('processed_payments').doc(String(paymentId));
-    const paymentSnap = await paymentRef.get();
-
-    if (paymentSnap.exists) {
-      console.log('[WEBHOOK] ✅ Payment já processado, ignorando duplicação:', paymentId);
+    // ✅ Idempotência: não processar o mesmo payment 2x
+    const processedRef = db.collection('processed_payments').doc(String(paymentId));
+    const processedSnap = await processedRef.get();
+    if (processedSnap.exists) {
+      console.log('[WEBHOOK] ✅ Payment já processado:', paymentId);
       return res.status(200).json({ ok: true, duplicated: true });
     }
 
-    // Gera código e expiração
-    let expirationDays = 30;
-    if (plan === 'trial') expirationDays = 5;
-    else if (plan === 'monthly') expirationDays = 30;
-    else if (plan === 'quarterly') expirationDays = 90;
-    else if (plan === 'annual') expirationDays = 365;
+    // ✅ Busca pagamento no MP (SDK nova)
+    const client = ensureMercadoPagoClient();
+    const paymentClient = new Payment(client);
 
-    const expiresAtMs = Date.now() + expirationDays * 24 * 60 * 60 * 1000;
-    const expiresAt = admin.firestore.Timestamp.fromMillis(expiresAtMs);
+    let payment;
+    try {
+      payment = await paymentClient.get({ id: String(paymentId) });
+    } catch (e) {
+      // Simulador do MP costuma dar 404 mesmo (Payment not found)
+      console.error('[WEBHOOK] ⚠️ Falha ao buscar payment:', e?.message || e);
+      return res.status(200).json({ ok: true, message: 'Payment não encontrado (simulação?)', paymentId });
+    }
 
+    console.log('[WEBHOOK] payment.status:', payment?.status);
+
+    // ✅ SÓ PROCESSA SE APROVADO
+    if (payment?.status !== 'approved') {
+      console.log('[WEBHOOK] ⚠️ Pagamento não aprovado, ignorando');
+      return res.status(200).json({
+        ok: true,
+        message: 'Pagamento não aprovado ainda',
+        status: payment?.status || null,
+      });
+    }
+
+    // ✅ Extrai dados do external_reference (prioridade)
+    const extRef = typeof payment.external_reference === 'string'
+      ? safeJsonParse(payment.external_reference)
+      : null;
+
+    const plan = extRef?.plan || payment?.metadata?.plan || 'monthly';
+    const name = extRef?.name || payment?.metadata?.name || payment?.payer?.first_name || 'Cliente';
+
+    const email = normalizeEmail(
+      extRef?.email ||
+      payment?.metadata?.email ||
+      payment?.payer?.email
+    );
+
+    const phone =
+      extRef?.phone ||
+      payment?.metadata?.phone ||
+      payment?.payer?.phone?.number ||
+      '';
+
+    if (!email) {
+      console.log('[WEBHOOK] ❌ Email não encontrado');
+      return res.status(400).json({ error: 'Email não encontrado' });
+    }
+
+    // ✅ Gera código premium
     const code = generateCode(plan);
+    const expiresAt = computeExpiresAtMs(plan);
 
-    console.log('[WEBHOOK] ✅ Dados finais:', { paymentId, plan, name, email, phone, code, expiresAtMs });
+    console.log('[WEBHOOK] 🎟️ Código gerado:', code);
+    console.log('[WEBHOOK] 📧 Email:', email);
+    console.log('[WEBHOOK] 📅 Expira em:', new Date(expiresAt).toISOString());
 
     // ✅ Salva código com ID = code (compatível com validate-code.js)
-    const codeRef = db.collection('premium_codes').doc(code);
-    await codeRef.set({
+    await db.collection('premium_codes').doc(code).set({
       code,
       plan,
       email,
       name,
       phone,
       status: 'active',
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      expiresAt,
+      expiresAt, // número em ms (mais simples)
       usedBy: null,
       usedAt: null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
       paymentId: String(paymentId),
       paymentStatus: payment.status,
     }, { merge: false });
 
-    // ✅ Marca payment como processado (para não duplicar)
-    await paymentRef.set({
+    // ✅ Marca payment como processado (idempotência)
+    await processedRef.set({
       paymentId: String(paymentId),
       email,
       code,
       processedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // ✅ Envia e-mail (usar domínio público pra não depender do VERCEL_URL interno)
+    // ✅ Envia email automaticamente (não falha o webhook se email falhar)
     const baseUrl =
-      process.env.PUBLIC_BASE_URL?.trim()
-        ? process.env.PUBLIC_BASE_URL.trim().replace(/\/$/, '')
-        : 'https://www.veganfit.life';
+      (process.env.PUBLIC_BASE_URL && process.env.PUBLIC_BASE_URL.trim()) ||
+      'https://www.veganfit.life';
 
     try {
-      await sendEmail({
-        baseUrl,
-        email,
-        name,
-        code,
-        plan,
-        expiresAt: expiresAtMs,
-      });
-
+      await sendPremiumEmail({ baseUrl, email, name, code, plan, expiresAt });
       console.log('[WEBHOOK] ✅ Email enviado com sucesso');
-    } catch (e) {
-      console.error('[WEBHOOK] ⚠️ Erro ao enviar email (não vou falhar webhook):', e.message);
+    } catch (emailErr) {
+      console.error('[WEBHOOK] ⚠️ Erro ao enviar email:', emailErr?.message || emailErr);
     }
 
     return res.status(200).json({
       ok: true,
-      email,
       code,
+      email,
       plan,
-      expiresAt: new Date(expiresAtMs).toISOString(),
+      expiresAt: new Date(expiresAt).toISOString(),
     });
 
   } catch (error) {
     console.error('[WEBHOOK] ❌ ERRO:', error?.message || error);
-    if (error?.details) console.error('[WEBHOOK] details:', JSON.stringify(error.details, null, 2));
-
     return res.status(500).json({
       ok: false,
       error: 'Erro no webhook',
