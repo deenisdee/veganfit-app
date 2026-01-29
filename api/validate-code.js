@@ -50,26 +50,17 @@ function initFirebase() {
   });
 }
 
-/**
- * normalizeEmail()
- * - Normaliza email para comparação
- */
+/** Normaliza email para comparação */
 function normalizeEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
 
-/**
- * normalizeCode()
- * - Normaliza code para comparação
- */
+/** Normaliza code para comparação */
 function normalizeCode(code) {
   return String(code || '').trim().toUpperCase();
 }
 
-/**
- * getExpiresAtMs()
- * - Aceita Timestamp do Firestore ou número (ms)
- */
+/** Extrai expiresAt em ms (Timestamp ou número) */
 function getExpiresAtMs(subscription) {
   const exp = subscription?.expiresAt;
 
@@ -81,10 +72,7 @@ function getExpiresAtMs(subscription) {
   return Number.isFinite(n) ? n : 0;
 }
 
-/**
- * isPlaceholderEmail()
- * - Detecta email placeholder antigo
- */
+/** Detecta email placeholder antigo */
 function isPlaceholderEmail(email) {
   const e = normalizeEmail(email);
   return !e || e === 'unknown@email.com' || e === 'unknown@domain.com';
@@ -96,14 +84,14 @@ function isPlaceholderEmail(email) {
  * - Retorna { ref, data } ou null
  */
 async function findCodeDoc(db, normalizedCode) {
-  // 1) Tenta docId = code
+  // 1) docId = code
   const docRef = db.collection('premium_codes').doc(normalizedCode);
   const docSnap = await docRef.get();
   if (docSnap.exists) {
     return { ref: docRef, data: docSnap.data() || {} };
   }
 
-  // 2) Tenta query (caso tenha sido salvo por .add())
+  // 2) query (caso tenha sido salvo por .add())
   const qSnap = await db
     .collection('premium_codes')
     .where('code', '==', normalizedCode)
@@ -140,7 +128,7 @@ module.exports = async (req, res) => {
     const body = req.body || {};
     const normalizedCode = normalizeCode(body.code);
 
-    // Email pode vir em chaves diferentes (dependendo do front)
+    // Email pode vir com chaves diferentes (dependendo do front)
     const emailRaw =
       body.email ||
       body.userEmail ||
@@ -158,7 +146,6 @@ module.exports = async (req, res) => {
       email: normalizedEmail || '(email não enviado)',
     });
 
-    // Busca o código
     const found = await findCodeDoc(db, normalizedCode);
 
     if (!found) {
@@ -183,10 +170,7 @@ module.exports = async (req, res) => {
       return res.status(401).json({ ok: false, error: 'Código expirado' });
     }
 
-    // Email do código
     const codeEmail = normalizeEmail(subscription.email);
-
-    // ✅ Se não veio email no body, tentamos usar o email que está no código
     const finalEmail = normalizedEmail || codeEmail;
 
     if (!finalEmail || !finalEmail.includes('@')) {
@@ -196,13 +180,13 @@ module.exports = async (req, res) => {
       });
     }
 
-    // ✅ Se email do código é placeholder, adotamos o email digitado e corrigimos no Firestore
+    // Se email do código é placeholder, adota o email digitado e corrige no Firestore
     if (isPlaceholderEmail(codeEmail) && normalizedEmail) {
       await ref.update({ email: normalizedEmail });
       console.log('✅ Email placeholder corrigido no código:', normalizedEmail);
     }
 
-    // ✅ Bloqueia mismatch apenas se o email do código for real e diferente
+    // Bloqueia mismatch apenas se o email do código for real e diferente
     if (!isPlaceholderEmail(codeEmail) && normalizedEmail && codeEmail && codeEmail !== normalizedEmail) {
       console.log('❌ Email não corresponde:', {
         emailCodigo: codeEmail,
@@ -230,10 +214,9 @@ module.exports = async (req, res) => {
       console.log('✅ Código marcado como usado por:', finalEmail);
     }
 
-    // Dias restantes
     const expiresInDays = Math.ceil((expiresAtMs - Date.now()) / (1000 * 60 * 60 * 24));
 
-    // Token
+    // Token (simples e compatível com seu client)
     const tokenData = {
       code: normalizedCode,
       activated: Date.now(),
@@ -263,5 +246,3 @@ module.exports = async (req, res) => {
     return res.status(500).json({ ok: false, error: 'Erro ao validar código' });
   }
 };
-
-// nextFunction()  // <- primeira linha da próxima função (se houver no seu arquivo)
