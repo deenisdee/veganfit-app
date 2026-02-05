@@ -15,11 +15,10 @@ const db = admin.firestore();
 
 module.exports = async (req, res) => {
   // CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -29,119 +28,95 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { code, email } = req.body;
+    let { code, email } = req.body;
 
     if (!code || typeof code !== 'string') {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Código ausente' 
+      return res.status(400).json({ ok: false, error: 'Código ausente' });
+    }
+
+    const normalizedCode = code.trim().toUpperCase();
+    const normalizedEmail =
+      typeof email === 'string' && email.includes('@')
+        ? email.trim().toLowerCase()
+        : null;
+
+    console.log('🔍 Validando:', {
+      code: normalizedCode,
+      email: normalizedEmail || '(email não enviado)'
+    });
+
+    // 🔎 Busca código
+    const codeSnap = await db
+      .collection('premium_codes')
+      .where('code', '==', normalizedCode)
+      .limit(1)
+      .get();
+
+    if (codeSnap.empty) {
+      return res.status(401).json({ ok: false, error: 'Código inválido ou inexistente' });
+    }
+
+    const doc = codeSnap.docs[0];
+    const data = doc.data();
+
+    const codeEmail = String(data.email || '').toLowerCase();
+    const expiresAt =
+      typeof data.expiresAt?.toMillis === 'function'
+        ? data.expiresAt.toMillis()
+        : data.expiresAt;
+
+    // ⏳ Expiração
+    if (!expiresAt || Date.now() > expiresAt) {
+      return res.status(401).json({ ok: false, error: 'Código expirado' });
+    }
+
+    // 📧 Se email foi enviado, valida
+    if (normalizedEmail && normalizedEmail !== codeEmail) {
+      return res.status(401).json({
+        ok: false,
+        error: 'Este código pertence a outro email'
       });
     }
 
-    if (!email || typeof email !== 'string') {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Email ausente' 
-      });
-    }
-
-    // Normaliza código e email
-    const normalized = code.trim().toUpperCase();
-    const normalizedEmail = email.trim().toLowerCase();
-    
-    console.log('🔍 Validando:', { code: normalized, email: normalizedEmail });
-    
-    // Busca código no Firestore
-    const docRef = db.collection('premium_codes').doc(normalized);
-    const doc = await docRef.get();
-
-    if (!doc.exists) {
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Código inválido ou expirado' 
-      });
-    }
-
-    const subscription = doc.data();
-    const expiresAt = subscription.expiresAt.toDate().getTime();
-
-    // ✅ VALIDA SE EMAIL É O MESMO QUE COMPROU
-    if (subscription.email.toLowerCase() !== normalizedEmail) {
-      console.log('❌ Email não corresponde:', {
-        emailCodigo: subscription.email,
-        emailDigitado: normalizedEmail
-      });
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Este código pertence a outro email' 
-      });
-    }
-
-    // ✅ VALIDA SE JÁ FOI USADO
-    if (subscription.usedBy && subscription.usedBy !== normalizedEmail) {
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Este código já foi ativado em outra conta' 
-      });
-    }
-
-    // Verifica expiração
-    if (Date.now() > expiresAt) {
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Código expirado' 
-      });
-    }
-
-    // Verifica status
-    if (subscription.status !== 'active') {
-      return res.status(401).json({ 
-        ok: false, 
-        error: 'Código inativo' 
-      });
-    }
-
-    // ✅ MARCA CÓDIGO COMO USADO
-    if (!subscription.usedBy) {
-      await docRef.update({
-        usedBy: normalizedEmail,
+    // 🔐 Marca como usado (idempotente)
+    if (!data.usedBy) {
+      await doc.ref.update({
+        usedBy: codeEmail,
         usedAt: admin.firestore.FieldValue.serverTimestamp()
       });
-      console.log('✅ Código marcado como usado por:', normalizedEmail);
     }
 
-    // Calcula dias restantes
-    const expiresInDays = Math.ceil((expiresAt - Date.now()) / (1000 * 60 * 60 * 24));
+    const expiresInDays = Math.ceil(
+      (expiresAt - Date.now()) / (1000 * 60 * 60 * 24)
+    );
 
-    // Gera token
-    const tokenData = {
-      code: normalized,
-      activated: Date.now(),
-      expires: expiresAt
+    // 🎟 Token simples
+    const tokenPayload = {
+      code: normalizedCode,
+      email: codeEmail,
+      expiresAt
     };
-    
-    const token = Buffer.from(JSON.stringify(tokenData)).toString('base64');
 
-    console.log('[VALIDATE] Código validado com sucesso:', {
-      code: normalized,
-      email: normalizedEmail,
+    const token = Buffer.from(JSON.stringify(tokenPayload)).toString('base64');
+
+    console.log('✅ Código validado:', {
+      code: normalizedCode,
+      email: codeEmail,
       expiresInDays
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       ok: true,
       premium: true,
-      token: token,
-      expiresInDays: expiresInDays,
-      expiresAt: expiresAt,
-      message: `Premium ativado por ${expiresInDays} dias!`
+      email: codeEmail,        // ⬅️ IMPORTANTE
+      token,
+      expiresAt,
+      expiresInDays,
+      message: `Premium ativado por ${expiresInDays} dias`
     });
 
-  } catch (error) {
-    console.error('Erro ao validar código:', error);
-    res.status(500).json({ 
-      ok: false,
-      error: 'Erro ao validar código' 
-    });
+  } catch (err) {
+    console.error('Erro ao validar código:', err);
+    return res.status(500).json({ ok: false, error: 'Erro interno' });
   }
 };
