@@ -1,3 +1,4 @@
+// /api/validate-code.js
 const admin = require('firebase-admin');
 
 // Inicializa Firebase Admin
@@ -60,6 +61,8 @@ module.exports = async (req, res) => {
     const data = doc.data();
 
     const codeEmail = String(data.email || '').toLowerCase();
+    const plan = String(data.plan || 'monthly');
+
     const expiresAt =
       typeof data.expiresAt?.toMillis === 'function'
         ? data.expiresAt.toMillis()
@@ -86,37 +89,47 @@ module.exports = async (req, res) => {
       });
     }
 
-    const expiresInDays = Math.ceil(
-      (expiresAt - Date.now()) / (1000 * 60 * 60 * 24)
+    // ✅✅✅ AQUI É O QUE ESTAVA FALTANDO:
+    // - Persistir "estado premium" por usuário
+    // - Fonte da verdade para /api/premium-status
+    await db.collection('premium_users').doc(codeEmail).set(
+      {
+        email: codeEmail,
+        plan,
+        expiresAt,
+        activatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        code: normalizedCode
+      },
+      { merge: true }
     );
 
-    // 🎟 Token simples
-    const tokenPayload = {
-      code: normalizedCode,
-      email: codeEmail,
-      expiresAt
-    };
+    const expiresInDays = Math.ceil((expiresAt - Date.now()) / (1000 * 60 * 60 * 24));
 
+    // 🎟 Token simples (mantido, mas agora o estado real está no Firestore)
+    const tokenPayload = { code: normalizedCode, email: codeEmail, expiresAt };
     const token = Buffer.from(JSON.stringify(tokenPayload)).toString('base64');
 
-    console.log('✅ Código validado:', {
+    console.log('✅ Código validado + premium_users salvo:', {
       code: normalizedCode,
       email: codeEmail,
+      plan,
       expiresInDays
     });
 
     return res.status(200).json({
       ok: true,
       premium: true,
-      email: codeEmail,        // ⬅️ IMPORTANTE
+      email: codeEmail,
+      plan,
       token,
       expiresAt,
       expiresInDays,
       message: `Premium ativado por ${expiresInDays} dias`
     });
-
   } catch (err) {
     console.error('Erro ao validar código:', err);
     return res.status(500).json({ ok: false, error: 'Erro interno' });
   }
 };
+
+// (fim do arquivo)
