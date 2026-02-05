@@ -1068,6 +1068,114 @@ window.confirmUnlockRecipe = function () {
 
 
 
+// syncPremiumFromServer()
+// - Revalida Premium no backend usando fit_email
+// - Reconstrói estado local (isPremium / premiumExpires / storage/localStorage)
+// - Não quebra seu fluxo atual (timers, UI, RF.premium)
+async function syncPremiumFromServer() {
+  try {
+    // 1) Descobre email (storage tem prioridade)
+    let email = '';
+    try {
+      const s = await storage.get('fit_email');
+      if (s && s.value) email = String(s.value).trim().toLowerCase();
+    } catch (_) {}
+
+    if (!email) {
+      try {
+        email = String(localStorage.getItem('fit_email') || '').trim().toLowerCase();
+      } catch (_) {}
+    }
+
+    // Sem email => não tem como revalidar
+    if (!email || !email.includes('@')) return { ok: true, premium: false, reason: 'no-email' };
+
+    // 2) Consulta backend (fonte da verdade)
+    const resp = await fetch('/api/premium-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await resp.json().catch(() => ({}));
+
+    if (!resp.ok || !data || data.ok !== true) {
+      return { ok: false, premium: false, reason: 'request-failed' };
+    }
+
+    // 3) Se backend disser premium ativo => reconstrói estado local
+    if (data.premium === true && Number.isFinite(Number(data.expiresAt))) {
+      isPremium = true;
+      premiumExpires = Number(data.expiresAt);
+
+      // Token pode continuar o mesmo (se existir). Não inventa token novo.
+      // Mantém o que já estiver salvo.
+      if (!premiumToken) {
+        try {
+          premiumToken = String(localStorage.getItem('fit_premium_token') || '') || null;
+        } catch (_) {}
+      }
+
+      // Persiste flags
+      await storage.set('fit_premium', 'true');
+      await storage.set('fit_premium_expires', String(premiumExpires));
+      await storage.set('fit_email', email);
+
+      try {
+        localStorage.setItem('fit_premium', 'true');
+        localStorage.setItem('fit_premium_expires', String(premiumExpires));
+        localStorage.setItem('fit_email', email);
+      } catch (_) {}
+
+      // Sincroniza “fonte única” (RF)
+      if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
+        RF.premium.setActive(true);
+      } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
+        RF.premium.syncUI();
+      }
+
+      // Atualiza UI
+      try { updateUI(); } catch (_) {}
+      try { if (typeof window.updatePremiumButtons === 'function') window.updatePremiumButtons(); } catch (_) {}
+
+      // Timers de expiração (se você usa)
+      try { _setupPremiumTimers(); } catch (_) {}
+
+      return { ok: true, premium: true, ...data };
+    }
+
+    // 4) Se backend disser não premium => limpa estado local (se estiver marcado)
+    if (typeof clearPremiumState === 'function') {
+      clearPremiumState();
+    } else {
+      isPremium = false;
+      premiumToken = null;
+      premiumExpires = null;
+
+      await storage.set('fit_premium', 'false');
+      await storage.set('fit_premium_token', '');
+      await storage.set('fit_premium_expires', '');
+
+      try {
+        localStorage.setItem('fit_premium', 'false');
+        localStorage.setItem('fit_premium_token', '');
+        localStorage.setItem('fit_premium_expires', '');
+      } catch (_) {}
+    }
+
+    try { updateUI(); } catch (_) {}
+    try { if (typeof window.updatePremiumButtons === 'function') window.updatePremiumButtons(); } catch (_) {}
+
+    return { ok: true, premium: false, ...data };
+  } catch (e) {
+    console.error('[PREMIUM] syncPremiumFromServer error:', e);
+    return { ok: false, premium: false, reason: 'exception' };
+  }
+}
+
+
+
+
 // loadUserData()
 // - Carrega do storage: créditos, receitas liberadas e estado premium (token/expiração)
 // - Tem um “guard” no começo que limpa premium inválido antes de qualquer UI renderizar
@@ -1099,6 +1207,66 @@ async function loadUserData() {
     const expiresStr = (expiresResult && expiresResult.value) ? String(expiresResult.value) : '';
     premiumExpires = expiresStr ? parseInt(expiresStr, 10) : null;
     if (!Number.isFinite(premiumExpires)) premiumExpires = null;
+
+    // ✅ 1.5) REVALIDA NO SERVIDOR (corrige “perdeu o premium ao voltar pro site”)
+    // - Se token existir, a verdade passa a ser o /api/premium-status
+    if (premiumToken) {
+      try {
+        const resp = await fetch('/api/premium-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: premiumToken })
+        });
+
+        const server = await resp.json().catch(() => ({}));
+
+        // Esperado: { ok:true, premium:true, expiresAt:<ms> }  (ou ok:false)
+        if (!resp.ok || !server || server.ok !== true || server.premium !== true) {
+          // ❌ Token inválido / expirado / não encontrado => limpa tudo
+          if (typeof clearPremiumState === 'function') {
+            clearPremiumState();
+          } else {
+            localStorage.setItem('fit_premium', 'false');
+            localStorage.setItem('fit_premium_token', '');
+            localStorage.setItem('fit_premium_expires', '');
+            isPremium = false;
+            premiumToken = null;
+            premiumExpires = null;
+          }
+
+          // também limpa no storage (fonte que você usa no load)
+          try {
+            await storage.set('fit_premium', 'false');
+            await storage.set('fit_premium_token', '');
+            await storage.set('fit_premium_expires', '');
+          } catch (_) {}
+        } else {
+          // ✅ Premium válido => normaliza e persiste expiração do servidor
+          isPremium = true;
+
+          if (server.expiresAt != null) {
+            const exp = Number(server.expiresAt);
+            premiumExpires = Number.isFinite(exp) ? exp : premiumExpires;
+          }
+
+          // persiste como fonte única
+          try {
+            localStorage.setItem('fit_premium', 'true');
+            localStorage.setItem('fit_premium_token', premiumToken);
+            if (premiumExpires) localStorage.setItem('fit_premium_expires', String(premiumExpires));
+          } catch (_) {}
+
+          try {
+            await storage.set('fit_premium', 'true');
+            await storage.set('fit_premium_token', premiumToken);
+            if (premiumExpires) await storage.set('fit_premium_expires', String(premiumExpires));
+          } catch (_) {}
+        }
+      } catch (e) {
+        console.warn('[PREMIUM] Falha ao revalidar no servidor:', e);
+        // Se falhar a rede, mantém o fallback local (abaixo), mas sem “inventar premium”
+      }
+    }
 
     // ✅ 2) Decide Premium de forma consistente (fonte única)
     // Se existir validação por tempo/token, ela manda
@@ -3158,7 +3326,6 @@ async function redeemPremiumCode(code) {
 
 
 
-
 async function activatePremium() {
   const input = document.getElementById('premium-code-input');
   const code = input ? input.value.trim().toUpperCase() : '';
@@ -3172,35 +3339,44 @@ async function activatePremium() {
     const response = await fetch('/api/validate-code', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: code })
+      body: JSON.stringify({ code })
     });
 
     const data = await response.json();
 
-    // ✅ CORRIGIDO: Verifica data.ok ao invés de data.valid
     if (!data.ok) {
       showNotification('Código Inválido', data.error || 'Código inválido ou expirado');
       return;
     }
 
-    // ✅ DEBUG
-    console.log('[ACTIVATE] API Response:', {
-      token: data.token,
-      expiresAt: data.expiresAt,
-      expiresInDays: data.expiresInDays
-    });
-
-    // ✅ ATIVA PREMIUM
+    // ============================
+    // ATIVA PREMIUM
+    // ============================
     isPremium = true;
     premiumToken = data.token;
     premiumExpires = data.expiresAt;
 
-    // ✅ Persiste no storage
+    // 🔑 PARTE CRÍTICA (IDENTIDADE)
+    // Salva o email do premium (vem do backend)
+    if (data.email) {
+      const normalizedEmail = String(data.email).toLowerCase();
+
+      await storage.set('fit_email', normalizedEmail);
+
+      try {
+        localStorage.setItem('fit_email', normalizedEmail);
+      } catch (e) {
+        console.warn('[PREMIUM] localStorage email falhou:', e);
+      }
+    }
+
+    // ============================
+    // PERSISTE PREMIUM
+    // ============================
     await storage.set('fit_premium', 'true');
     await storage.set('fit_premium_token', data.token);
     await storage.set('fit_premium_expires', data.expiresAt.toString());
 
-    // ✅ Persiste no localStorage
     try {
       localStorage.setItem('fit_premium', 'true');
       localStorage.setItem('fit_premium_token', data.token);
@@ -3209,7 +3385,9 @@ async function activatePremium() {
       console.warn('[PREMIUM] localStorage falhou:', e);
     }
 
-    // ✅ Sincroniza UI
+    // ============================
+    // SINCRONIZA UI
+    // ============================
     if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
       RF.premium.setActive(true);
     } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
@@ -3224,7 +3402,6 @@ async function activatePremium() {
 
     _setupPremiumTimers();
 
-    // ✅ Fecha modal
     if (typeof window.closePremiumModal === 'function') {
       window.closePremiumModal();
     }
@@ -3234,8 +3411,9 @@ async function activatePremium() {
       `Você tem acesso ilimitado por ${data.expiresInDays} dias!`
     );
 
-    console.log('[PREMIUM] Ativado!', { 
-      expires: new Date(data.expiresAt).toISOString() 
+    console.log('[PREMIUM] Ativado!', {
+      email: data.email,
+      expires: new Date(data.expiresAt).toISOString()
     });
 
   } catch (e) {
@@ -3247,7 +3425,6 @@ async function activatePremium() {
     }
   }
 }
-
 
 
 
