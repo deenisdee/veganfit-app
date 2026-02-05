@@ -1173,7 +1173,6 @@ async function syncPremiumFromServer() {
   }
 }
 
-
 async function loadUserData() {
   try {
     // ✅ A) Recupera email salvo (aceita chaves antigas e novas)
@@ -1183,11 +1182,6 @@ async function loadUserData() {
       (localStorage.getItem('vf_user_email') || '').trim();
 
     if (savedEmail && savedEmail.includes('@')) {
-      // mantém userData coerente
-      if (typeof userData === 'object' && userData) {
-        userData.email = savedEmail;
-      }
-
       // ✅ normaliza: grava também nas chaves "fit_*" (as que seu core usa)
       try {
         localStorage.setItem('fit_user_email', savedEmail);
@@ -1196,7 +1190,6 @@ async function loadUserData() {
     }
 
     // ✅ B) Puxa Premium do servidor ANTES de decidir isPremium
-    // (isso é o que faltava para ativar automaticamente após F5)
     try {
       if (savedEmail && savedEmail.includes('@') && typeof syncPremiumFromServer === 'function') {
         await syncPremiumFromServer(savedEmail);
@@ -1205,7 +1198,7 @@ async function loadUserData() {
       console.warn('[PREMIUM] syncPremiumFromServer falhou:', e);
     }
 
-    // ✅ 0) Guard: se alguém deixou fit_premium = true mas expirou, limpa ANTES de qualquer coisa
+    // ✅ 0) Se alguém deixou fit_premium = true mas expirou, limpa ANTES de qualquer coisa
     const flaggedAsPremium =
       (window.RF && RF.premium && typeof RF.premium.isActive === 'function')
         ? RF.premium.isActive()
@@ -1235,7 +1228,7 @@ async function loadUserData() {
     // ✅ 2) Decide Premium de forma consistente (fonte única)
     if (typeof isPremiumValidNow === 'function') {
       isPremium = !!isPremiumValidNow();
-      localStorage.setItem('fit_premium', isPremium ? 'true' : 'false');
+      try { localStorage.setItem('fit_premium', isPremium ? 'true' : 'false'); } catch (_) {}
     } else {
       isPremium = (localStorage.getItem('fit_premium') === 'true');
     }
@@ -1261,7 +1254,7 @@ async function loadUserData() {
     // ✅ 4) Atualiza UI
     try { updateUI(); } catch (_) {}
     try { updatePremiumUI(); } catch (_) {}
-    try { updatePremiumButtons(); } catch (_) {}
+    try { if (typeof window.updatePremiumButtons === 'function') window.updatePremiumButtons(); } catch (_) {}
 
     // ✅ 5) Render inicial
     try { renderRecipes(); } catch (_) {}
@@ -4195,9 +4188,7 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
       localStorage.setItem('fit_email', normalizedEmail);
     } catch (_) {}
 
-    if (typeof userData === 'object' && userData) {
-      userData.email = normalizedEmail;
-    }
+
 
     const response = await fetch('/api/create-preference', {
       method: 'POST',
