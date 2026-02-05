@@ -1,16 +1,10 @@
 // /api/premium-status.js
-// - Fonte da verdade do Premium no front
-// - Consulta Firestore (coleção: premium_users) por email
-// - Retorna premium true/false + expiresAt
+// - Verifica se existe Premium ativo para um email
+// - Fonte da verdade: Firestore (collection premium_codes)
+// - Retorna { ok:true, premium:true/false, expiresAt, code, plan }
 
 const admin = require('firebase-admin');
 
-/**
- * getFirebaseServiceAccount()
- * - Aceita JSON puro (string começando com "{")
- * - Aceita Base64 de JSON
- * - (mesmo padrão do seu webhook.js)
- */
 function getFirebaseServiceAccount() {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   if (!raw) return null;
@@ -18,30 +12,24 @@ function getFirebaseServiceAccount() {
   const trimmed = String(raw).trim();
   if (!trimmed) return null;
 
-  if (trimmed.startsWith('{')) {
-    return JSON.parse(trimmed);
-  }
+  // JSON direto
+  if (trimmed.startsWith('{')) return JSON.parse(trimmed);
 
+  // Base64 JSON
   const decoded = Buffer.from(trimmed, 'base64').toString('utf-8').trim();
   return JSON.parse(decoded);
 }
 
-/**
- * initFirebase()
- * - Inicializa Firebase Admin uma única vez
- */
 function initFirebase() {
   if (admin.apps.length) return;
 
   const sa = getFirebaseServiceAccount();
   if (sa) {
-    admin.initializeApp({
-      credential: admin.credential.cert(sa),
-    });
+    admin.initializeApp({ credential: admin.credential.cert(sa) });
     return;
   }
 
-  // Fallback (envs antigas)
+  // fallback (envs antigas)
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
@@ -56,71 +44,76 @@ function normalizeEmail(email) {
 }
 
 module.exports = async (req, res) => {
-  // CORS
+  // CORS básico
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ ok: false, error: 'Use POST' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'Use POST' });
 
   try {
     initFirebase();
     const db = admin.firestore();
 
-    const { email } = req.body || {};
-    const normalizedEmail = normalizeEmail(email);
+    const body = req.body && typeof req.body === 'object'
+      ? req.body
+      : (typeof req.body === 'string' ? JSON.parse(req.body) : {});
 
-    if (!normalizedEmail || !normalizedEmail.includes('@')) {
-      return res.status(400).json({
-        ok: false,
-        premium: false,
-        error: 'Email inválido',
-      });
+    const email = normalizeEmail(body.email);
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ ok: false, error: 'Email inválido' });
     }
 
-    // ✅ Fonte da verdade: premium_users/{email}
-    const userRef = db.collection('premium_users').doc(normalizedEmail);
-    const userSnap = await userRef.get();
+    const now = Date.now();
 
-    if (!userSnap.exists) {
+    // Busca códigos do email e pega o melhor (mais longe no futuro)
+    const snap = await db
+      .collection('premium_codes')
+      .where('email', '==', email)
+      .get();
+
+    if (snap.empty) {
       return res.status(200).json({ ok: true, premium: false });
     }
 
-    const data = userSnap.data() || {};
-    const expiresAt = data.expiresAt;
+    let best = null;
 
-    if (!expiresAt || Date.now() > expiresAt) {
-      return res.status(200).json({
-        ok: true,
-        premium: false,
-        expired: true,
-      });
+    snap.docs.forEach((d) => {
+      const data = d.data() || {};
+      const expiresAt =
+        typeof data.expiresAt?.toMillis === 'function'
+          ? data.expiresAt.toMillis()
+          : Number(data.expiresAt);
+
+      if (!Number.isFinite(expiresAt)) return;
+
+      // considera ativo se expiração ainda no futuro
+      if (expiresAt > now) {
+        if (!best || expiresAt > best.expiresAt) {
+          best = {
+            code: String(data.code || d.id),
+            plan: String(data.plan || 'monthly'),
+            expiresAt,
+          };
+        }
+      }
+    });
+
+    if (!best) {
+      return res.status(200).json({ ok: true, premium: false });
     }
-
-    const expiresInDays = Math.ceil((expiresAt - Date.now()) / (1000 * 60 * 60 * 24));
 
     return res.status(200).json({
       ok: true,
       premium: true,
-      email: normalizedEmail,
-      plan: data.plan || 'premium',
-      expiresAt,
-      expiresInDays,
+      email,
+      code: best.code,
+      plan: best.plan,
+      expiresAt: best.expiresAt,
     });
   } catch (err) {
     console.error('premium-status error:', err);
-    return res.status(500).json({
-      ok: false,
-      premium: false,
-      error: 'Erro interno',
-    });
+    return res.status(500).json({ ok: false, error: 'Erro interno' });
   }
 };
-
-// (fim do arquivo)
