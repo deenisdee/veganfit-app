@@ -1,3 +1,4 @@
+// /api/webhook.js
 const admin = require('firebase-admin');
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 
@@ -167,7 +168,11 @@ module.exports = async function handler(req, res) {
     } catch (e) {
       // Simulador do MP costuma dar 404 mesmo (Payment not found)
       console.error('[WEBHOOK] ⚠️ Falha ao buscar payment:', e?.message || e);
-      return res.status(200).json({ ok: true, message: 'Payment não encontrado (simulação?)', paymentId });
+      return res.status(200).json({
+        ok: true,
+        message: 'Payment não encontrado (simulação?)',
+        paymentId
+      });
     }
 
     console.log('[WEBHOOK] payment.status:', payment?.status);
@@ -223,7 +228,7 @@ module.exports = async function handler(req, res) {
       name,
       phone,
       status: 'active',
-      expiresAt, // número em ms (mais simples)
+      expiresAt, // número em ms
       usedBy: null,
       usedAt: null,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -231,40 +236,5 @@ module.exports = async function handler(req, res) {
       paymentStatus: payment.status,
     }, { merge: false });
 
-    // ✅ Marca payment como processado (idempotência)
-    await processedRef.set({
-      paymentId: String(paymentId),
-      email,
-      code,
-      processedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    // ✅ Envia email automaticamente (não falha o webhook se email falhar)
-    const baseUrl =
-      (process.env.PUBLIC_BASE_URL && process.env.PUBLIC_BASE_URL.trim()) ||
-      'https://www.veganfit.life';
-
-    try {
-      await sendPremiumEmail({ baseUrl, email, name, code, plan, expiresAt });
-      console.log('[WEBHOOK] ✅ Email enviado com sucesso');
-    } catch (emailErr) {
-      console.error('[WEBHOOK] ⚠️ Erro ao enviar email:', emailErr?.message || emailErr);
-    }
-
-    return res.status(200).json({
-      ok: true,
-      code,
-      email,
-      plan,
-      expiresAt: new Date(expiresAt).toISOString(),
-    });
-
-  } catch (error) {
-    console.error('[WEBHOOK] ❌ ERRO:', error?.message || error);
-    return res.status(500).json({
-      ok: false,
-      error: 'Erro no webhook',
-      details: error?.message || String(error),
-    });
-  }
-};
+    // ✅✅✅ NOVO: atualiza premium_users/{email} (fonte da verdade do /api/premium-status)
+    // Regra: ma
