@@ -13,7 +13,7 @@ function getFirebaseServiceAccount() {
 
   const trimmed = String(raw).trim();
   if (!trimmed) return null;
- 
+
   if (trimmed.startsWith('{')) {
     return JSON.parse(trimmed);
   }
@@ -37,7 +37,7 @@ function initFirebase() {
     return;
   }
 
-  // Fallback (se você ainda tiver envs antigas)
+  // Fallback (envs antigas)
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
@@ -166,7 +166,6 @@ module.exports = async function handler(req, res) {
     try {
       payment = await paymentClient.get({ id: String(paymentId) });
     } catch (e) {
-      // Simulador do MP costuma dar 404 mesmo (Payment not found)
       console.error('[WEBHOOK] ⚠️ Falha ao buscar payment:', e?.message || e);
       return res.status(200).json({
         ok: true,
@@ -220,7 +219,7 @@ module.exports = async function handler(req, res) {
     console.log('[WEBHOOK] 📧 Email:', email);
     console.log('[WEBHOOK] 📅 Expira em:', new Date(expiresAt).toISOString());
 
-    // ✅ Salva código com ID = code (compatível com validate-code.js)
+    // ✅ Salva código (histórico/auditoria)
     await db.collection('premium_codes').doc(code).set({
       code,
       plan,
@@ -228,7 +227,7 @@ module.exports = async function handler(req, res) {
       name,
       phone,
       status: 'active',
-      expiresAt, // número em ms
+      expiresAt,
       usedBy: null,
       usedAt: null,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -236,5 +235,64 @@ module.exports = async function handler(req, res) {
       paymentStatus: payment.status,
     }, { merge: false });
 
-    // ✅✅✅ NOVO: atualiza premium_users/{email} (fonte da verdade do /api/premium-status)
-    // Regra: ma
+    // ✅ Atualiza premium_users/{email} (estado/fonte da verdade)
+    const userRef = db.collection('premium_users').doc(email);
+
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(userRef);
+      const current = snap.exists ? (snap.data() || {}) : {};
+      const currentExpiresAt = Number(current.expiresAt || 0);
+
+      const nextExpiresAt = Math.max(currentExpiresAt || 0, Number(expiresAt || 0));
+
+      tx.set(
+        userRef,
+        {
+          email,
+          plan,
+          expiresAt: nextExpiresAt,
+          lastPaymentId: String(paymentId),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          createdAt: current.createdAt || admin.firestore.FieldValue.serverTimestamp(),
+        },
+        { merge: true }
+      );
+    });
+
+    // ✅ Marca payment como processado (idempotência)
+    await processedRef.set({
+      paymentId: String(paymentId),
+      email,
+      code,
+      processedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // ✅ Envia email (não derruba o webhook se falhar)
+    const baseUrl =
+      (process.env.PUBLIC_BASE_URL && process.env.PUBLIC_BASE_URL.trim()) ||
+      'https://www.veganfit.life';
+
+    try {
+      await sendPremiumEmail({ baseUrl, email, name, code, plan, expiresAt });
+      console.log('[WEBHOOK] ✅ Email enviado com sucesso');
+    } catch (emailErr) {
+      console.error('[WEBHOOK] ⚠️ Erro ao enviar email:', emailErr?.message || emailErr);
+    }
+
+    return res.status(200).json({
+      ok: true,
+      code,
+      email,
+      plan,
+      expiresAt: new Date(expiresAt).toISOString(),
+    });
+
+  } catch (error) {
+    console.error('[WEBHOOK] ❌ ERRO:', error?.message || error);
+    return res.status(500).json({
+      ok: false,
+      error: 'Erro no webhook',
+      details: error?.message || String(error),
+    });
+  }
+};
