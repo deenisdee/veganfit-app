@@ -13,7 +13,7 @@ function getFirebaseServiceAccount() {
 
   const trimmed = String(raw).trim();
   if (!trimmed) return null;
-
+ 
   if (trimmed.startsWith('{')) {
     return JSON.parse(trimmed);
   }
