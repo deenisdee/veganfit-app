@@ -37,7 +37,7 @@ function initFirebase() {
     return;
   }
 
-  // Fallback (envs antigas)
+  // Fallback (se você ainda tiver envs antigas)
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
@@ -170,7 +170,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({
         ok: true,
         message: 'Payment não encontrado (simulação?)',
-        paymentId
+        paymentId,
       });
     }
 
@@ -219,7 +219,7 @@ module.exports = async function handler(req, res) {
     console.log('[WEBHOOK] 📧 Email:', email);
     console.log('[WEBHOOK] 📅 Expira em:', new Date(expiresAt).toISOString());
 
-    // ✅ Salva código (histórico/auditoria)
+    // ✅ Salva código com ID = code (histórico / compatível com validate-code.js)
     await db.collection('premium_codes').doc(code).set({
       code,
       plan,
@@ -227,7 +227,7 @@ module.exports = async function handler(req, res) {
       name,
       phone,
       status: 'active',
-      expiresAt,
+      expiresAt, // número em ms
       usedBy: null,
       usedAt: null,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -235,7 +235,8 @@ module.exports = async function handler(req, res) {
       paymentStatus: payment.status,
     }, { merge: false });
 
-    // ✅ Atualiza premium_users/{email} (estado/fonte da verdade)
+    // ✅✅✅ CRÍTICO: grava/atualiza premium_users/{email} (estado/fonte da verdade do app)
+    // Regra: sempre mantém a maior expiração (renovação nunca encurta)
     const userRef = db.collection('premium_users').doc(email);
 
     await db.runTransaction(async (tx) => {
@@ -267,7 +268,7 @@ module.exports = async function handler(req, res) {
       processedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // ✅ Envia email (não derruba o webhook se falhar)
+    // ✅ Envia email automaticamente (não falha o webhook se email falhar)
     const baseUrl =
       (process.env.PUBLIC_BASE_URL && process.env.PUBLIC_BASE_URL.trim()) ||
       'https://www.veganfit.life';
