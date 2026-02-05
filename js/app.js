@@ -1180,6 +1180,7 @@ async function syncPremiumFromServer() {
 // - Carrega do storage: créditos, receitas liberadas e estado premium (token/expiração)
 // - Tem um “guard” no começo que limpa premium inválido antes de qualquer UI renderizar
 async function loadUserData() {
+	await syncPremiumFromServer();
   try {
     // ✅ 0) Guard: se alguém deixou fit_premium = true mas expirou, limpa ANTES de qualquer coisa
     const flaggedAsPremium =
