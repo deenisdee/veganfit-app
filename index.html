@@ -941,7 +941,7 @@
 
 
 <script>
-  // Abre Premium automaticamente se vier da URL
+// Abre Premium automaticamente se vier da URL
 const urlParams = new URLSearchParams(window.location.search);
 const openParam = (urlParams.get('open') || '').toLowerCase();
 const codeParam = (urlParams.get('code') || '').trim();
@@ -960,7 +960,13 @@ if (openParam === 'premium' || openParam === 'redeem') {
     // Pré-preenche o código (se veio pela URL)
     if (openParam === 'redeem' && codeParam) {
       const codeInput = document.getElementById('premium-code-input');
-      if (codeInput) codeInput.value = codeParam.toUpperCase();
+      if (codeInput) {
+        codeInput.value = codeParam.toUpperCase();
+
+        // 🔑 força atualização real do input
+        codeInput.dispatchEvent(new Event('input', { bubbles: true }));
+        codeInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
 
       const emailInput = document.getElementById('premium-redeem-email');
       if (emailInput) emailInput.focus();
@@ -970,6 +976,7 @@ if (openParam === 'premium' || openParam === 'redeem') {
     window.history.replaceState({}, '', 'index.html');
   }, 500);
 }
+
 </script>
 
 
