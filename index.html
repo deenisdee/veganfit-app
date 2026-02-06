@@ -137,7 +137,9 @@
                      </button>
                   </div>
                   <div class="header-actions">
-                     <div id="credits-badge" class="badge">
+                     
+                     <div id="user-greeting" style="font-size:13px; font-weight:600; opacity:0.9; margin-right:10px;"></div>
+<div id="credits-badge" class="badge">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                            <circle cx="12" cy="12" r="3"></circle>
@@ -742,7 +744,16 @@
       <p class="tab-desc">Digite o código que você recebeu por e-mail</p>
 
       <div class="code-activation">
-        <input 
+        
+                    <label style="display:block; margin: 12px 0 6px;">E-mail</label>
+                    <input
+                      id="premium-redeem-email"
+                      type="email"
+                      placeholder="Digite o e-mail usado na compra"
+                      style="width:100%; padding:12px; border-radius:10px; border:1px solid #e5e7eb; margin-bottom:10px;"
+                      autocomplete="email"
+                    />
+<input 
           type="text" 
           id="premium-code-input" 
           placeholder="VFP-XXXX-XXXX-XXXX"
@@ -930,19 +941,35 @@
 
 
 <script>
-  // Abre premium automaticamente se vier da URL
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('open') === 'premium') {
-    setTimeout(function () {
-      if (typeof window.openPremium === 'function') {
-        window.openPremium('url');
-      } else if (typeof window.openPremiumModal === 'function') {
-        window.openPremiumModal('url');
-      }
-      // Limpa URL
-      window.history.replaceState({}, '', 'index.html');
-    }, 500);
-  }
+  // Abre Premium automaticamente se vier da URL
+const urlParams = new URLSearchParams(window.location.search);
+const openParam = (urlParams.get('open') || '').toLowerCase();
+const codeParam = (urlParams.get('code') || '').trim();
+
+if (openParam === 'premium' || openParam === 'redeem') {
+  setTimeout(function () {
+    // Abre o modal
+    if (typeof window.openPremiumModal === 'function') {
+      // startTab: 1 = Cadastro, 2 = Plano, 3 = Código
+      const startTab = openParam === 'redeem' ? 3 : 1;
+      window.openPremiumModal('url', startTab);
+    } else if (typeof window.openPremium === 'function') {
+      window.openPremium('url');
+    }
+
+    // Pré-preenche o código (se veio pela URL)
+    if (openParam === 'redeem' && codeParam) {
+      const codeInput = document.getElementById('premium-code-input');
+      if (codeInput) codeInput.value = codeParam.toUpperCase();
+
+      const emailInput = document.getElementById('premium-redeem-email');
+      if (emailInput) emailInput.focus();
+    }
+
+    // Limpa URL (mantém index.html limpo)
+    window.history.replaceState({}, '', 'index.html');
+  }, 500);
+}
 </script>
 
 
