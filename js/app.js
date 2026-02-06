@@ -4214,36 +4214,52 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
 }
 
 
-
 async function selectPlan(plan) {
-  const email = prompt('Digite seu email para continuar:');
-  if (!email) return;
-
-  const normalizedEmail = String(email).trim().toLowerCase();
-  if (!normalizedEmail.includes('@')) return;
-
-  // ✅ grava email para permitir sync automático após F5
   try {
-    localStorage.setItem('vf_user_email', normalizedEmail);
-    localStorage.setItem('fit_user_email', normalizedEmail);
+    // === VINCULA EMAIL AO PREMIUM (OBRIGATÓRIO) ===
+    const email = prompt('Digite o email que receberá o acesso Premium:');
+    if (!email) return;
+
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail.includes('@')) {
+      alert('Email inválido');
+      return;
+    }
+
+    // salva em TODAS as chaves usadas pelo app
     localStorage.setItem('fit_email', normalizedEmail);
-  } catch (_) {}
+    localStorage.setItem('fit_user_email', normalizedEmail);
+    localStorage.setItem('vf_user_email', normalizedEmail);
 
-  if (typeof userData === 'object' && userData) {
-    userData.email = normalizedEmail;
-  }
+    console.log('[PREMIUM] Pagamento vinculado ao email:', normalizedEmail);
+    // =============================================
 
-  try {
+    // cria a preferência no backend
     const response = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: plan, email: normalizedEmail })
+      body: JSON.stringify({
+        plan: plan,
+        email: normalizedEmail
+      })
     });
 
-    const { preferenceId } = await response.json();
+    if (!response.ok) {
+      throw new Error('Falha ao criar preferência');
+    }
 
+    const data = await response.json();
+    const preferenceId = data.preferenceId;
+
+    if (!preferenceId) {
+      throw new Error('preferenceId não retornado');
+    }
+
+    // abre o Checkout Pro
     if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
+      console.error('MercadoPago SDK não encontrado');
+      alert('Erro ao iniciar pagamento');
+      return;
     }
 
     mp.checkout({
@@ -4252,10 +4268,11 @@ async function selectPlan(plan) {
     });
 
   } catch (error) {
-    console.error('Erro ao abrir checkout:', error);
-    alert('Erro ao processar pagamento. Tente novamente.');
+    console.error('[CHECKOUT] Erro em selectPlan:', error);
+    alert('Erro ao iniciar pagamento. Tente novamente.');
   }
 }
+
 
 
 async function processPayment(plan) {
