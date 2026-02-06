@@ -4044,24 +4044,38 @@ window.openFAQModal = function() {
 
 
 
-
-window.openPremiumModal = function(origin) {
+window.openPremiumModal = function (origin, startTab) {
   if (!origin) origin = 'tab';
   haptic(10);
   console.log('[Premium] Aberto por:', origin);
-  
+
   const premiumModal = document.getElementById('premium-modal');
   if (!premiumModal) return;
-  
+
   premiumModal.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  
-  // foco simples (sem firula)
+
+  // ✅ Aba inicial (padrão: 1 = Cadastro)
+  const _startTab = Number.isFinite(Number(startTab)) ? Number(startTab) : 1;
+
+  // Se existir a função global switchTab, usa (mantém o que já funciona)
+  if (typeof window.switchTab === 'function') {
+    window.switchTab(_startTab);
+  }
+
+  // foco: se for aba 3, foca no e-mail (redeem), senão mantém o foco no código
   setTimeout(() => {
-    const input = document.getElementById('premium-code-input');
-    if (input) input.focus();
+    const emailInput = document.getElementById('premium-redeem-email');
+    const codeInput = document.getElementById('premium-code-input');
+
+    if (_startTab === 3 && emailInput) {
+      emailInput.focus();
+    } else if (codeInput) {
+      codeInput.focus();
+    }
   }, 150);
 };
+
 
 // Função para processar pagamento via Mercado Pago
 window.openPremiumCheckout = async function(plan = 'premium-monthly') {
