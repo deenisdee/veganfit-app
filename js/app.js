@@ -5421,37 +5421,162 @@ async function activatePremiumWithCode() {
 }
 
 
+function ensurePremiumRecoverUI() {
+  const tab3 = document.getElementById('tab-3');
+  if (!tab3) {
+    console.warn('[RECOVER] tab-3 não encontrado (HTML do modal ainda não carregou?)');
+    return;
+  }
+
+  // Evita injetar duas vezes
+  if (document.getElementById('premium-recover-box')) return;
+
+  // 1) Cria o box de recuperação por email (abaixo do conteúdo existente)
+  const box = document.createElement('div');
+  box.id = 'premium-recover-box';
+  box.style.marginTop = '14px';
+  box.style.padding = '12px';
+  box.style.border = '1px solid rgba(255,255,255,0.12)';
+  box.style.borderRadius = '12px';
+  box.style.background = 'rgba(255,255,255,0.04)';
+
+  box.innerHTML = `
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+      <div style="font-weight:700;">Recuperar Premium por e-mail</div>
+      <button id="premium-recover-focus-btn" class="tap" type="button" style="border:none; background:transparent; color:#7CFF7C; font-weight:600; cursor:pointer;">
+        Usar
+      </button>
+    </div>
+
+    <div style="margin-top:10px; font-size:13px; opacity:0.9;">
+      Se você limpou o cache ou trocou de celular, digite o e-mail usado na compra para recuperar o acesso.
+    </div>
+
+    <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+      <input
+        id="premium-recover-email"
+        type="email"
+        placeholder="seuemail@exemplo.com"
+        style="flex:1; min-width:220px; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.12); background:rgba(0,0,0,0.25); color:#fff;"
+      />
+      <button
+        id="premium-recover-btn"
+        class="tap"
+        type="button"
+        style="padding:10px 14px; border-radius:10px; border:none; background:#22c55e; color:#0b1a10; font-weight:800; cursor:pointer;"
+      >
+        Verificar Premium
+      </button>
+    </div>
+
+    <div style="margin-top:8px; font-size:12px; opacity:0.8;">
+      Tem um código? Você ainda pode usar o campo de código acima.
+    </div>
+  `;
+
+  tab3.appendChild(box);
+
+  // 2) Função interna: efetiva recuperação consultando o servidor
+  async function recoverPremiumByEmail(emailRaw) {
+    const normalizedEmail = String(emailRaw || '').trim().toLowerCase();
+    if (!normalizedEmail || !normalizedEmail.includes('@')) {
+      showNotification('Aviso', 'Digite um e-mail válido.');
+      return;
+    }
+
+    // Salva email para o app usar sempre o mesmo após F5
+    try {
+      localStorage.setItem('fit_email', normalizedEmail);
+      localStorage.setItem('fit_user_email', normalizedEmail);
+      localStorage.setItem('vf_user_email', normalizedEmail);
+    } catch (_) {}
+
+    // Consulta fonte da verdade (Firestore via API)
+    const resp = await fetch('/api/premium-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: normalizedEmail })
+    });
+
+    const data = await resp.json().catch(() => ({}));
+
+    if (!resp.ok || !data || data.ok !== true) {
+      showNotification('Erro', data?.error || 'Falha ao verificar premium. Tente novamente.');
+      return;
+    }
+
+    if (!data.premium) {
+      showNotification('Não encontrado', 'Não há premium ativo para este e-mail. Se você recebeu um código, use o campo acima.');
+      return;
+    }
+
+    const expiresAt = Number(data.expiresAt);
+    const daysLeft = Math.max(0, Math.ceil((expiresAt - Date.now()) / (24 * 60 * 60 * 1000)));
+
+    // Ativa premium no front (sem precisar de código)
+    try {
+      isPremium = true;
+      premiumExpires = expiresAt;
+
+      await storage?.set?.('fit_premium', 'true');
+      await storage?.set?.('fit_premium_expires', String(expiresAt));
+
+      localStorage.setItem('fit_premium', 'true');
+      localStorage.setItem('fit_premium_expires', String(expiresAt));
+    } catch (_) {}
+
+    // Sincroniza UI
+    if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
+      RF.premium.setActive(true);
+    }
+    if (typeof window.updatePremiumButtons === 'function') window.updatePremiumButtons();
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof _setupPremiumTimers === 'function') _setupPremiumTimers();
+
+    showNotification('Premium Ativo ✅', `Encontramos premium para ${normalizedEmail}. Restam ~${daysLeft} dias.`);
+  }
+
+  // 3) Wire dos botões
+  const input = document.getElementById('premium-recover-email');
+  const btn = document.getElementById('premium-recover-btn');
+  const focusBtn = document.getElementById('premium-recover-focus-btn');
+
+  focusBtn?.addEventListener('click', () => input?.focus());
+  btn?.addEventListener('click', () => recoverPremiumByEmail(input?.value));
+
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      btn?.click();
+    }
+  });
+
+  console.log('[RECOVER] UI de recuperação por e-mail injetada no tab-3');
+}
 
 
-
-
-// Abrir modal
 function openPremiumModal(source) {
   const modal = document.getElementById('premium-modal');
   modal.classList.remove('hidden');
-  
+
   // Previne scroll do body (importante no iOS)
   document.body.classList.add('modal-open');
   document.body.style.overflow = 'hidden';
-  
+
+  // ✅ Garante que a UI de recuperação existe
+  ensurePremiumRecoverUI();
+
   // Auto-preenche se já cadastrou antes
   autoFillForm();
-  
+
   // Sempre abre na aba 1
   switchTab(1);
-  
+
   console.log('[MODAL] Aberto de:', source);
 }
 
-// Fechar modal
 function closePremiumModal() {
-  const modal = document.getElementById('premium-modal');
-  modal.classList.add('hidden');
-  
-  // Restaura scroll do body
-  document.body.classList.remove('modal-open');
-  document.body.style.overflow = '';
-}
+
 
 
 
