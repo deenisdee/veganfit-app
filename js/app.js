@@ -5167,16 +5167,26 @@ let userData = {
 
 // Trocar de aba (navegação livre)
 function switchTab(tabNumber) {
-  // Remove active de todas as abas
-  document.querySelectorAll('.premium-tab-btn').forEach(btn => btn.classList.remove('active'));
-  document.querySelectorAll('.premium-tab-content').forEach(content => content.classList.remove('active'));
-  
-  // Ativa aba selecionada
-  document.querySelector(`.premium-tab-btn:nth-child(${tabNumber})`).classList.add('active');
-  document.getElementById(`tab-${tabNumber}`).classList.add('active');
-  
-  console.log('[TAB] Mudou para aba', tabNumber);
+  // 🔒 NÃO ALTERE a lógica interna se ela já existia no seu app
+  // Se você já tinha código aqui dentro, mantenha exatamente igual.
+  // (Abaixo deixo um corpo neutro só para referência visual)
+
+  const tabs = document.querySelectorAll('.premium-tab');
+  const contents = document.querySelectorAll('.premium-tab-content');
+
+  tabs.forEach(tab => tab.classList.remove('active'));
+  contents.forEach(content => content.classList.add('hidden'));
+
+  const activeTab = document.querySelector(`[data-tab="${tabNumber}"]`);
+  const activeContent = document.getElementById(`tab-${tabNumber}`);
+
+  if (activeTab) activeTab.classList.add('active');
+  if (activeContent) activeContent.classList.remove('hidden');
 }
+
+// ✅ EXPÕE PARA onclick="" NO HTML
+window.switchTab = switchTab;
+
 
 // Formulário de cadastro
 document.getElementById('signup-form')?.addEventListener('submit', function(e) {
@@ -5576,30 +5586,18 @@ function openPremiumModal(source) {
 }
 
 function closePremiumModal() {
+  const modal = document.getElementById('premium-modal');
+  if (!modal) return;
 
+  modal.classList.add('hidden');
 
+  // Libera scroll da página
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = '';
+}
 
-
-
-// ===================================
-// MÁSCARA DE TELEFONE
-// ===================================
-
-document.getElementById('user-phone')?.addEventListener('input', function(e) {
-  let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é número
-  
-  if (value.length <= 11) {
-    // Formato: (11) 99999-9999
-    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-    value = value.replace(/(\d)(\d{4})$/, '$1-$2');
-  } else {
-    value = value.substring(0, 11);
-    value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-    value = value.replace(/(\d)(\d{4})$/, '$1-$2');
-  }
-  
-  e.target.value = value;
-});
+// ✅ expõe para onclick=""
+window.closePremiumModal = closePremiumModal;
 
 
 
