@@ -67,6 +67,17 @@ export default async function handler(req, res) {
             <strong>Plano:</strong> ${escapeHtml(plan)}
             ${expiresText ? `<br/><strong>Válido até:</strong> ${escapeHtml(expiresText)}` : ""}
           </div>
+        
+        <div style="margin: 0 0 14px;">
+          <a
+            href="https://www.veganfit.life/?open=redeem&code=${encodeURIComponent(codigo)}"
+            style="display:inline-block; padding:12px 18px; background:#22c55e; color:#fff; text-decoration:none; border-radius:10px; font-weight:700;"
+          >
+            Ativar meu Premium
+          </a>
+          <div style="font-size:12px; color:#555; margin-top:8px;">
+            Dica: ao abrir, seu código já estará preenchido. Basta informar seu e-mail e ativar.
+          </div>
         </div>
 
         <p style="margin:0 0 10px;">
