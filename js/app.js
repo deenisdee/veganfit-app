@@ -1068,143 +1068,11 @@ window.confirmUnlockRecipe = function () {
 
 
 
-// syncPremiumFromServer()
-// - Revalida Premium no backend usando fit_email
-// - Reconstrói estado local (isPremium / premiumExpires / storage/localStorage)
-// - Não quebra seu fluxo atual (timers, UI, RF.premium)
-async function syncPremiumFromServer() {
-  try {
-    // 1) Descobre email (storage tem prioridade)
-    let email = '';
-    try {
-      const s = await storage.get('fit_email');
-      if (s && s.value) email = String(s.value).trim().toLowerCase();
-    } catch (_) {}
-
-    if (!email) {
-      try {
-        email = String(localStorage.getItem('fit_email') || '').trim().toLowerCase();
-      } catch (_) {}
-    }
-
-    // Sem email => não tem como revalidar
-    if (!email || !email.includes('@')) return { ok: true, premium: false, reason: 'no-email' };
-
-    // 2) Consulta backend (fonte da verdade)
-    const resp = await fetch('/api/premium-status', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    });
-
-    const data = await resp.json().catch(() => ({}));
-
-    if (!resp.ok || !data || data.ok !== true) {
-      return { ok: false, premium: false, reason: 'request-failed' };
-    }
-
-    // 3) Se backend disser premium ativo => reconstrói estado local
-    if (data.premium === true && Number.isFinite(Number(data.expiresAt))) {
-      isPremium = true;
-      premiumExpires = Number(data.expiresAt);
-
-      // Token pode continuar o mesmo (se existir). Não inventa token novo.
-      // Mantém o que já estiver salvo.
-      if (!premiumToken) {
-        try {
-          premiumToken = String(localStorage.getItem('fit_premium_token') || '') || null;
-        } catch (_) {}
-      }
-
-      // Persiste flags
-      await storage.set('fit_premium', 'true');
-      await storage.set('fit_premium_expires', String(premiumExpires));
-      await storage.set('fit_email', email);
-
-      try {
-        localStorage.setItem('fit_premium', 'true');
-        localStorage.setItem('fit_premium_expires', String(premiumExpires));
-        localStorage.setItem('fit_email', email);
-      } catch (_) {}
-
-      // Sincroniza “fonte única” (RF)
-      if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
-        RF.premium.setActive(true);
-      } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
-        RF.premium.syncUI();
-      }
-
-      // Atualiza UI
-      try { updateUI(); } catch (_) {}
-      try { if (typeof window.updatePremiumButtons === 'function') window.updatePremiumButtons(); } catch (_) {}
-
-      // Timers de expiração (se você usa)
-      try { _setupPremiumTimers(); } catch (_) {}
-
-      return { ok: true, premium: true, ...data };
-    }
-
-    // 4) Se backend disser não premium => limpa estado local (se estiver marcado)
-    if (typeof clearPremiumState === 'function') {
-      clearPremiumState();
-    } else {
-      isPremium = false;
-      premiumToken = null;
-      premiumExpires = null;
-
-      await storage.set('fit_premium', 'false');
-      await storage.set('fit_premium_token', '');
-      await storage.set('fit_premium_expires', '');
-
-      try {
-        localStorage.setItem('fit_premium', 'false');
-        localStorage.setItem('fit_premium_token', '');
-        localStorage.setItem('fit_premium_expires', '');
-      } catch (_) {}
-    }
-
-    try { updateUI(); } catch (_) {}
-    try { if (typeof window.updatePremiumButtons === 'function') window.updatePremiumButtons(); } catch (_) {}
-
-    return { ok: true, premium: false, ...data };
-  } catch (e) {
-    console.error('[PREMIUM] syncPremiumFromServer error:', e);
-    return { ok: false, premium: false, reason: 'exception' };
-  }
-}
-
-
+// loadUserData()
+// - Carrega do storage: créditos, receitas liberadas e estado premium (token/expiração)
+// - Tem um “guard” no começo que limpa premium inválido antes de qualquer UI renderizar
 async function loadUserData() {
   try {
-    // ✅ A) Recupera email salvo (aceita chaves antigas e novas)
-    const savedEmail =
-      (localStorage.getItem('fit_user_email') || '').trim() ||
-      (localStorage.getItem('fit_email') || '').trim() ||
-      (localStorage.getItem('vf_user_email') || '').trim();
-
-    if (savedEmail && savedEmail.includes('@')) {
-      // mantém userData coerente
-      if (typeof userData === 'object' && userData) {
-        userData.email = savedEmail;
-      }
-
-      // ✅ normaliza: grava também nas chaves "fit_*" (as que seu core usa)
-      try {
-        localStorage.setItem('fit_user_email', savedEmail);
-        localStorage.setItem('fit_email', savedEmail);
-      } catch (_) {}
-    }
-
-    // ✅ B) Puxa Premium do servidor ANTES de decidir isPremium
-    // (isso é o que faltava para ativar automaticamente após F5)
-    try {
-      if (savedEmail && savedEmail.includes('@') && typeof syncPremiumFromServer === 'function') {
-        await syncPremiumFromServer(savedEmail);
-      }
-    } catch (e) {
-      console.warn('[PREMIUM] syncPremiumFromServer falhou:', e);
-    }
-
     // ✅ 0) Guard: se alguém deixou fit_premium = true mas expirou, limpa ANTES de qualquer coisa
     const flaggedAsPremium =
       (window.RF && RF.premium && typeof RF.premium.isActive === 'function')
@@ -1233,10 +1101,12 @@ async function loadUserData() {
     if (!Number.isFinite(premiumExpires)) premiumExpires = null;
 
     // ✅ 2) Decide Premium de forma consistente (fonte única)
+    // Se existir validação por tempo/token, ela manda
     if (typeof isPremiumValidNow === 'function') {
       isPremium = !!isPremiumValidNow();
       localStorage.setItem('fit_premium', isPremium ? 'true' : 'false');
     } else {
+      // fallback: usa a flag
       isPremium = (localStorage.getItem('fit_premium') === 'true');
     }
 
@@ -1250,51 +1120,61 @@ async function loadUserData() {
 
       const rawUnlocked = unlockedResult && unlockedResult.value ? unlockedResult.value : '[]';
       try {
-        unlocked = JSON.parse(rawUnlocked);
+        unlockedRecipes = JSON.parse(rawUnlocked) || [];
       } catch (_) {
-        unlocked = [];
+        unlockedRecipes = [];
       }
-
-      if (!Array.isArray(unlocked)) unlocked = [];
     }
 
-    // ✅ 4) Atualiza UI
-    try { updateUI(); } catch (_) {}
-    try { updatePremiumUI(); } catch (_) {}
-    try { updatePremiumButtons(); } catch (_) {}
+    // ✅ 4) Shopping list e Week plan (vale pra free e premium)
+    const shoppingResult = await storage.get('fit_shopping');
+    if (shoppingResult && shoppingResult.value) {
+      try { shoppingList = JSON.parse(shoppingResult.value) || []; } catch (_) { shoppingList = []; }
+    }
 
-    // ✅ 5) Render inicial
-    try { renderRecipes(); } catch (_) {}
-    try { setupRecipeHeroPrefetch(); } catch (_) {}
-    try { setupRecipeGridClickGuard(); } catch (_) {}
+    const weekPlanResult = await storage.get('fit_weekplan');
+    if (weekPlanResult && weekPlanResult.value) {
+      try { weekPlan = JSON.parse(weekPlanResult.value) || {}; } catch (_) { weekPlan = {}; }
+    }
 
-    // ✅ 6) Sincroniza Premium “do core/validade” no lugar certo
-    try {
-      if (typeof syncPremiumFromCore === 'function') {
-        syncPremiumFromCore();
-      } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
-        RF.premium.syncUI();
-      }
-    } catch (_) {}
-
-    // ✅ 7) Timers de expiração (se existirem no seu fluxo)
-    try {
-      if (typeof _setupPremiumTimers === 'function' && isPremium && premiumExpires && premiumExpires > Date.now()) {
-        _setupPremiumTimers();
-      }
-    } catch (_) {}
-
-    // ✅ 8) Lucide (ícones)
-    try {
-      if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-      }
-    } catch (_) {}
-
-  } catch (e) {
-    console.error('Erro em loadUserData():', e);
+  } catch (error) {
+    console.error('Erro ao carregar dados do usuário:', error);
   }
+
+  // ✅ 5) Render/Sync (fora do try para sempre rodar mesmo se um storage falhar)
+  try { updateUI(); } catch (_) {}
+  try { if (typeof updatePremiumButtons === 'function') updatePremiumButtons(); } catch (_) {}
+
+  try { updateShoppingCounter(); } catch (_) {}
+  try { initSliderAndCategories(); } catch (_) {}
+  try { renderRecipes(); } catch (_) {}
+  try { setupRecipeHeroPrefetch(); } catch (_) {}
+  try { setupRecipeGridClickGuard(); } catch (_) {}
+
+  // ✅ 6) Agora sim: sincroniza Premium “do core/validade” no lugar certo
+  try {
+    if (typeof syncPremiumFromCore === 'function') {
+      syncPremiumFromCore();
+    } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
+      RF.premium.syncUI();
+    }
+  } catch (_) {}
+
+  // ✅ 7) Timers de expiração (se existirem no seu fluxo)
+  try {
+    if (typeof _setupPremiumTimers === 'function' && isPremium && premiumExpires && premiumExpires > Date.now()) {
+      _setupPremiumTimers();
+    }
+  } catch (_) {}
+
+  // ✅ 8) Lucide (ícones)
+  try {
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
+  } catch (_) {}
 }
+
 
 
 
@@ -3278,6 +3158,7 @@ async function redeemPremiumCode(code) {
 
 
 
+
 async function activatePremium() {
   const input = document.getElementById('premium-code-input');
   const code = input ? input.value.trim().toUpperCase() : '';
@@ -3291,44 +3172,35 @@ async function activatePremium() {
     const response = await fetch('/api/validate-code', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
+      body: JSON.stringify({ code: code })
     });
 
     const data = await response.json();
 
+    // ✅ CORRIGIDO: Verifica data.ok ao invés de data.valid
     if (!data.ok) {
       showNotification('Código Inválido', data.error || 'Código inválido ou expirado');
       return;
     }
 
-    // ============================
-    // ATIVA PREMIUM
-    // ============================
+    // ✅ DEBUG
+    console.log('[ACTIVATE] API Response:', {
+      token: data.token,
+      expiresAt: data.expiresAt,
+      expiresInDays: data.expiresInDays
+    });
+
+    // ✅ ATIVA PREMIUM
     isPremium = true;
     premiumToken = data.token;
     premiumExpires = data.expiresAt;
 
-    // 🔑 PARTE CRÍTICA (IDENTIDADE)
-    // Salva o email do premium (vem do backend)
-    if (data.email) {
-      const normalizedEmail = String(data.email).toLowerCase();
-
-      await storage.set('fit_email', normalizedEmail);
-
-      try {
-        localStorage.setItem('fit_email', normalizedEmail);
-      } catch (e) {
-        console.warn('[PREMIUM] localStorage email falhou:', e);
-      }
-    }
-
-    // ============================
-    // PERSISTE PREMIUM
-    // ============================
+    // ✅ Persiste no storage
     await storage.set('fit_premium', 'true');
     await storage.set('fit_premium_token', data.token);
     await storage.set('fit_premium_expires', data.expiresAt.toString());
 
+    // ✅ Persiste no localStorage
     try {
       localStorage.setItem('fit_premium', 'true');
       localStorage.setItem('fit_premium_token', data.token);
@@ -3337,9 +3209,7 @@ async function activatePremium() {
       console.warn('[PREMIUM] localStorage falhou:', e);
     }
 
-    // ============================
-    // SINCRONIZA UI
-    // ============================
+    // ✅ Sincroniza UI
     if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
       RF.premium.setActive(true);
     } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
@@ -3354,6 +3224,7 @@ async function activatePremium() {
 
     _setupPremiumTimers();
 
+    // ✅ Fecha modal
     if (typeof window.closePremiumModal === 'function') {
       window.closePremiumModal();
     }
@@ -3363,9 +3234,8 @@ async function activatePremium() {
       `Você tem acesso ilimitado por ${data.expiresInDays} dias!`
     );
 
-    console.log('[PREMIUM] Ativado!', {
-      email: data.email,
-      expires: new Date(data.expiresAt).toISOString()
+    console.log('[PREMIUM] Ativado!', { 
+      expires: new Date(data.expiresAt).toISOString() 
     });
 
   } catch (e) {
@@ -3377,6 +3247,7 @@ async function activatePremium() {
     }
   }
 }
+
 
 
 
@@ -4178,35 +4049,21 @@ window.openPremiumModal = function(origin) {
   }, 150);
 };
 
-
-
+// Função para processar pagamento via Mercado Pago
 window.openPremiumCheckout = async function(plan = 'premium-monthly') {
   try {
     const email = prompt('Digite seu email para continuar:');
     if (!email) return;
 
-    const normalizedEmail = String(email).trim().toLowerCase();
-    if (!normalizedEmail.includes('@')) return;
-
-    // ✅ grava email para permitir sync automático após F5
-    try {
-      localStorage.setItem('vf_user_email', normalizedEmail);
-      localStorage.setItem('fit_user_email', normalizedEmail);
-      localStorage.setItem('fit_email', normalizedEmail);
-    } catch (_) {}
-
-    if (typeof userData === 'object' && userData) {
-      userData.email = normalizedEmail;
-    }
-
     const response = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: plan, email: normalizedEmail })
+      body: JSON.stringify({ plan: plan, email: email })
     });
 
     const { preferenceId } = await response.json();
 
+    // Inicializa MP se ainda não foi
     if (typeof mp === 'undefined') {
       window.mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
     }
@@ -4220,97 +4077,7 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
     console.error('Erro ao abrir checkout:', error);
     alert('Erro ao processar pagamento. Tente novamente.');
   }
-}
-
-
-
-async function selectPlan(plan) {
-  const email = prompt('Digite seu email para continuar:');
-  if (!email) return;
-
-  const normalizedEmail = String(email).trim().toLowerCase();
-  if (!normalizedEmail.includes('@')) return;
-
-  // ✅ grava email para permitir sync automático após F5
-  try {
-    localStorage.setItem('vf_user_email', normalizedEmail);
-    localStorage.setItem('fit_user_email', normalizedEmail);
-    localStorage.setItem('fit_email', normalizedEmail);
-  } catch (_) {}
-
-  if (typeof userData === 'object' && userData) {
-    userData.email = normalizedEmail;
-  }
-
-  try {
-    const response = await fetch('/api/create-preference', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: plan, email: normalizedEmail })
-    });
-
-    const { preferenceId } = await response.json();
-
-    if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
-    }
-
-    mp.checkout({
-      preference: { id: preferenceId },
-      autoOpen: true
-    });
-
-  } catch (error) {
-    console.error('Erro ao abrir checkout:', error);
-    alert('Erro ao processar pagamento. Tente novamente.');
-  }
-}
-
-
-async function processPayment(plan) {
-  try {
-    const response = await fetch('/api/create-preference', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        plan: plan, 
-        email: userData.email,
-        name: userData.name,      // ← ADICIONA
-        phone: userData.phone     // ← ADICIONA
-      })
-    });
-
-    const { preferenceId } = await response.json();
-
-    // Inicializa MP
-    if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
-    }
-
-    // Marca que está aguardando pagamento
-    sessionStorage.setItem('vf_awaiting_payment', 'true');
-
-    // Abre checkout
-    mp.checkout({
-      preference: { id: preferenceId },
-      autoOpen: true
-    });
-
-    // Auto-switch pra aba 3
-    setTimeout(() => {
-      const isAwaiting = sessionStorage.getItem('vf_awaiting_payment');
-      if (isAwaiting === 'true') {
-        switchTab(3);
-        sessionStorage.removeItem('vf_awaiting_payment');
-        showNotification('💳 Pagamento Processado', 'Digite o código que você recebeu por e-mail');
-      }
-    }, 3000);
-
-  } catch (error) {
-    console.error('Erro ao processar pagamento:', error);
-    showNotification('Erro', 'Erro ao processar pagamento. Tente novamente.');
-  }
-}
+};
 
 
 
@@ -5139,8 +4906,34 @@ function showPremiumTab(tab) {
   }
 }
 
+async function selectPlan(plan) {
+  const email = prompt('Digite seu email para continuar:');
+  if (!email) return;
+  
+  try {
+    const response = await fetch('/api/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: plan, email: email })
+    });
 
+    const { preferenceId } = await response.json();
 
+    // Inicializa MP se ainda não foi
+    if (typeof mp === 'undefined') {
+      window.mp = new MercadoPago(process.env.MP_PUBLIC_KEY || 'APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
+    }
+
+    mp.checkout({
+      preference: { id: preferenceId },
+      autoOpen: true
+    });
+
+  } catch (error) {
+    console.error('Erro ao abrir checkout:', error);
+    alert('Erro ao processar pagamento. Tente novamente.');
+  }
+}
 
 
 
@@ -5332,6 +5125,51 @@ async function activateTrial() {
 }
 
 
+
+async function processPayment(plan) {
+  try {
+    const response = await fetch('/api/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        plan: plan, 
+        email: userData.email,
+        name: userData.name,      // ← ADICIONA
+        phone: userData.phone     // ← ADICIONA
+      })
+    });
+
+    const { preferenceId } = await response.json();
+
+    // Inicializa MP
+    if (typeof mp === 'undefined') {
+      window.mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
+    }
+
+    // Marca que está aguardando pagamento
+    sessionStorage.setItem('vf_awaiting_payment', 'true');
+
+    // Abre checkout
+    mp.checkout({
+      preference: { id: preferenceId },
+      autoOpen: true
+    });
+
+    // Auto-switch pra aba 3
+    setTimeout(() => {
+      const isAwaiting = sessionStorage.getItem('vf_awaiting_payment');
+      if (isAwaiting === 'true') {
+        switchTab(3);
+        sessionStorage.removeItem('vf_awaiting_payment');
+        showNotification('💳 Pagamento Processado', 'Digite o código que você recebeu por e-mail');
+      }
+    }, 3000);
+
+  } catch (error) {
+    console.error('Erro ao processar pagamento:', error);
+    showNotification('Erro', 'Erro ao processar pagamento. Tente novamente.');
+  }
+}
 
 
 
