@@ -1,6 +1,15 @@
 // ============================================
-// ARQUIVO: js/app.js (REVISADO)
+// ARQUIVO: js/app.js (CONSOLIDADO B — REVISADO)
+// - Remove dupla cobrança de crédito
+// - Remove duplicação de closeMealSelector (assumindo B: #meal-selector-modal no HTML)
+// - Centraliza RECIPES/allRecipes (fonte única)
+// - Premium preparado p/ evoluir pra token/KV sem quebrar nada
+// - Mantém visual e funcionalidades
 // ============================================
+
+
+
+
 
 
 // ===================================
@@ -10,12 +19,12 @@
 window.addEventListener('DOMContentLoaded', function() {
   const urlParams = new URLSearchParams(window.location.search);
   const returnType = urlParams.get('return');
-
+  
   if (returnType) {
     // Remove o parâmetro da URL sem recarregar
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl);
-
+    
     // Aguarda 500ms pra garantir que tudo carregou
     setTimeout(() => {
       if (returnType === 'success') {
@@ -23,24 +32,24 @@ window.addEventListener('DOMContentLoaded', function() {
         openPremiumModal('mp-success');
         switchTab(3);
         showNotification(
-        '✅ Pagamento Aprovado!',
-        'Digite o código que você recebeu por e-mail'
+          '✅ Pagamento Aprovado!',
+          'Digite o código que você recebeu por e-mail'
         );
       } else if (returnType === 'pending') {
-      showNotification(
-      '⏳ Pagamento Pendente',
-      'Você receberá o código assim que confirmarmos o pagamento'
-      );
-    } else if (returnType === 'failure') {
-    openPremiumModal('mp-failure');
-    switchTab(2); // Volta pra aba de planos
-    showNotification(
-    '❌ Pagamento Não Aprovado',
-    'Tente novamente ou escolha outro método de pagamento'
-    );
+        showNotification(
+          '⏳ Pagamento Pendente',
+          'Você receberá o código assim que confirmarmos o pagamento'
+        );
+      } else if (returnType === 'failure') {
+        openPremiumModal('mp-failure');
+        switchTab(2); // Volta pra aba de planos
+        showNotification(
+          '❌ Pagamento Não Aprovado',
+          'Tente novamente ou escolha outro método de pagamento'
+        );
+      }
+    }, 500);
   }
-}, 500);
-}
 });
 
 
@@ -56,19 +65,120 @@ window.addEventListener('DOMContentLoaded', function() {
 // PROTEÇÃO ANTI-BURLA (3 camadas) - V2
 // ============================================
 
-/* (bloco comentado removido: código legado desativado) */
+/* 
+
+(function() {
+  'use strict';
+  
+  // 1️⃣ VALIDAÇÃO DE TOKEN (a cada 5s)
+  setInterval(() => {
+    const premium = localStorage.getItem('fit_premium');
+    const token = localStorage.getItem('fit_premium_token');
+    
+    if (premium === 'true') {
+      if (!token || token.length === 0) {
+        console.warn('🚨 Premium sem token - limpando...');
+        localStorage.clear();
+        location.reload();
+        return;
+      }
+
+      try {
+        const decoded = atob(token);
+        const tokenData = JSON.parse(decoded);
+        
+        if (!tokenData.code || !tokenData.expires || !tokenData.activated) {
+          throw new Error('Token malformado');
+        }
+        
+        if (Date.now() > tokenData.expires) {
+          console.warn('🚨 Token expirado - limpando...');
+          localStorage.clear();
+          location.reload();
+          return;
+        }
+        
+      } catch (e) {
+        console.warn('🚨 Token inválido - limpando...', e.message);
+        localStorage.clear();
+        location.reload();
+      }
+    }
+  }, 5000);
+
+  // 2️⃣ DETECTAR DEVTOOLS ABERTO
+  let devtoolsWarned = false;
+  setInterval(() => {
+    const threshold = 160;
+    const isOpen = window.outerWidth - window.innerWidth > threshold || 
+                   window.outerHeight - window.innerHeight > threshold;
+    
+    if (isOpen && !devtoolsWarned) {
+      devtoolsWarned = true;
+      console.clear();
+      console.log('%c⚠️ ÁREA TÉCNICA', 'color:red;font-size:50px;font-weight:bold;text-shadow:2px 2px 4px rgba(0,0,0,0.3)');
+      console.log('%c ', 'font-size:1px');
+      console.log('%cEsta é uma área para desenvolvedores.', 'font-size:16px;color:#333');
+      console.log('%cModificar o código pode violar os Termos de Uso.', 'font-size:14px;color:orange;font-weight:bold');
+      console.log('%c ', 'font-size:1px');
+      console.log('%cSe você é desenvolvedor e quer contribuir, entre em contato!', 'font-size:12px;color:#16a34a');
+    } else if (!isOpen) {
+      devtoolsWarned = false;
+    }
+  }, 1000);
+
+  // 3️⃣ MONITORAR MUDANÇAS NO LOCALSTORAGE
+  // Detecta modificações suspeitas
+  const originalSetItem = localStorage.setItem;
+  localStorage.setItem = function(key, value) {
+    // Detecta tentativas de burla
+    if (key === 'fit_premium' && value === 'true') {
+      const token = localStorage.getItem('fit_premium_token');
+      if (!token || token.length < 20) {
+        console.error('🚨 Tentativa de burla detectada!');
+        console.warn('Premium sem token válido.');
+        // Não permite setar
+        return;
+      }
+    }
+    
+    // Chama original
+    return originalSetItem.apply(this, arguments);
+  };
+
+  // 4️⃣ VALIDAÇÃO EXTRA AO ACESSAR RECEITAS
+  // Intercepta cliques nas receitas
+  document.addEventListener('click', function(e) {
+    const recipeCard = e.target.closest('.recipe-card');
+    if (recipeCard) {
+      // Valida estado premium
+      const premium = localStorage.getItem('fit_premium');
+      const token = localStorage.getItem('fit_premium_token');
+      
+      if (premium === 'true' && (!token || token.length < 20)) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.error('🚨 Estado inválido detectado');
+        localStorage.clear();
+        location.reload();
+      }
+    }
+  }, true);
+
+  console.log('%c✅ Proteções ativas (v2)', 'color:#16a34a;font-weight:bold');
+
+})();
+
+ 
+
+
+ */
 
 // setupIngredientDropdown()
 // - Inicializa o dropdown "Buscar por ingredientes"
 // - NÃO depende do botão Aplicar
 // - Clicou no ingrediente => aplica automaticamente (sem precisar aplicar)
 // - Limpar continua funcionando
-
-/* =========================================================
-FUNÇÃO: setupIngredientDropdown
-PARA QUE SERVE:
-- Inicializa e configura a rotina setupIngredientDropdown (eventos, estado e elementos de UI relacionados).
-========================================================= */
 function setupIngredientDropdown() {
   const toggle = document.getElementById('rfIngToggle');
   const panel = document.getElementById('rfIngPanel');
@@ -78,57 +188,45 @@ function setupIngredientDropdown() {
   if (!toggle || !panel || !grid || !btnClear) return;
 
   // ✅ Usa o id REAL do seu HTML: search-input
-
-  /* =========================================================
-  FUNÇÃO: getSearchInput
-  PARA QUE SERVE:
-  - Obtém/carrega dados necessários para getSearchInput (UI/estado/localStorage/API).
-  ========================================================= */
   function getSearchInput() {
     return document.getElementById('search-input');
   }
 
-let selected = new Set();
+  let selected = new Set();
 
-function collectIngredientsFromRecipes() {
-  const out = new Set();
-  if (!Array.isArray(window.RECIPES)) return [];
+  function collectIngredientsFromRecipes() {
+    const out = new Set();
+    if (!Array.isArray(window.RECIPES)) return [];
 
-  window.RECIPES.forEach((r) => {
-    const list = Array.isArray(r?.ingredients) ? r.ingredients : [];
-    list.forEach((ing) => {
-      let text = '';
+    window.RECIPES.forEach((r) => {
+      const list = Array.isArray(r?.ingredients) ? r.ingredients : [];
+      list.forEach((ing) => {
+        let text = '';
 
-      if (!ing) return;
-      if (typeof ing === 'string') text = ing;
-      else if (typeof ing.text === 'string') text = ing.text;
-      else if (typeof ing.name === 'string') text = ing.name;
+        if (!ing) return;
+        if (typeof ing === 'string') text = ing;
+        else if (typeof ing.text === 'string') text = ing.text;
+        else if (typeof ing.name === 'string') text = ing.name;
 
-      text = String(text || '').trim().toLowerCase();
+        text = String(text || '').trim().toLowerCase();
 
-      text = text
-      .replace(/\d+/g, ' ')
-      .replace(/\b(xícara|xicara|colher|sopa|chá|cha|ml|g|kg|un|unidade|pitada|a\s+gosto)\b/gi, ' ')
-      .replace(/[()]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+        text = text
+          .replace(/\d+/g, ' ')
+          .replace(/\b(xícara|xicara|colher|sopa|chá|cha|ml|g|kg|un|unidade|pitada|a\s+gosto)\b/gi, ' ')
+          .replace(/[()]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
 
-      if (text.length < 3) return;
+        if (text.length < 3) return;
 
-      out.add(text);
+        out.add(text);
+      });
     });
-});
 
-return Array.from(out).sort((a, b) => a.localeCompare(b, 'pt-BR'));
-}
+    return Array.from(out).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }
 
-
-/* =========================================================
-FUNÇÃO: renderChips
-PARA QUE SERVE:
-- Renderiza/atualiza a UI relacionada a renderChips com base no estado atual do app.
-========================================================= */
-function renderChips(items) {
+  function renderChips(items) {
   // =========================
   // ÍCONES POR INGREDIENTE (Lucide)
   // =========================
@@ -169,12 +267,12 @@ function renderChips(items) {
     return 'sparkles';
   }
 
-grid.innerHTML = items.map((label) => {
-  const safe = label.replace(/"/g, '&quot;');
-  const active = selected.has(label) ? 'is-active' : '';
-  const icon = pickIcon(label);
+  grid.innerHTML = items.map((label) => {
+    const safe = label.replace(/"/g, '&quot;');
+    const active = selected.has(label) ? 'is-active' : '';
+    const icon = pickIcon(label);
 
-  return `
+    return `
       <button
         type="button"
         class="rf-chip tap rf-ing-chip ${active}"
@@ -185,59 +283,41 @@ grid.innerHTML = items.map((label) => {
         <span class="rf-ing-chip__label">${label}</span>
       </button>
     `;
-}).join('');
+  }).join('');
 
-try {
-  if (window.lucide && typeof window.lucide.createIcons === 'function') {
-    window.lucide.createIcons();
+  try {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
+  } catch (_) {}
+}
+
+
+
+  function toggleChip(label) {
+    if (selected.has(label)) selected.delete(label);
+    else selected.add(label);
   }
-} catch (_) {}
-}
 
+  function setOpen(isOpen) {
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    if (isOpen) panel.classList.remove('hidden');
+    else panel.classList.add('hidden');
+  }
 
+  function applySelectionAuto() {
+    const input = getSearchInput();
+    const list = Array.from(selected);
 
+    if (!input) return;
 
-/* =========================================================
-FUNÇÃO: toggleChip
-PARA QUE SERVE:
-- Alterna um estado (liga/desliga) relacionado a toggleChip e atualiza a UI quando necessário.
-========================================================= */
-function toggleChip(label) {
-  if (selected.has(label)) selected.delete(label);
-  else selected.add(label);
-}
-
-function setOpen(isOpen) {
-  toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  if (isOpen) panel.classList.remove('hidden');
-  else panel.classList.add('hidden');
-}
-
-
-/* =========================================================
-FUNÇÃO: applySelectionAuto
-PARA QUE SERVE:
-- Executa a lógica encapsulada em applySelectionAuto.
-========================================================= */
-function applySelectionAuto() {
-  const input = getSearchInput();
-  const list = Array.from(selected);
-
-  if (!input) return;
-
-  if (list.length === 0) input.value = '';
-  else input.value = `ing: ${list.join(', ')}`;
+    if (list.length === 0) input.value = '';
+    else input.value = `ing: ${list.join(', ')}`;
 
     // ✅ Isso dispara o motor oficial do input
     input.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
-
-/* =========================================================
-   FUNÇÃO: clearSelection
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em clearSelection.
-   ========================================================= */
   function clearSelection() {
     const input = getSearchInput();
     selected = new Set();
@@ -316,12 +396,6 @@ function applySelectionAuto() {
 // - #sliderDots (dots)
 // Cada slide deve ter: data-recipe-id="123"
 // =====================================
-
-/* =========================================================
-   FUNÇÃO: setupHeroSliderDrag
-   PARA QUE SERVE:
-   - Inicializa e configura a rotina setupHeroSliderDrag (eventos, estado e elementos de UI relacionados).
-   ========================================================= */
 function setupHeroSliderDrag() {
   const track = document.getElementById('sliderTrack');
   const dotsEl = document.getElementById('sliderDots');
@@ -340,12 +414,6 @@ function setupHeroSliderDrag() {
   const DRAG_THRESHOLD_PX = 10;     // separa click de drag
   const SNAP_THRESHOLD_RATIO = 0.18; // % da largura para trocar slide
 
-
-/* =========================================================
-   FUNÇÃO: slides
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em slides.
-   ========================================================= */
   function slides() {
     return Array.from(track.children || []);
   }
@@ -357,12 +425,6 @@ function setupHeroSliderDrag() {
     return rect.width || 0;
   }
 
-
-/* =========================================================
-   FUNÇÃO: clampIndex
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em clampIndex.
-   ========================================================= */
   function clampIndex(i) {
     const max = Math.max(0, slides().length - 1);
     return Math.min(max, Math.max(0, i));
@@ -372,12 +434,6 @@ function setupHeroSliderDrag() {
     track.style.transform = `translate3d(${x}px,0,0)`;
   }
 
-
-/* =========================================================
-   FUNÇÃO: goto
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em goto.
-   ========================================================= */
   function goto(i, animate = true) {
     index = clampIndex(i);
     const w = slideWidth();
@@ -389,18 +445,12 @@ function setupHeroSliderDrag() {
     updateDots();
   }
 
-
-/* =========================================================
-   FUNÇÃO: updateDots
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em updateDots.
-   ========================================================= */
   function updateDots() {
     if (!dotsEl) return;
     const s = slides();
     dotsEl.innerHTML = s.map((_, i) => `
-  <button class="slider-dot ${i === index ? 'active' : ''}" type="button" aria-label="Slide ${i + 1}"></button>
-  `).join('');
+      <button class="slider-dot ${i === index ? 'active' : ''}" type="button" aria-label="Slide ${i + 1}"></button>
+    `).join('');
 
     // click nos dots
     Array.from(dotsEl.querySelectorAll('.slider-dot')).forEach((btn, i) => {
@@ -408,12 +458,6 @@ function setupHeroSliderDrag() {
     });
   }
 
-
-/* =========================================================
-   FUNÇÃO: onResize
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em onResize.
-   ========================================================= */
   function onResize() {
     // recalc posição atual no novo width
     goto(index, false);
@@ -481,12 +525,6 @@ function setupHeroSliderDrag() {
     setTranslate(baseX + dx);
   });
 
-
-/* =========================================================
-   FUNÇÃO: endDrag
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em endDrag.
-   ========================================================= */
   function endDrag() {
     if (!dragging) return;
     dragging = false;
@@ -516,12 +554,6 @@ function setupHeroSliderDrag() {
 }
 
 // (Opcional) API para setas existentes chamarem
-
-/* =========================================================
-   FUNÇÃO: heroSliderNext
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em heroSliderNext.
-   ========================================================= */
 function heroSliderNext() {
   const track = document.getElementById('sliderTrack');
   if (!track) return;
@@ -531,12 +563,6 @@ function heroSliderNext() {
   track.dataset.heroIndex = String(next);
 }
 
-
-/* =========================================================
-   FUNÇÃO: heroSliderPrev
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em heroSliderPrev.
-   ========================================================= */
 function heroSliderPrev() {
   const track = document.getElementById('sliderTrack');
   if (!track) return;
@@ -569,12 +595,6 @@ window.RF = window.RF || {};
  * - activatePremium()
  * - clearPremiumState()/forceFreeCleanup()
  */
-
-/* =========================================================
-   FUNÇÃO: syncPremiumFromCore
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em syncPremiumFromCore (estado, validação e sincronização de UI).
-   ========================================================= */
 function syncPremiumFromCore() {
   try {
     const valid = (typeof isPremiumValidNow === 'function')
@@ -761,12 +781,6 @@ let allRecipes = ALL_RECIPES; // compat
 // Embaralhar receitas a cada carregamento (Fisher–Yates)
 // (compatível iPhone / ES5)
 // ============================================
-
-/* =========================================================
-   FUNÇÃO: shuffleArray
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em shuffleArray.
-   ========================================================= */
 function shuffleArray(arr) {
   for (var i = arr.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
@@ -884,12 +898,6 @@ const mealSelectorSubtitle = document.getElementById('meal-selector-subtitle');
 // ==============================
 // MODAL HELPERS
 // ==============================
-
-/* =========================================================
-   FUNÇÃO: openModal
-   PARA QUE SERVE:
-   - Abre/mostra a interface ou modal relacionado a openModal.
-   ========================================================= */
 function openModal(el) {
   if (!el) return;
   el.classList.remove('hidden');
@@ -911,12 +919,6 @@ window.closePremiumModal = function () {
 // ==============================
 // CORE BUSINESS RULES (fonte da verdade)
 // ==============================
-
-/* =========================================================
-   FUNÇÃO: canAccessRecipe
-   PARA QUE SERVE:
-   - Executa uma etapa do fluxo de receitas (seleção/abertura/renderização) em canAccessRecipe.
-   ========================================================= */
 function canAccessRecipe(recipeId) {
   if (isPremium) return true;
   if (unlockedRecipes.includes(recipeId)) return true;
@@ -928,12 +930,6 @@ function canAccessRecipe(recipeId) {
  * e somente quando necessário.
  * Retorna true se pode acessar, false se deve ir pro premium.
  */
-
-/* =========================================================
-   FUNÇÃO: ensureRecipeAccess
-   PARA QUE SERVE:
-   - Executa uma etapa do fluxo de receitas (seleção/abertura/renderização) em ensureRecipeAccess.
-   ========================================================= */
 function ensureRecipeAccess(recipeId) {
   // Premium ou já liberada
   if (isPremium || unlockedRecipes.includes(recipeId)) return true;
@@ -1075,12 +1071,6 @@ window.confirmUnlockRecipe = function () {
 // loadUserData()
 // - Carrega do storage: créditos, receitas liberadas e estado premium (token/expiração)
 // - Tem um “guard” no começo que limpa premium inválido antes de qualquer UI renderizar
-
-/* =========================================================
-   FUNÇÃO: loadUserData
-   PARA QUE SERVE:
-   - Obtém/carrega dados necessários para loadUserData (UI/estado/localStorage/API).
-   ========================================================= */
 async function loadUserData() {
   try {
     // ✅ 0) Guard: se alguém deixou fit_premium = true mas expirou, limpa ANTES de qualquer coisa
@@ -1189,12 +1179,6 @@ async function loadUserData() {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: saveUserData
-   PARA QUE SERVE:
-   - Salva dados/estado persistente (ex.: localStorage) conforme a lógica de saveUserData.
-   ========================================================= */
 async function saveUserData() {
   try {
     if (isPremium && premiumToken) {
@@ -1215,12 +1199,6 @@ async function saveUserData() {
   }
 }
 
-
-/* =========================================================
-   FUNÇÃO: saveShoppingList
-   PARA QUE SERVE:
-   - Salva dados/estado persistente (ex.: localStorage) conforme a lógica de saveShoppingList.
-   ========================================================= */
 async function saveShoppingList() {
   try {
     await storage.set('fit_shopping', JSON.stringify(shoppingList));
@@ -1228,12 +1206,6 @@ async function saveShoppingList() {
   } catch (e) {}
 }
 
-
-/* =========================================================
-   FUNÇÃO: saveWeekPlan
-   PARA QUE SERVE:
-   - Salva dados/estado persistente (ex.: localStorage) conforme a lógica de saveWeekPlan.
-   ========================================================= */
 async function saveWeekPlan() {
   try {
     await storage.set('fit_weekplan', JSON.stringify(weekPlan));
@@ -1250,12 +1222,6 @@ async function saveWeekPlan() {
 // ==============================
 // UI (Badge / Premium)
 // ==============================
-
-/* =========================================================
-   FUNÇÃO: updateUI
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em updateUI.
-   ========================================================= */
 function updateUI() {
   try { 
   
@@ -1281,11 +1247,11 @@ function updateUI() {
       }
 
       creditsBadge.innerHTML = `
-  <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-  </svg>
-  <span>${badgeText}</span>
-  `;
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        <span>${badgeText}</span>
+      `;
 
       if (premiumBtn) {
         premiumBtn.style.display = 'none';
@@ -1299,9 +1265,9 @@ function updateUI() {
 
       creditsBadge.classList.remove('premium');
       creditsBadge.innerHTML = `
-
-  <span id="credits-text">&nbsp &nbsp &nbsp${credits} Créditos</span>
-  `;
+        
+        <span id="credits-text">&nbsp &nbsp &nbsp${credits} Créditos</span>
+      `;
 
       if (premiumBtn) {
         premiumBtn.style.display = 'block';
@@ -1325,6 +1291,8 @@ function updateUI() {
       updatePremiumButtons();
     }
   }
+    try { updateGreetingUI(); } catch (e) {}
+
 }
 
 
@@ -1333,12 +1301,6 @@ function updateUI() {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: updateShoppingCounter
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em updateShoppingCounter.
-   ========================================================= */
 function updateShoppingCounter() {
   if (!shoppingCounter) return;
   if (shoppingList.length > 0) {
@@ -1354,12 +1316,6 @@ function updateShoppingCounter() {
 // ==============================
 let sliderAutoplay = null;
 
-
-/* =========================================================
-   FUNÇÃO: initSliderAndCategories
-   PARA QUE SERVE:
-   - Inicializa e configura a rotina initSliderAndCategories (eventos, estado e elementos de UI relacionados).
-   ========================================================= */
 function initSliderAndCategories() {
   if (!allRecipes || allRecipes.length === 0) return;
 
@@ -1375,26 +1331,26 @@ function initSliderAndCategories() {
       const img = recipe.images?.hero || recipe.image;
 
       return `
-  <div class="slide-new" data-recipe-id="${id}" role="button" tabindex="0" aria-label="Abrir receita ${recipe.name}">
-  <img src="${img}" alt="${recipe.name}"
-  loading="eager" decoding="async"
-
-
-  onerror="this.onerror=null; this.src='https://mymortgagecompany.co.uk/wp-content/uploads/2016/09/placeholder.png';">
-
-
-  <div class="slide-overlay-new">
-  <h2 class="slide-title-new">${recipe.name}</h2>
-  <p class="slide-description-new">${recipe.description || 'Receita deliciosa'}</p>
-  </div>
-  </div>
-  `;
+        <div class="slide-new" data-recipe-id="${id}" role="button" tabindex="0" aria-label="Abrir receita ${recipe.name}">
+          <img src="${img}" alt="${recipe.name}"
+            loading="eager" decoding="async"
+			
+			
+            onerror="this.onerror=null; this.src='https://mymortgagecompany.co.uk/wp-content/uploads/2016/09/placeholder.png';">
+			
+			
+          <div class="slide-overlay-new">
+            <h2 class="slide-title-new">${recipe.name}</h2>
+            <p class="slide-description-new">${recipe.description || 'Receita deliciosa'}</p>
+          </div>
+        </div>
+      `;
     }).join('');
 
     // Dots (sem onclick inline)
     sliderDots.innerHTML = featuredRecipes.map((_, idx) => `
-  <button class="slider-dot-new ${idx === 0 ? 'active' : ''}" type="button" data-slide-idx="${idx}" aria-label="Ir para slide ${idx + 1}"></button>
-  `).join('');
+      <button class="slider-dot-new ${idx === 0 ? 'active' : ''}" type="button" data-slide-idx="${idx}" aria-label="Ir para slide ${idx + 1}"></button>
+    `).join('');
 
     // Clique nos dots (tenta usar sua função existente; senão faz fallback)
     if (!sliderDots.dataset.dotsBound) {
@@ -1432,12 +1388,6 @@ function initSliderAndCategories() {
 
       const MOVE_THRESHOLD = 12; // px: separa tap de drag
 
-
-/* =========================================================
-   FUNÇÃO: openFromTarget
-   PARA QUE SERVE:
-   - Abre/mostra a interface ou modal relacionado a openFromTarget.
-   ========================================================= */
       function openFromTarget(target) {
         const slide = target.closest?.('[data-recipe-id]');
         if (!slide) return;
@@ -1522,11 +1472,11 @@ const categories = [
 ];
 
     categoriesGrid.innerHTML = categories.map((cat, index) => `
-  <div class="category-card-new ${index === 0 ? 'active' : ''}"
-  onclick="filterByCategory('${cat.value}', this)">
-  ${cat.name}
-  </div>
-  `).join('');
+      <div class="category-card-new ${index === 0 ? 'active' : ''}"
+           onclick="filterByCategory('${cat.value}', this)">
+        ${cat.name}
+      </div>
+    `).join('');
   }
 }
 
@@ -1544,12 +1494,6 @@ window.goToSlideNew = function(index) {
   updateSlider();
 };
 
-
-/* =========================================================
-   FUNÇÃO: updateSlider
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em updateSlider.
-   ========================================================= */
 function updateSlider() {
   if (!sliderTrack) return;
   sliderTrack.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
@@ -1558,12 +1502,6 @@ function updateSlider() {
   });
 }
 
-
-/* =========================================================
-   FUNÇÃO: startAutoplay
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em startAutoplay.
-   ========================================================= */
 function startAutoplay() {
   if (!featuredRecipes || featuredRecipes.length === 0) return;
   clearInterval(sliderAutoplay);
@@ -1653,12 +1591,6 @@ window.filterByCategory = function(category, element) {
 // ================================
 // MAPEAMENTO AUTOMÁTICO DE ÍCONES (SÓ LUCIDE)
 // ================================
-
-/* =========================================================
-   FUNÇÃO: getIconFromIngredientName
-   PARA QUE SERVE:
-   - Obtém/carrega dados necessários para getIconFromIngredientName (UI/estado/localStorage/API).
-   ========================================================= */
 function getIconFromIngredientName(name) {
   if (!name) return 'utensils';
   
@@ -1745,12 +1677,6 @@ function getIconFromIngredientName(name) {
 // ACCESS CORE — créditos + desbloqueios
 // ================================
 
-
-/* =========================================================
-   FUNÇÃO: getUnlockedSet
-   PARA QUE SERVE:
-   - Obtém/carrega dados necessários para getUnlockedSet (UI/estado/localStorage/API).
-   ========================================================= */
 function getUnlockedSet() {
   // unlockedRecipes pode existir globalmente; garantimos um Set
   if (!Array.isArray(unlockedRecipes)) unlockedRecipes = [];
@@ -1763,12 +1689,6 @@ function persistUnlocked() {
   } catch (_) {}
 }
 
-
-/* =========================================================
-   FUNÇÃO: persistCredits
-   PARA QUE SERVE:
-   - Salva dados/estado persistente (ex.: localStorage) conforme a lógica de persistCredits.
-   ========================================================= */
 function persistCredits() {
   try {
     localStorage.setItem('fit_credits', String(credits ?? 3));
@@ -1780,12 +1700,6 @@ function isRecipeUnlocked(recipeId) {
   return s.has(String(recipeId));
 }
 
-
-/* =========================================================
-   FUNÇÃO: unlockRecipe
-   PARA QUE SERVE:
-   - Executa uma etapa do fluxo de receitas (seleção/abertura/renderização) em unlockRecipe.
-   ========================================================= */
 function unlockRecipe(recipeId) {
   const id = String(recipeId);
   if (!Array.isArray(unlockedRecipes)) unlockedRecipes = [];
@@ -1796,12 +1710,6 @@ function unlockRecipe(recipeId) {
 }
 
 
-
-/* =========================================================
-   FUNÇÃO: canAccessRecipe
-   PARA QUE SERVE:
-   - Executa uma etapa do fluxo de receitas (seleção/abertura/renderização) em canAccessRecipe.
-   ========================================================= */
 function canAccessRecipe(recipeId) {
   // Premium: acesso total
   if (isPremium === true) return true;
@@ -1820,12 +1728,6 @@ function canAccessRecipe(recipeId) {
 // UI/REGRA OFICIAL — Lock & CTA
 // ================================
 
-
-/* =========================================================
-   FUNÇÃO: getCreditsSafe
-   PARA QUE SERVE:
-   - Obtém/carrega dados necessários para getCreditsSafe (UI/estado/localStorage/API).
-   ========================================================= */
 function getCreditsSafe() {
   return Number.isFinite(credits) ? credits : 0;
 }
@@ -1847,12 +1749,6 @@ function shouldShowLock(recipeId) {
 // - free
 // - ainda não desbloqueada
 // - créditos > 0)
-
-/* =========================================================
-   FUNÇÃO: shouldShowUnlockCTA
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em shouldShowUnlockCTA.
-   ========================================================= */
 function shouldShowUnlockCTA(recipeId) {
   if (isPremium === true) return false;
   if (isRecipeUnlocked(recipeId)) return false;
@@ -1885,12 +1781,6 @@ function shouldShowUnlockCTA(recipeId) {
  * - Retorno de navegação
  */
  
-
-/* =========================================================
-   FUNÇÃO: decideRecipeOpenAction
-   PARA QUE SERVE:
-   - Executa uma etapa do fluxo de receitas (seleção/abertura/renderização) em decideRecipeOpenAction.
-   ========================================================= */
 function decideRecipeOpenAction(recipeId) {
   const id = String(recipeId);
 
@@ -1977,12 +1867,6 @@ function requestOpenRecipe(recipeId) {
 // ================================
 const _rfPrefetchCache = new Set();
 
-
-/* =========================================================
-   FUNÇÃO: _rfPrefetchImage
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em _rfPrefetchImage.
-   ========================================================= */
 function _rfPrefetchImage(url) {
   if (!url || typeof url !== 'string') return;
   if (_rfPrefetchCache.has(url)) return;
@@ -1999,12 +1883,6 @@ function _rfPrefetchImage(url) {
   }
 }
 
-
-/* =========================================================
-   FUNÇÃO: _rfGetRecipeHeroUrlById
-   PARA QUE SERVE:
-   - Executa uma etapa do fluxo de receitas (seleção/abertura/renderização) em _rfGetRecipeHeroUrlById.
-   ========================================================= */
 function _rfGetRecipeHeroUrlById(recipeId) {
   const id = String(recipeId);
   const recipe = (Array.isArray(allRecipes) ? allRecipes : []).find(r => String(r.id) === id);
@@ -2014,12 +1892,6 @@ function _rfGetRecipeHeroUrlById(recipeId) {
   return recipe.images?.hero || recipe.image || null;
 }
 
-
-/* =========================================================
-   FUNÇÃO: setupRecipeHeroPrefetch
-   PARA QUE SERVE:
-   - Inicializa e configura a rotina setupRecipeHeroPrefetch (eventos, estado e elementos de UI relacionados).
-   ========================================================= */
 function setupRecipeHeroPrefetch() {
   if (!recipeGrid) return;
 
@@ -2027,12 +1899,6 @@ function setupRecipeHeroPrefetch() {
   if (recipeGrid.dataset.heroPrefetchAttached === '1') return;
   recipeGrid.dataset.heroPrefetchAttached = '1';
 
-
-/* =========================================================
-   FUNÇÃO: prefetchFromTarget
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em prefetchFromTarget.
-   ========================================================= */
   function prefetchFromTarget(target) {
     const card = target.closest?.('[data-recipe-id]');
     if (!card) return;
@@ -2084,12 +1950,6 @@ function setupRecipeHeroPrefetch() {
  *
  * Ela apenas identifica o recipeId e encaminha.
  */
-
-/* =========================================================
-   FUNÇÃO: setupRecipeGridClickGuard
-   PARA QUE SERVE:
-   - Inicializa e configura a rotina setupRecipeGridClickGuard (eventos, estado e elementos de UI relacionados).
-   ========================================================= */
 function setupRecipeGridClickGuard() {
   const grid = document.getElementById('recipe-grid');
   if (!grid) return;
@@ -2122,12 +1982,6 @@ function setupRecipeGridClickGuard() {
 
 // initHomeUI()
 // - inicializa listeners e UI da home
-
-/* =========================================================
-   FUNÇÃO: initHomeUI
-   PARA QUE SERVE:
-   - Inicializa e configura a rotina initHomeUI (eventos, estado e elementos de UI relacionados).
-   ========================================================= */
 function initHomeUI() {
   setupIngredientDropdown();
 }
@@ -2139,12 +1993,6 @@ function initHomeUI() {
 // getRecipeIngredientsHaystack(recipe)
 // - Cria um texto “pesquisável” com todos os ingredientes da receita
 // - Compatível com ingredientes como string OU como objeto { text } / { name }
-
-/* =========================================================
-   FUNÇÃO: getRecipeIngredientsHaystack
-   PARA QUE SERVE:
-   - Obtém/carrega dados necessários para getRecipeIngredientsHaystack (UI/estado/localStorage/API).
-   ========================================================= */
 function getRecipeIngredientsHaystack(recipe) {
   const list = Array.isArray(recipe?.ingredients) ? recipe.ingredients : [];
   const parts = list.map((ing) => {
@@ -2165,12 +2013,6 @@ function getRecipeIngredientsHaystack(recipe) {
 //   prot>=15 | proteina>=15 | proteína>=15
 //   tempo<=20
 // - Retorna: { cleanedText, filters }
-
-/* =========================================================
-   FUNÇÃO: parseAdvancedFilters
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em parseAdvancedFilters.
-   ========================================================= */
 function parseAdvancedFilters(raw) {
   let text = String(raw || '').trim(); // vamos limpar daqui
   const filters = { maxCalories: null, minProtein: null, maxTime: null };
@@ -2203,12 +2045,6 @@ function parseAdvancedFilters(raw) {
 }
 
 
-
-/* =========================================================
-   FUNÇÃO: renderRecipes
-   PARA QUE SERVE:
-   - Renderiza/atualiza a UI relacionada a renderRecipes com base no estado atual do app.
-   ========================================================= */
 function renderRecipes() {
   if (!recipeGrid || !Array.isArray(allRecipes) || allRecipes.length === 0) return;
 
@@ -2233,12 +2069,6 @@ function renderRecipes() {
     .map(el => rfNorm(el.getAttribute('data-value')))
     .filter(Boolean);
 
-
-/* =========================================================
-   FUNÇÃO: recipeTagSet
-   PARA QUE SERVE:
-   - Executa uma etapa do fluxo de receitas (seleção/abertura/renderização) em recipeTagSet.
-   ========================================================= */
   function recipeTagSet(recipe) {
     const set = new Set();
 
@@ -2344,11 +2174,11 @@ function renderRecipes() {
   // ✅ Estado vazio: mensagem genérica (funciona para ingredientes + filtros + sliders)
   if (!filtered || filtered.length === 0) {
     recipeGrid.innerHTML = `
-  <div class="rf-empty-state">
-  <h3>Nenhuma receita encontrada</h3>
-  <p>Não encontramos nenhuma receita com os filtros usados. Tente remover uma tag, ajustar os valores ou limpar os filtros.</p>
-  </div>
-  `;
+      <div class="rf-empty-state">
+        <h3>Nenhuma receita encontrada</h3>
+        <p>Não encontramos nenhuma receita com os filtros usados. Tente remover uma tag, ajustar os valores ou limpar os filtros.</p>
+      </div>
+    `;
     return;
   }
 
@@ -2367,25 +2197,25 @@ function renderRecipes() {
     const showPremiumCTA = (!isUnlocked && noCredits);
 
     return `
-  <div class="recipe-card" data-recipe-id="${id}">
-  <div class="recipe-image-container">
+      <div class="recipe-card" data-recipe-id="${id}">
+        <div class="recipe-image-container">
 
-  <img
-  src="${recipe.image}"
-  alt="${recipe.name}"
-  class="recipe-image"
-  loading="lazy"
-  decoding="async"
-  onload="this.classList.add('is-loaded')"
-  onerror="this.onerror=null; this.classList.add('is-loaded'); this.src='https://images.unsplash.com/photo-1490644659350-3f5777c715be?auto=format&fit=crop&w=1200&q=60';"
-  />
+          <img
+            src="${recipe.image}"
+            alt="${recipe.name}"
+            class="recipe-image"
+            loading="lazy"
+            decoding="async"
+            onload="this.classList.add('is-loaded')"
+            onerror="this.onerror=null; this.classList.add('is-loaded'); this.src='https://images.unsplash.com/photo-1490644659350-3f5777c715be?auto=format&fit=crop&w=1200&q=60';"
+          />
 
-  <div class="rf-skeleton" aria-hidden="true"></div>
-  <div class="recipe-category">${recipe.category}</div>
+          <div class="rf-skeleton" aria-hidden="true"></div>
+          <div class="recipe-category">${recipe.category}</div>
 
-  ${
-    showLock
-    ? `
+          ${
+            showLock
+              ? `
                 <div class="recipe-overlay">
                   <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
@@ -2393,72 +2223,72 @@ function renderRecipes() {
                   </svg>
                 </div>
               `
-    : ''
-  }
-</div>
+              : ''
+          }
+        </div>
 
-<div class="recipe-content">
-<h3 class="recipe-title">${recipe.name}</h3>
+        <div class="recipe-content">
+          <h3 class="recipe-title">${recipe.name}</h3>
 
-<div class="recipe-meta">
-<svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-<circle cx="12" cy="12" r="10"/>
-<polyline points="12 6 12 12 16 14"/>
-</svg>
-<span>${recipe.time}min</span>
+          <div class="recipe-meta">
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>${recipe.time}min</span>
 
-<svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-<circle cx="9" cy="7" r="4"/>
-</svg>
-<span>${recipe.servings}</span>
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+            <span>${recipe.servings}</span>
 
-<svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-</svg>
-<span>${recipe.difficulty}</span>
-</div>
+            <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+            <span>${recipe.difficulty}</span>
+          </div>
 
-<div class="recipe-stats">
-<div class="stat">
-<div class="stat-value calories">${recipe.calories}</div>
-<div class="stat-label">calorias</div>
-</div>
-<div class="stat">
-<div class="stat-value protein">${recipe.protein}g</div>
-<div class="stat-label">proteína</div>
-</div>
-</div>
+          <div class="recipe-stats">
+            <div class="stat">
+              <div class="stat-value calories">${recipe.calories}</div>
+              <div class="stat-label">calorias</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value protein">${recipe.protein}g</div>
+              <div class="stat-label">proteína</div>
+            </div>
+          </div>
 
-<button
-type="button"
-class="recipe-button ${
-isUnlocked
-? 'unlocked'
-: (showPremiumCTA ? 'premium-cta' : 'locked')
-}"
->
-${
-  isUnlocked
-  ? `
+          <button
+            type="button"
+            class="recipe-button ${
+              isUnlocked
+                ? 'unlocked'
+                : (showPremiumCTA ? 'premium-cta' : 'locked')
+            }"
+          >
+            ${
+              isUnlocked
+                ? `
                   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                     <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
                   </svg>
                   <span class="btn-label">Ver Receita</span>
                 `
-  : `
+                : `
                   <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                   </svg>
                   <span class="btn-label">Desbloquear</span>
                 `
-}
-</button>
-</div>
-</div>
-`;
+            }
+          </button>
+        </div>
+      </div>
+    `;
   }).join('');
 }
 
@@ -2466,12 +2296,6 @@ ${
 
 
 
-
-/* =========================================================
-   FUNÇÃO: viewRecipe
-   PARA QUE SERVE:
-   - Executa uma etapa do fluxo de receitas (seleção/abertura/renderização) em viewRecipe.
-   ========================================================= */
 function viewRecipe(recipeId) {
   const id = String(recipeId);
 
@@ -2551,12 +2375,6 @@ function viewRecipe(recipeId) {
 // ==============================
 
 
-
-/* =========================================================
-   FUNÇÃO: renderRecipeDetail
-   PARA QUE SERVE:
-   - Renderiza/atualiza a UI relacionada a renderRecipeDetail com base no estado atual do app.
-   ========================================================= */
 function renderRecipeDetail(recipeId) {
    const id = String(recipeId);
   const recipe = allRecipes.find(r => String(r.id) === id);
@@ -2567,91 +2385,91 @@ function renderRecipeDetail(recipeId) {
   
 
  recipeDetail.innerHTML = `
-<div class="breadcrumbs-wrapper">
-<button class="back-btn" onclick="closeRecipeDetail()">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-<path d="M19 12H5M12 19l-7-7 7-7"/>
-</svg>
-Início
-</button>
+  <div class="breadcrumbs-wrapper">
+    <button class="back-btn" onclick="closeRecipeDetail()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      Início
+    </button>
 
-<div class="breadcrumbs">
-<div class="breadcrumb-item">
-<span class="breadcrumb-current">${recipe.name}</span>
-</div>
-</div>
+    <div class="breadcrumbs">
+      <div class="breadcrumb-item">
+        <span class="breadcrumb-current">${recipe.name}</span>
+      </div>
+    </div>
+	
+	
+	
+  </div>
 
-
-
-</div>
-
-<img src="${heroImage}" alt="${recipe.name}" class="detail-hero-image">
-
-
+  <img src="${heroImage}" alt="${recipe.name}" class="detail-hero-image">
 
 
 
-<div class="detail-content-wrapper">
-<div style="align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+    
 
-<button class="btn-add-shopping" onclick="addToShoppingList(${recipe.id})">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;">
-<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-</svg>
-Adicionar à Lista de compras
-</button>
-<br>
-<p class="planner-subtitle" style="display: block; margin-top: -0.5rem; clear: both;">Aproveite para adicionar os ingredientes desta receita na Lista de compras (Só para Usuário Premium)</p>
-</div>
+    <div class="detail-content-wrapper">
+      <div style="align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
 
-${recipe.tags && recipe.tags.length > 0 ? `
+        <button class="btn-add-shopping" onclick="addToShoppingList(${recipe.id})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          Adicionar à Lista de compras
+        </button>
+		<br>
+		<p class="planner-subtitle" style="display: block; margin-top: -0.5rem; clear: both;">Aproveite para adicionar os ingredientes desta receita na Lista de compras (Só para Usuário Premium)</p>
+      </div>
+
+      ${recipe.tags && recipe.tags.length > 0 ? `
         <div class="tags-container">
           ${recipe.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
         </div>
       ` : ''}
 
-  <div class="detail-stats">
-  <div class="detail-stat">
-  <div class="detail-stat-value">${recipe.calories}</div>
-  <div class="detail-stat-label">Calorias</div>
-  </div>
-  <div class="detail-stat">
-  <div class="detail-stat-value">${recipe.protein}g</div>
-  <div class="detail-stat-label">Proteína</div>
-  </div>
-  <div class="detail-stat">
-  <div class="detail-stat-value">${recipe.carbs}g</div>
-  <div class="detail-stat-label">Carbos</div>
-  </div>
-  <div class="detail-stat">
-  <div class="detail-stat-value">${recipe.fats}g</div>
-  <div class="detail-stat-label">Gorduras</div>
-  </div>
-  <div class="detail-stat">
-  <div class="detail-stat-value">${recipe.time}min</div>
-  <div class="detail-stat-label">Tempo</div>
-  </div>
-  <div class="detail-stat">
-  <div class="detail-stat-value">${recipe.difficulty}</div>
-  <div class="detail-stat-label">Dificuldade</div>
-  </div>
-  </div>
+      <div class="detail-stats">
+        <div class="detail-stat">
+          <div class="detail-stat-value">${recipe.calories}</div>
+          <div class="detail-stat-label">Calorias</div>
+        </div>
+        <div class="detail-stat">
+          <div class="detail-stat-value">${recipe.protein}g</div>
+          <div class="detail-stat-label">Proteína</div>
+        </div>
+        <div class="detail-stat">
+          <div class="detail-stat-value">${recipe.carbs}g</div>
+          <div class="detail-stat-label">Carbos</div>
+        </div>
+        <div class="detail-stat">
+          <div class="detail-stat-value">${recipe.fats}g</div>
+          <div class="detail-stat-label">Gorduras</div>
+        </div>
+        <div class="detail-stat">
+          <div class="detail-stat-value">${recipe.time}min</div>
+          <div class="detail-stat-label">Tempo</div>
+        </div>
+        <div class="detail-stat">
+          <div class="detail-stat-value">${recipe.difficulty}</div>
+          <div class="detail-stat-label">Dificuldade</div>
+        </div>
+      </div>
 
-  <div class="detail-section">
-  <h3 class="section-title">
-  <i data-lucide="calendar-plus" class="section-icon"></i>
-  Adicionar ao Planejamento Semanal
-  </h3>
-  <p class="planner-subtitle">Selecione o dia da semana que você quer fazer esta receita (Só para Usuário Premium)</p>
-  <div class="planner-days">
-  ${['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].map(day => `
+      <div class="detail-section">
+        <h3 class="section-title">
+          <i data-lucide="calendar-plus" class="section-icon"></i>
+          Adicionar ao Planejamento Semanal
+        </h3>
+        <p class="planner-subtitle">Selecione o dia da semana que você quer fazer esta receita (Só para Usuário Premium)</p>
+        <div class="planner-days">
+          ${['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].map(day => `
             <button class="planner-day" onclick="addToWeekPlan('${day}', ${recipe.id})">${day}</button>
           `).join('')}
-    </div>
-    </div>
+        </div>
+      </div>
 
-    ${recipe.benefits && recipe.benefits.length > 0 ? `
+      ${recipe.benefits && recipe.benefits.length > 0 ? `
         <div class="detail-section">
           <h3 class="section-title">
             <i data-lucide="heart-pulse" class="section-icon"></i>
@@ -2659,48 +2477,48 @@ ${recipe.tags && recipe.tags.length > 0 ? `
           </h3>
           <div class="benefits-grid">
             ${recipe.benefits.map(benefit => `
-      <div class="benefit-item">
-      <i data-lucide="check-circle" class="benefit-icon"></i>
-      <span>${benefit}</span>
-      </div>
-      `).join('')}
+              <div class="benefit-item">
+                <i data-lucide="check-circle" class="benefit-icon"></i>
+                <span>${benefit}</span>
+              </div>
+            `).join('')}
           </div>
         </div>
       ` : ''}
 
-    <div class="detail-section">
-    <h3 class="section-title">
-    <i data-lucide="chef-hat" class="section-icon"></i>
-    Ingredientes
-    </h3>
-    <div class="ingredients-grid">
-
-
-
-
-
-    ${(recipe.ingredients || []).map(ing => {
-        if (typeof ing === 'string') {
-          ing = { text: ing, quantity: '', name: ing };
-        }
-
-      // Pega ícone (só Lucide agora)
-      const iconName = ing.icon || getIconFromIngredientName(ing.text || ing.name || ing.quantity);
-
-      // Renderiza ícone
-      const iconHTML = `<i data-lucide="${iconName}" class="ingredient-icon"></i>`;
+      <div class="detail-section">
+        <h3 class="section-title">
+          <i data-lucide="chef-hat" class="section-icon"></i>
+          Ingredientes
+        </h3>
+        <div class="ingredients-grid">
+		
+		
+		
+		
+		
+ ${(recipe.ingredients || []).map(ing => {
+  if (typeof ing === 'string') {
+    ing = { text: ing, quantity: '', name: ing };
+  }
+  
+  // Pega ícone (só Lucide agora)
+  const iconName = ing.icon || getIconFromIngredientName(ing.text || ing.name || ing.quantity);
+  
+  // Renderiza ícone
+  const iconHTML = `<i data-lucide="${iconName}" class="ingredient-icon"></i>`;
   
   return `
-      <div class="ingredient-item">
+    <div class="ingredient-item">
       <div class="ingredient-icon-wrapper">
-      ${iconHTML}
+        ${iconHTML}
       </div>
       <div class="ingredient-content">
-      <span class="ingredient-text">${ing.text || ing.name || ing.quantity || ing}</span>
-      ${ing.optional ? '<span class="ingredient-optional">Opcional</span>' : ''}
+        <span class="ingredient-text">${ing.text || ing.name || ing.quantity || ing}</span>
+        ${ing.optional ? '<span class="ingredient-optional">Opcional</span>' : ''}
       </div>
-      </div>
-      `;
+    </div>
+  `;
 }).join('')}
  
         </ol>
@@ -2711,20 +2529,20 @@ ${recipe.tags && recipe.tags.length > 0 ? `
 	  
 	  <!-- ✅ MODO DE PREPARO -->
         ${recipe.instructions && (Array.isArray(recipe.instructions) ? recipe.instructions : recipe.instructions.steps || []).length > 0 ? `
-      <div class="detail-section">
-      <h3 class="section-title">
-      <i data-lucide="chef-hat" class="section-icon"></i>
-      Modo de Preparo
-      </h3>
-      <ol class="instructions-list">
-      ${(Array.isArray(recipe.instructions) ? recipe.instructions : recipe.instructions.steps || []).map((step, index) => `
+            <div class="detail-section">
+                <h3 class="section-title">
+                    <i data-lucide="chef-hat" class="section-icon"></i>
+                    Modo de Preparo
+                </h3>
+                <ol class="instructions-list">
+                    ${(Array.isArray(recipe.instructions) ? recipe.instructions : recipe.instructions.steps || []).map((step, index) => `
                         <li class="instruction-step">
                             <span class="step-number">${index + 1}</span>
                             <span class="step-text">${step}</span>
                         </li>
                     `).join('')}
-        </ol>
-        </div>
+                </ol>
+            </div>
         ` : ''}
 	  
 	  
@@ -2732,13 +2550,13 @@ ${recipe.tags && recipe.tags.length > 0 ? `
 	  
 
       ${recipe.tips && recipe.tips.length > 0 ? `
-      <div class="detail-section">
-      <h3 class="section-title">
-      <i data-lucide="lightbulb" class="section-icon"></i>
-      Dicas do Chef
-      </h3>
-      <div class="tips-list">
-      ${recipe.tips.map(tip => `<div class="tip-item">${tip}</div>`).join('')}
+        <div class="detail-section">
+          <h3 class="section-title">
+            <i data-lucide="lightbulb" class="section-icon"></i>
+            Dicas do Chef
+          </h3>
+          <div class="tips-list">
+            ${recipe.tips.map(tip => `<div class="tip-item">${tip}</div>`).join('')}
           </div>
         </div>
       ` : ''}
@@ -2751,16 +2569,16 @@ ${recipe.tags && recipe.tags.length > 0 ? `
           </h3>
           <div class="allergens-container">
             ${recipe.allergens.map(allergen => `
-        <div class="allergen-badge">
-        <i data-lucide="alert-circle" class="allergen-icon"></i>
-        ${allergen}
-        </div>
-        `).join('')}
+              <div class="allergen-badge">
+                <i data-lucide="alert-circle" class="allergen-icon"></i>
+                ${allergen}
+              </div>
+            `).join('')}
           </div>
         </div>
       ` : ''}
-      </div>
-      `;
+    </div>
+  `;
 
   // ✅ Renderiza os ícones Lucide
   if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -2939,12 +2757,6 @@ window.addToShoppingList = function(recipeId) {
   showNotification('Sucesso!', `Ingredientes de "${recipe.name}" adicionados à lista.`);
 };
 
-
-/* =========================================================
-   FUNÇÃO: renderShoppingList
-   PARA QUE SERVE:
-   - Renderiza/atualiza a UI relacionada a renderShoppingList com base no estado atual do app.
-   ========================================================= */
 function renderShoppingList() {
   const content = document.getElementById('shopping-list-content');
   if (!content) return;
@@ -2952,20 +2764,20 @@ function renderShoppingList() {
   if (shoppingList.length === 0) {
     content.innerHTML = `
       <div class="shopping-empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="9" cy="21" r="1"/>
-      <circle cx="20" cy="21" r="1"/>
-      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-      </svg>
-      <p style="font-size:1.125rem;margin-bottom:.5rem;">Sua lista está vazia</p>
-      <p style="font-size:.875rem;">Adicione ingredientes das receitas</p>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="9" cy="21" r="1"/>
+          <circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <p style="font-size:1.125rem;margin-bottom:.5rem;">Sua lista está vazia</p>
+        <p style="font-size:.875rem;">Adicione ingredientes das receitas</p>
       </div>
-      `;
+    `;
     return;
   }
 
   content.innerHTML = `
-      <div style="max-height: 60vh; overflow-y: auto;">
+    <div style="max-height: 60vh; overflow-y: auto;">
       ${shoppingList.map(item => `
         <div class="shopping-item">
           <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleShoppingItem('${item.id}')">
@@ -2986,10 +2798,10 @@ function renderShoppingList() {
           </button>
         </div>
       `).join('')}
-        </div>
+    </div>
 
-        <button class="btn-clear-list" onclick="clearShoppingList()">Limpar Toda a Lista</button>
-        `;
+    <button class="btn-clear-list" onclick="clearShoppingList()">Limpar Toda a Lista</button>
+  `;
 }
 
 window.toggleShoppingItem = function(id) {
@@ -3128,12 +2940,6 @@ window.closeMealSelector = function() {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: renderWeekPlanner
-   PARA QUE SERVE:
-   - Renderiza/atualiza a UI relacionada a renderWeekPlanner com base no estado atual do app.
-   ========================================================= */
 function renderWeekPlanner() {
   const content = document.getElementById('week-planner-content');
   if (!content) return;
@@ -3152,53 +2958,53 @@ function renderWeekPlanner() {
   });
 
   content.innerHTML = `
-        <div class="week-planner-wrapper">
-        <table class="week-table">
+    <div class="week-planner-wrapper">
+      <table class="week-table">
         <thead>
-        <tr>
-        <th>Refeição</th>
-        ${days.map(day => `<th>${day}</th>`).join('')}
+          <tr>
+            <th>Refeição</th>
+            ${days.map(day => `<th>${day}</th>`).join('')}
           </tr>
         </thead>
         <tbody>
           ${meals.map(meal => `
-        <tr>
-        <td style="background:#f9fafb;font-weight:600;">${meal}</td>
-        ${days.map(day => {
-            const key = `${day}-${meal}`;
+            <tr>
+              <td style="background:#f9fafb;font-weight:600;">${meal}</td>
+              ${days.map(day => {
+                const key = `${day}-${meal}`;
                 const planned = weekPlan[key];
                 return `
-            <td>
-            ${planned ? `
+                  <td>
+                    ${planned ? `
                       <div class="planned-meal">
                         <div class="planned-meal-name">${planned.name}</div>
                         <div class="planned-meal-cal">${planned.calories} cal</div>
                         <button class="btn-remove-meal" onclick="removeFromWeekPlan('${day}', '${meal}')">Remover</button>
                       </div>
                     ` : `<div class="empty-slot">-</div>`}
-              </td>
-              `;
+                  </td>
+                `;
               }).join('')}
             </tr>
           `).join('')}
-              <tr>
-              <td style="background:#fffbeb;font-weight:600;">Total do Dia</td>
-              ${days.map(day => `
+          <tr>
+            <td style="background:#fffbeb;font-weight:600;">Total do Dia</td>
+            ${days.map(day => `
               <td style="background:#fffbeb;font-weight:600;color:#ea580c;">
                 ${dailyCalories[day]} cal
               </td>
             `).join('')}
-                </tr>
-                </tbody>
-                </table>
-                </div>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-                ${isPremium ? `
+    ${isPremium ? `
       <button class="btn-save-plan" onclick="saveWeekPlanConfirm()">Salvar Planejamento</button>
     ` : `
       <button class="btn-save-plan" disabled title="Disponível apenas para usuários Premium">Calcule e Planeje sua Semana</button>
     `}
-                  `;
+  `;
 }
 
 window.saveWeekPlanConfirm = function() {
@@ -3251,42 +3057,42 @@ window.calculateCalories = function() {
 
   results.classList.remove('hidden');
   results.innerHTML = `
-                  <div class="result-box" style="background:#dbeafe;">
-                  <h4>Suas Necessidades Calóricas</h4>
-                  <div class="result-grid">
-                  <div class="result-item">
-                  <div class="result-value" style="color:#16a34a;">${Math.round(tdee)}</div>
-                  <div class="result-label">Manutenção</div>
-                  </div>
-                  <div class="result-item">
-                  <div class="result-value" style="color:#ea580c;">${Math.round(deficit)}</div>
-                  <div class="result-label">Perder Peso</div>
-                  </div>
-                  <div class="result-item">
-                  <div class="result-value" style="color:#3b82f6;">${Math.round(surplus)}</div>
-                  <div class="result-label">Ganhar Massa</div>
-                  </div>
-                  </div>
-                  </div>
+    <div class="result-box" style="background:#dbeafe;">
+      <h4>Suas Necessidades Calóricas</h4>
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="result-value" style="color:#16a34a;">${Math.round(tdee)}</div>
+          <div class="result-label">Manutenção</div>
+        </div>
+        <div class="result-item">
+          <div class="result-value" style="color:#ea580c;">${Math.round(deficit)}</div>
+          <div class="result-label">Perder Peso</div>
+        </div>
+        <div class="result-item">
+          <div class="result-value" style="color:#3b82f6;">${Math.round(surplus)}</div>
+          <div class="result-label">Ganhar Massa</div>
+        </div>
+      </div>
+    </div>
 
-                  <div class="result-box" style="background:#f0fdf4;">
-                  <h4>Macronutrientes Recomendados</h4>
-                  <div class="result-grid">
-                  <div class="result-item">
-                  <div class="result-value" style="color:#3b82f6;">${Math.round(weight * 2)}g</div>
-                  <div class="result-label">Proteína</div>
-                  </div>
-                  <div class="result-item">
-                  <div class="result-value" style="color:#f59e0b;">${Math.round(tdee * 0.4 / 4)}g</div>
-                  <div class="result-label">Carboidratos</div>
-                  </div>
-                  <div class="result-item">
-                  <div class="result-value" style="color:#ea580c;">${Math.round(tdee * 0.25 / 9)}g</div>
-                  <div class="result-label">Gorduras</div>
-                  </div>
-                  </div>
-                  </div>
-                  `;
+    <div class="result-box" style="background:#f0fdf4;">
+      <h4>Macronutrientes Recomendados</h4>
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="result-value" style="color:#3b82f6;">${Math.round(weight * 2)}g</div>
+          <div class="result-label">Proteína</div>
+        </div>
+        <div class="result-item">
+          <div class="result-value" style="color:#f59e0b;">${Math.round(tdee * 0.4 / 4)}g</div>
+          <div class="result-label">Carboidratos</div>
+        </div>
+        <div class="result-item">
+          <div class="result-value" style="color:#ea580c;">${Math.round(tdee * 0.25 / 9)}g</div>
+          <div class="result-label">Gorduras</div>
+        </div>
+      </div>
+    </div>
+  `;
 };
 
 
@@ -3336,12 +3142,6 @@ window.closeWeekPlanner = function () {
 // ==============================
 // PREMIUM (pronto p/ evoluir)
 // ==============================
-
-/* =========================================================
-   FUNÇÃO: redeemPremiumCode
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em redeemPremiumCode (estado, validação e sincronização de UI).
-   ========================================================= */
 async function redeemPremiumCode(code) {
   // hoje: /api/redeem
   // amanhã: token/KV/edge -> só troca aqui
@@ -3361,18 +3161,24 @@ async function redeemPremiumCode(code) {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: activatePremium
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em activatePremium (estado, validação e sincronização de UI).
-   ========================================================= */
 async function activatePremium() {
   const input = document.getElementById('premium-code-input');
   const code = input ? input.value.trim().toUpperCase() : '';
   
   if (!code) {
     showNotification('Aviso', 'Digite um código válido');
+    return;
+  }
+
+  // ✅ Fluxo "Já tenho um código": exige e-mail para validar com o Firebase
+  const redeemEmailInput = document.getElementById('premium-redeem-email');
+  const typedEmail = redeemEmailInput ? String(redeemEmailInput.value || '').trim().toLowerCase() : '';
+  const effectiveEmail = (typedEmail || String(userData.email || '').trim().toLowerCase());
+
+  // Se existe campo de e-mail na tela, ele é obrigatório para ativação
+  if (redeemEmailInput && !typedEmail) {
+    showNotification('Aviso', 'Digite o e-mail usado na compra');
+    redeemEmailInput.focus();
     return;
   }
 
@@ -3470,12 +3276,6 @@ async function activatePremium() {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: _handlePremiumExpiration
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em _handlePremiumExpiration (estado, validação e sincronização de UI).
-   ========================================================= */
 async function _handlePremiumExpiration() {
   console.log('[PREMIUM] Expirado - executando bloqueio');
   
@@ -3531,12 +3331,6 @@ async function _handlePremiumExpiration() {
 // updatePremiumButtons()
 // - Mantém o “amarelo/estado Premium” nos botões (TabBar + Hambúrguer)
 // - Agora prioriza o estado único (RF.premium / isPremiumValidNow) e só usa variáveis antigas como fallback
-
-/* =========================================================
-   FUNÇÃO: updatePremiumButtons
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em updatePremiumButtons (estado, validação e sincronização de UI).
-   ========================================================= */
 function updatePremiumButtons() {
   const tabPremiumBtn = document.querySelector('.tab-premium');
   const tabPremiumLabel = tabPremiumBtn?.querySelector('.tab-label');
@@ -3635,12 +3429,6 @@ function updatePremiumButtons() {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: _setupPremiumTimers
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em _setupPremiumTimers (estado, validação e sincronização de UI).
-   ========================================================= */
 function _setupPremiumTimers() {
   // Limpa timers anteriores (se existirem)
   _clearPremiumTimers();
@@ -3695,12 +3483,6 @@ function _setupPremiumTimers() {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: _clearPremiumTimers
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em _clearPremiumTimers (estado, validação e sincronização de UI).
-   ========================================================= */
 function _clearPremiumTimers() {
   if (_premiumTimeout) {
     clearTimeout(_premiumTimeout);
@@ -3714,12 +3496,6 @@ function _clearPremiumTimers() {
 }
 
 // ✅ Mantém função pública para compatibilidade
-
-/* =========================================================
-   FUNÇÃO: checkPremiumExpiration
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em checkPremiumExpiration (estado, validação e sincronização de UI).
-   ========================================================= */
 async function checkPremiumExpiration() {
   if (!isPremium || !premiumExpires) return;
   
@@ -3762,12 +3538,6 @@ if (premiumCodeInput) {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: handleSearchInput
-   PARA QUE SERVE:
-   - Manipula um evento/ação do usuário e encaminha a lógica necessária em handleSearchInput.
-   ========================================================= */
 function handleSearchInput(e) {
   const raw = String(e?.target?.value || '').trim();
 
@@ -3882,46 +3652,34 @@ const faqData = [
   }
 ];
 
-
-/* =========================================================
-   FUNÇÃO: chevronSvg
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em chevronSvg.
-   ========================================================= */
 function chevronSvg() {
   return `
-                  <svg viewBox="0 0 24 24" fill="none">
-                  <polyline points="9 18 15 12 9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
-                  </svg>
-                  `;
+    <svg viewBox="0 0 24 24" fill="none">
+      <polyline points="9 18 15 12 9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>
+    </svg>
+  `;
 }
 
-
-/* =========================================================
-   FUNÇÃO: renderFAQ
-   PARA QUE SERVE:
-   - Renderiza/atualiza a UI relacionada a renderFAQ com base no estado atual do app.
-   ========================================================= */
 function renderFAQ() {
   const content = document.getElementById('faq-content');
   if (!content) return;
 
   content.innerHTML = faqData.map((section, idx) => `
-                  <div class="faq-section" id="faq-sec-${idx}">
-                  <button class="faq-header" onclick="toggleFAQSection(${idx})" aria-expanded="false">
-                  <span class="faq-title">${section.title}</span>
-                  <span class="faq-chevron">${chevronSvg()}</span>
-                  </button>
-                  <div class="faq-body" id="faq-body-${idx}" style="display:block;">
-                  ${section.items.map(item => `
+    <div class="faq-section" id="faq-sec-${idx}">
+      <button class="faq-header" onclick="toggleFAQSection(${idx})" aria-expanded="false">
+        <span class="faq-title">${section.title}</span>
+        <span class="faq-chevron">${chevronSvg()}</span>
+      </button>
+      <div class="faq-body" id="faq-body-${idx}" style="display:block;">
+        ${section.items.map(item => `
           <div style="margin-bottom:12px;">
             <div class="faq-q">${item.q}</div>
             <div class="faq-a">${item.a}</div>
           </div>
         `).join('')}
-                    </div>
-                    </div>
-                    `).join('') + `
+      </div>
+    </div>
+  `).join('') + `
     <div class="faq-help">
       <h4>Ainda tem dúvidas?</h4>
       <div class="faq-help-links">
@@ -3943,11 +3701,11 @@ function renderFAQ() {
     </div>
   `;
 
-                    document.querySelectorAll('.faq-section').forEach(sec => sec.classList.add('open'));
-                  }
+  document.querySelectorAll('.faq-section').forEach(sec => sec.classList.add('open'));
+}
 
-                window.toggleFAQSection = function(idx) {
-                  const body = document.getElementById(`faq-body-${idx}`);
+window.toggleFAQSection = function(idx) {
+  const body = document.getElementById(`faq-body-${idx}`);
   const sec = document.getElementById(`faq-sec-${idx}`);
   if (!body || !sec) return;
 
@@ -3967,12 +3725,6 @@ if (faqBtn) faqBtn.addEventListener('click', window.openFAQ);
 // ==============================
 // NOTIFICAÇÃO + CONFIRM
 // ==============================
-
-/* =========================================================
-   FUNÇÃO: showNotification
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em showNotification.
-   ========================================================= */
 function showNotification(title, message) {
   const modal = document.getElementById('notification-modal');
   const titleEl = document.getElementById('notification-title');
@@ -3995,12 +3747,6 @@ window.closeNotification = function() {
   }
 };
 
-
-/* =========================================================
-   FUNÇÃO: showConfirm
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em showConfirm.
-   ========================================================= */
 function showConfirm(title, message, onConfirm) {
   const modal = document.getElementById('confirm-modal');
   if (!modal) return;
@@ -4013,12 +3759,6 @@ function showConfirm(title, message, onConfirm) {
   if (titleEl) titleEl.textContent = title;
   if (messageEl) messageEl.textContent = message;
 
-
-/* =========================================================
-   FUNÇÃO: cleanup
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em cleanup.
-   ========================================================= */
   const cleanup = () => {
     if (yesBtn) yesBtn.onclick = null;
     if (noBtn) noBtn.onclick = null;
@@ -4044,12 +3784,6 @@ function showConfirm(title, message, onConfirm) {
 // ==============================
 // HAPTIC
 // ==============================
-
-/* =========================================================
-   FUNÇÃO: haptic
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em haptic.
-   ========================================================= */
 function haptic(ms = 8) {
   try {
     if (window.matchMedia('(pointer: coarse)').matches) {
@@ -4171,12 +3905,6 @@ window.tabGoPremium = function() {
   setActiveTab(3);
 };
 
-
-/* =========================================================
-   FUNÇÃO: setActiveTab
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em setActiveTab.
-   ========================================================= */
 function setActiveTab(index) {
   const tabs = document.querySelectorAll('.tab-item');
   tabs.forEach((tab, i) => {
@@ -4370,12 +4098,6 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: isPremiumValidNow
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em isPremiumValidNow (estado, validação e sincronização de UI).
-   ========================================================= */
 function isPremiumValidNow() {
   const flag = localStorage.getItem('fit_premium') === 'true';
   const exp = parseInt(localStorage.getItem('fit_premium_expires') || '0', 10);
@@ -4401,12 +4123,6 @@ function forceFreeCleanup() {
 // ================================
 // Premium Core (fonte única)
 // ================================
-
-/* =========================================================
-   FUNÇÃO: getPremiumExpiresFromStorage
-   PARA QUE SERVE:
-   - Obtém/carrega dados necessários para getPremiumExpiresFromStorage (UI/estado/localStorage/API).
-   ========================================================= */
 function getPremiumExpiresFromStorage() {
   const exp = parseInt(localStorage.getItem('fit_premium_expires') || '0', 10);
   return Number.isFinite(exp) ? exp : 0;
@@ -4415,12 +4131,6 @@ function getPremiumExpiresFromStorage() {
 // Alias de compatibilidade (opcional, recomendado)
 const getPremiumExpires = getPremiumExpiresFromStorage;
 
-
-/* =========================================================
-   FUNÇÃO: isPremiumValidNow
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em isPremiumValidNow (estado, validação e sincronização de UI).
-   ========================================================= */
 function isPremiumValidNow() {
   const flag = localStorage.getItem('fit_premium') === 'true';
   const exp = getPremiumExpiresFromStorage();
@@ -4553,12 +4263,6 @@ window.addEventListener('DOMContentLoaded', function() {
 (function debugPlannerTabbar(){
   'use strict';
 
-
-/* =========================================================
-   FUNÇÃO: pick
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em pick.
-   ========================================================= */
   function pick(sel){ return document.querySelector(sel); }
   function closestAny(el, sels){
     for (const s of sels) {
@@ -4625,12 +4329,6 @@ window.addEventListener('DOMContentLoaded', function() {
 (function plannerIndexFallback(){
   'use strict';
 
-
-/* =========================================================
-   FUNÇÃO: isIndexPage
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em isIndexPage.
-   ========================================================= */
   function isIndexPage() {
     const p = (location.pathname || '').toLowerCase();
     return p.endsWith('/index.html') || p === '/' || p.endsWith('/index');
@@ -4668,12 +4366,6 @@ window.addEventListener('DOMContentLoaded', function() {
 (function plannerActiveState() {
   'use strict';
 
-
-/* =========================================================
-   FUNÇÃO: getPlannerButton
-   PARA QUE SERVE:
-   - Obtém/carrega dados necessários para getPlannerButton (UI/estado/localStorage/API).
-   ========================================================= */
   function getPlannerButton() {
     const tabbar = document.querySelector('.tab-bar');
     if (!tabbar) return null;
@@ -4683,12 +4375,6 @@ window.addEventListener('DOMContentLoaded', function() {
     );
   }
 
-
-/* =========================================================
-   FUNÇÃO: setActive
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em setActive.
-   ========================================================= */
   function setActive(active) {
     const btn = getPlannerButton();
     if (!btn) return;
@@ -4745,12 +4431,6 @@ window.addEventListener('DOMContentLoaded', function() {
   if (window.__debugPlannerDropdownState) return;
   window.__debugPlannerDropdownState = true;
 
-
-/* =========================================================
-   FUNÇÃO: dd
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em dd.
-   ========================================================= */
   function dd() { return document.getElementById('planner-dropdown'); }
 
   document.addEventListener('click', function(){
@@ -4812,12 +4492,6 @@ window.addEventListener('DOMContentLoaded', function() {
   // ===============================
   // CONTROLE DE PLANO
   // ===============================
-
-/* =========================================================
-   FUNÇÃO: isPremium
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em isPremium (estado, validação e sincronização de UI).
-   ========================================================= */
   function isPremium(){
     return localStorage.getItem('fit_premium') === 'true';
   }
@@ -4838,12 +4512,6 @@ window.addEventListener('DOMContentLoaded', function() {
   // ===============================
   // RENDER
   // ===============================
-
-/* =========================================================
-   FUNÇÃO: render
-   PARA QUE SERVE:
-   - Renderiza/atualiza a UI relacionada a render com base no estado atual do app.
-   ========================================================= */
   function render(){
     textEl.textContent = steps[i];
     counterEl.textContent = `${i + 1}/${steps.length}`;
@@ -4854,12 +4522,6 @@ window.addEventListener('DOMContentLoaded', function() {
   // ===============================
   // AÇÕES
   // ===============================
-
-/* =========================================================
-   FUNÇÃO: open
-   PARA QUE SERVE:
-   - Abre/mostra a interface ou modal relacionado a open.
-   ========================================================= */
   function open(){
     card.classList.remove('hidden');
     i = 0;
@@ -4910,12 +4572,6 @@ window.addEventListener('DOMContentLoaded', function() {
 // PLANEJADOR — garante wrapper de scroll horizontal (WEB)
 // =========================================================
 (function ensurePlannerHorizontalScroll(){
-
-/* =========================================================
-   FUNÇÃO: wrapPlannerTable
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em wrapPlannerTable.
-   ========================================================= */
   function wrapPlannerTable() {
     // tenta achar a tabela do planejador no DOM (modal aberto)
     // ajuste aqui se sua tabela tiver um id/class específico
@@ -4986,12 +4642,6 @@ document.addEventListener('DOMContentLoaded', function(){
   };
 
   // 🔧 Ajuste aqui se o seu grid tiver outro id/classe
-
-/* =========================================================
-   FUNÇÃO: getGridEl
-   PARA QUE SERVE:
-   - Obtém/carrega dados necessários para getGridEl (UI/estado/localStorage/API).
-   ========================================================= */
   function getGridEl() {
     return document.getElementById('recipes-grid')
       || document.querySelector('.recipes-grid')
@@ -4999,12 +4649,6 @@ document.addEventListener('DOMContentLoaded', function(){
       || null;
   }
 
-
-/* =========================================================
-   FUNÇÃO: ensureSentinel
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em ensureSentinel.
-   ========================================================= */
   function ensureSentinel(grid) {
     if (!grid) return null;
 
@@ -5024,12 +4668,6 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   // Remove apenas os cards, mantendo o sentinela (ele será reanexado no final)
-
-/* =========================================================
-   FUNÇÃO: clearGridKeepSentinel
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em clearGridKeepSentinel.
-   ========================================================= */
   function clearGridKeepSentinel(grid) {
     if (!grid) return;
 
@@ -5043,12 +4681,6 @@ document.addEventListener('DOMContentLoaded', function(){
   // ---------------------------------------------------------
   // Render dos cards (reaproveita o que já existe)
   // ---------------------------------------------------------
-
-/* =========================================================
-   FUNÇÃO: renderCardFromExistingRenderer
-   PARA QUE SERVE:
-   - Renderiza/atualiza a UI relacionada a renderCardFromExistingRenderer com base no estado atual do app.
-   ========================================================= */
   function renderCardFromExistingRenderer(recipe) {
     // 1) Se você tiver uma função pronta de "criar card", usamos ela
     //    (muitos apps têm algo tipo createRecipeCard / renderRecipeCard etc.)
@@ -5068,8 +4700,8 @@ document.addEventListener('DOMContentLoaded', function(){
     const cat = recipe.category || '';
 
     card.innerHTML = `
-                  <div class="recipe-image">
-                  ${img ? `<img src="${img}" alt="${name}" loading="lazy" decoding="async">` : ''}
+      <div class="recipe-image">
+        ${img ? `<img src="${img}" alt="${name}" loading="lazy" decoding="async">` : ''}
       </div>
       <div class="recipe-content">
         ${cat ? `<div class="recipe-category">${cat}</div>` : ''}
@@ -5077,49 +4709,37 @@ document.addEventListener('DOMContentLoaded', function(){
       </div>
     `;
 
-                  // tenta abrir detalhe usando função existente
-                  card.addEventListener('click', () => {
-                    if (typeof window.requestOpenRecipe === 'function') {
-                      window.requestOpenRecipe(recipe.id);
-                    }
-                });
+    // tenta abrir detalhe usando função existente
+    card.addEventListener('click', () => {
+      if (typeof window.requestOpenRecipe === 'function') {
+        window.requestOpenRecipe(recipe.id);
+      }
+    });
 
-              return card;
-            }
+    return card;
+  }
 
+  function appendBatch(items) {
+    const grid = getGridEl();
+    if (!grid) return;
 
-          /* =========================================================
-          FUNÇÃO: appendBatch
-          PARA QUE SERVE:
-          - Executa a lógica encapsulada em appendBatch.
-          ========================================================= */
-          function appendBatch(items) {
-            const grid = getGridEl();
-            if (!grid) return;
+    // garante sentinela e insere cards antes dele
+    const sentinel = ensureSentinel(grid);
 
-            // garante sentinela e insere cards antes dele
-            const sentinel = ensureSentinel(grid);
+    const frag = document.createDocumentFragment();
+    items.forEach((r) => {
+      const el = renderCardFromExistingRenderer(r);
+      if (el) frag.appendChild(el);
+    });
 
-            const frag = document.createDocumentFragment();
-            items.forEach((r) => {
-              const el = renderCardFromExistingRenderer(r);
-              if (el) frag.appendChild(el);
-            });
-
-          // insere antes do sentinela (pra ele continuar no final)
-          if (sentinel) {
-            grid.insertBefore(frag, sentinel);
-          } else {
-          grid.appendChild(frag);
-        }
+    // insere antes do sentinela (pra ele continuar no final)
+    if (sentinel) {
+      grid.insertBefore(frag, sentinel);
+    } else {
+      grid.appendChild(frag);
     }
+  }
 
-
-  /* =========================================================
-  FUNÇÃO: loadNextBatch
-  PARA QUE SERVE:
-  - Obtém/carrega dados necessários para loadNextBatch (UI/estado/localStorage/API).
-  ========================================================= */
   function loadNextBatch() {
     if (!Array.isArray(state.list)) return;
 
@@ -5136,89 +4756,71 @@ document.addEventListener('DOMContentLoaded', function(){
     if (state.cursor >= state.list.length) {
       window.__rfStopInfiniteScroll && window.__rfStopInfiniteScroll();
     }
-}
-
-const observer = new IntersectionObserver((entries) => {
-  if (entries.some(e => e.isIntersecting)) loadNextBatch();
-}, { root: null, rootMargin: '600px 0px', threshold: 0.01 });
-
-
-/* =========================================================
-FUNÇÃO: start
-PARA QUE SERVE:
-- Executa a lógica encapsulada em start.
-========================================================= */
-function start(list) {
-  const grid = getGridEl();
-  if (!grid) {
-    console.warn('[InfiniteScroll] Grid nao encontrado');
-    return;
   }
 
-state.list = Array.isArray(list) ? list : [];
-state.cursor = 0;
+  const observer = new IntersectionObserver((entries) => {
+    if (entries.some(e => e.isIntersecting)) loadNextBatch();
+  }, { root: null, rootMargin: '600px 0px', threshold: 0.01 });
 
-// limpa grid e reinicia
-ensureSentinel(grid);
-clearGridKeepSentinel(grid);
+  function start(list) {
+    const grid = getGridEl();
+    if (!grid) {
+      console.warn('[InfiniteScroll] Grid nao encontrado');
+      return;
+    }
 
-const sentinel = ensureSentinel(grid);
+    state.list = Array.isArray(list) ? list : [];
+    state.cursor = 0;
 
-if (!state.observing && sentinel) {
-  observer.observe(sentinel);
-  state.observing = true;
-}
+    // limpa grid e reinicia
+    ensureSentinel(grid);
+    clearGridKeepSentinel(grid);
 
-loadNextBatch();
-}
+    const sentinel = ensureSentinel(grid);
 
+    if (!state.observing && sentinel) {
+      observer.observe(sentinel);
+      state.observing = true;
+    }
 
-/* =========================================================
-FUNÇÃO: stop
-PARA QUE SERVE:
-- Executa a lógica encapsulada em stop.
-========================================================= */
-function stop() {
-  const sentinel = document.getElementById('rf-load-more-sentinel');
-  if (sentinel) observer.unobserve(sentinel);
-  state.observing = false;
-}
-
-// ---------------------------------------------------------
-// Reset da Home (voltar do detalhe / trocar categoria)
-// ---------------------------------------------------------
-
-/* =========================================================
-FUNÇÃO: homeReset
-PARA QUE SERVE:
-- Executa a lógica encapsulada em homeReset.
-========================================================= */
-function homeReset(optionalList) {
-  // se passar lista, troca a lista atual
-  if (Array.isArray(optionalList)) state.list = optionalList;
-
-  // se não tiver lista ainda, tenta usar a global (compat)
-  if (!Array.isArray(state.list) || state.list.length === 0) {
-    state.list = (typeof window.allRecipes !== 'undefined' && Array.isArray(window.allRecipes))
-    ? window.allRecipes
-    : (typeof window.ALL_RECIPES !== 'undefined' && Array.isArray(window.ALL_RECIPES))
-    ? window.ALL_RECIPES
-    : (typeof window.RECIPES !== 'undefined' && Array.isArray(window.RECIPES))
-    ? window.RECIPES
-    : [];
+    loadNextBatch();
   }
 
-// reinicia do zero
-stop();
-start(state.list);
-}
+  function stop() {
+    const sentinel = document.getElementById('rf-load-more-sentinel');
+    if (sentinel) observer.unobserve(sentinel);
+    state.observing = false;
+  }
 
-// expõe
-window.__rfStartInfiniteScroll = start;
-window.__rfStopInfiniteScroll = stop;
-window.__rfHomeReset = homeReset;
+  // ---------------------------------------------------------
+  // Reset da Home (voltar do detalhe / trocar categoria)
+  // ---------------------------------------------------------
+  function homeReset(optionalList) {
+    // se passar lista, troca a lista atual
+    if (Array.isArray(optionalList)) state.list = optionalList;
 
-console.log('[InfiniteScroll] motor carregado (passo 2)');
+    // se não tiver lista ainda, tenta usar a global (compat)
+    if (!Array.isArray(state.list) || state.list.length === 0) {
+      state.list = (typeof window.allRecipes !== 'undefined' && Array.isArray(window.allRecipes))
+        ? window.allRecipes
+        : (typeof window.ALL_RECIPES !== 'undefined' && Array.isArray(window.ALL_RECIPES))
+          ? window.ALL_RECIPES
+          : (typeof window.RECIPES !== 'undefined' && Array.isArray(window.RECIPES))
+            ? window.RECIPES
+            : [];
+    }
+
+    // reinicia do zero
+    stop();
+    start(state.list);
+  }
+
+  // expõe
+  window.__rfStartInfiniteScroll = start;
+  window.__rfStopInfiniteScroll = stop;
+  window.__rfHomeReset = homeReset;
+
+  console.log('[InfiniteScroll] motor carregado (passo 2)');
 })();
 
 
@@ -5238,37 +4840,37 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
   try {
     const email = prompt('Digite seu email para continuar:');
     if (!email) return;
-
+    
     console.log('1. Enviando requisição...');
-
+    
     const response = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ plan: plan, email: email })
     });
-
-  console.log('2. Status:', response.status);
-  console.log('3. OK:', response.ok);
-
-  const data = await response.json();
-
-  console.log('4. Data recebida:', data);
-
-  if (!data.preferenceId) {
-    throw new Error('PreferenceId não retornado');
+    
+    console.log('2. Status:', response.status);
+    console.log('3. OK:', response.ok);
+    
+    const data = await response.json();
+    
+    console.log('4. Data recebida:', data);
+    
+    if (!data.preferenceId) {
+      throw new Error('PreferenceId não retornado');
+    }
+    
+    console.log('5. Abrindo checkout com preferenceId:', data.preferenceId);
+    
+    mp.checkout({
+      preference: { id: data.preferenceId },
+      autoOpen: true
+    });
+    
+  } catch (error) {
+    console.error('ERRO DETALHADO:', error);
+    alert('Erro ao processar pagamento: ' + error.message);
   }
-
-console.log('5. Abrindo checkout com preferenceId:', data.preferenceId);
-
-mp.checkout({
-  preference: { id: data.preferenceId },
-  autoOpen: true
-});
-
-} catch (error) {
-  console.error('ERRO DETALHADO:', error);
-  alert('Erro ao processar pagamento: ' + error.message);
-}
 };
 
 
@@ -5278,12 +4880,6 @@ mp.checkout({
 
 
 // 3. Função para validar código premium via API
-
-/* =========================================================
-FUNÇÃO: validatePremiumCodeAPI
-PARA QUE SERVE:
-- Centraliza rotinas relacionadas a Premium em validatePremiumCodeAPI (estado, validação e sincronização de UI).
-========================================================= */
 async function validatePremiumCodeAPI(code) {
   try {
     const response = await fetch('/api/validate-code', {
@@ -5292,13 +4888,13 @@ async function validatePremiumCodeAPI(code) {
       body: JSON.stringify({ code: code })
     });
 
-  const result = await response.json();
-  return result;
+    const result = await response.json();
+    return result;
 
-} catch (error) {
-  console.error('Erro ao validar código:', error);
-  return { valid: false, error: 'Erro ao validar código' };
-}
+  } catch (error) {
+    console.error('Erro ao validar código:', error);
+    return { valid: false, error: 'Erro ao validar código' };
+  }
 }
 
 
@@ -5309,37 +4905,25 @@ async function validatePremiumCodeAPI(code) {
 // PREMIUM MODAL - TABS E PLANOS
 // ===================================
 
-
-/* =========================================================
-FUNÇÃO: showPremiumTab
-PARA QUE SERVE:
-- Centraliza rotinas relacionadas a Premium em showPremiumTab (estado, validação e sincronização de UI).
-========================================================= */
 function showPremiumTab(tab) {
   // Remove active de todas as tabs
   document.querySelectorAll('.premium-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.premium-tab-content').forEach(c => c.classList.remove('active'));
-
+  
   // Ativa tab selecionada
   if (tab === 'plans') {
     document.querySelector('.premium-tab:first-child').classList.add('active');
     document.getElementById('premium-plans-tab').classList.add('active');
   } else {
-  document.querySelector('.premium-tab:last-child').classList.add('active');
-  document.getElementById('premium-code-tab').classList.add('active');
-}
+    document.querySelector('.premium-tab:last-child').classList.add('active');
+    document.getElementById('premium-code-tab').classList.add('active');
+  }
 }
 
-
-/* =========================================================
-FUNÇÃO: selectPlan
-PARA QUE SERVE:
-- Executa a lógica encapsulada em selectPlan.
-========================================================= */
 async function selectPlan(plan) {
   const email = prompt('Digite seu email para continuar:');
   if (!email) return;
-
+  
   try {
     const response = await fetch('/api/create-preference', {
       method: 'POST',
@@ -5347,22 +4931,22 @@ async function selectPlan(plan) {
       body: JSON.stringify({ plan: plan, email: email })
     });
 
-  const { preferenceId } = await response.json();
+    const { preferenceId } = await response.json();
 
-  // Inicializa MP se ainda não foi
-  if (typeof mp === 'undefined') {
-    window.mp = new MercadoPago(process.env.MP_PUBLIC_KEY || 'APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
+    // Inicializa MP se ainda não foi
+    if (typeof mp === 'undefined') {
+      window.mp = new MercadoPago(process.env.MP_PUBLIC_KEY || 'APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
+    }
+
+    mp.checkout({
+      preference: { id: preferenceId },
+      autoOpen: true
+    });
+
+  } catch (error) {
+    console.error('Erro ao abrir checkout:', error);
+    alert('Erro ao processar pagamento. Tente novamente.');
   }
-
-mp.checkout({
-  preference: { id: preferenceId },
-  autoOpen: true
-});
-
-} catch (error) {
-  console.error('Erro ao abrir checkout:', error);
-  alert('Erro ao processar pagamento. Tente novamente.');
-}
 }
 
 
@@ -5381,17 +4965,11 @@ let userData = {
 };
 
 // Trocar de aba (navegação livre)
-
-/* =========================================================
-FUNÇÃO: switchTab
-PARA QUE SERVE:
-- Executa a lógica encapsulada em switchTab.
-========================================================= */
 function switchTab(tabNumber) {
   // Remove active de todas as abas
   document.querySelectorAll('.premium-tab-btn').forEach(btn => btn.classList.remove('active'));
   document.querySelectorAll('.premium-tab-content').forEach(content => content.classList.remove('active'));
-
+  
   // Ativa aba selecionada
   document.querySelector(`.premium-tab-btn:nth-child(${tabNumber})`).classList.add('active');
   document.getElementById(`tab-${tabNumber}`).classList.add('active');
@@ -5440,12 +5018,6 @@ document.getElementById('signup-form')?.addEventListener('submit', function(e) {
 });
 
 // Auto-preencher formulário se já cadastrou antes
-
-/* =========================================================
-   FUNÇÃO: autoFillForm
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em autoFillForm.
-   ========================================================= */
 function autoFillForm() {
   try {
     const savedName = localStorage.getItem('vf_user_name');
@@ -5470,12 +5042,6 @@ function autoFillForm() {
 }
 
 // Selecionar plano COM VALIDAÇÃO
-
-/* =========================================================
-   FUNÇÃO: selectPlanWithValidation
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em selectPlanWithValidation.
-   ========================================================= */
 async function selectPlanWithValidation(plan) {
   // ✅ VALIDA SE PREENCHEU CADASTRO
   if (!userData.registered) {
@@ -5500,12 +5066,6 @@ async function selectPlanWithValidation(plan) {
 
 
 // Ativar trial de 5 dias
-
-/* =========================================================
-   FUNÇÃO: activateTrial
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em activateTrial.
-   ========================================================= */
 async function activateTrial() {
   try {
     const trialCode = 'TRIAL-' + Math.random().toString(36).substr(2, 8).toUpperCase();
@@ -5563,6 +5123,35 @@ async function activateTrial() {
 	await new Promise(resolve => setTimeout(resolve, 500));
 	
     // ✅ FECHA MODAL
+    // ✅ Saudação (primeiro nome) para deixar a experiência mais pessoal
+    try {
+      const nameSource = String(userData.name || userData.nome || '').trim();
+      const emailSource = String(effectiveEmail || userData.email || '').trim().toLowerCase();
+
+      let firstName = '';
+      if (nameSource) {
+        firstName = nameSource.split(' ')[0];
+      } else if (emailSource && emailSource.includes('@')) {
+        // pega a primeira parte do e-mail (antes do @) e remove separadores comuns
+        firstName = emailSource.split('@')[0].split(/[._-]/)[0];
+      }
+
+      if (firstName) {
+        localStorage.setItem('fit_user_firstname', firstName);
+      }
+    } catch (e) {
+      // silencioso
+    }
+
+    // Atualiza saudação na UI
+    try {
+      if (typeof window.updateGreetingUI === 'function') {
+        window.updateGreetingUI();
+      }
+    } catch (e) {
+      // silencioso
+    }
+
     closePremiumModal();
     
     showNotification(
@@ -5580,12 +5169,6 @@ async function activateTrial() {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: processPayment
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em processPayment.
-   ========================================================= */
 async function processPayment(plan) {
   try {
     const response = await fetch('/api/create-preference', {
@@ -5638,12 +5221,6 @@ async function processPayment(plan) {
 
 
 // Ativar com código
-
-/* =========================================================
-   FUNÇÃO: activatePremiumWithCode
-   PARA QUE SERVE:
-   - Centraliza rotinas relacionadas a Premium em activatePremiumWithCode (estado, validação e sincronização de UI).
-   ========================================================= */
 async function activatePremiumWithCode() {
   const input = document.getElementById('premium-code-input');
   const code = input ? input.value.trim().toUpperCase() : '';
@@ -5722,12 +5299,6 @@ async function activatePremiumWithCode() {
 
 
 // Abrir modal
-
-/* =========================================================
-   FUNÇÃO: openPremiumModal
-   PARA QUE SERVE:
-   - Abre/mostra a interface ou modal relacionado a openPremiumModal.
-   ========================================================= */
 function openPremiumModal(source, startTab) {
   const modal = document.getElementById('premium-modal');
   modal.classList.remove('hidden');
@@ -5739,21 +5310,14 @@ function openPremiumModal(source, startTab) {
   // Auto-preenche se já cadastrou antes
   autoFillForm();
   
-  // Sempre abre na aba 1
-// Aba inicial (padrão: 1 - Cadastro)
-const _startTab = Number.isFinite(Number(startTab)) ? Number(startTab) : 1;
-switchTab(_startTab);
+  // Aba inicial (padrão: 1 - Cadastro)
+  const _startTab = Number.isFinite(Number(startTab)) ? Number(startTab) : 1;
+  switchTab(_startTab);
   
   console.log('[MODAL] Aberto de:', source);
 }
 
 // Fechar modal
-
-/* =========================================================
-   FUNÇÃO: closePremiumModal
-   PARA QUE SERVE:
-   - Fecha/esconde a interface ou modal relacionado a closePremiumModal.
-   ========================================================= */
 function closePremiumModal() {
   const modal = document.getElementById('premium-modal');
   modal.classList.add('hidden');
@@ -5794,12 +5358,6 @@ document.getElementById('user-phone')?.addEventListener('input', function(e) {
 // LISTENER - CARD
 // ===================================
 
-
-/* =========================================================
-   FUNÇÃO: setupRecipeGridClickGuard
-   PARA QUE SERVE:
-   - Inicializa e configura a rotina setupRecipeGridClickGuard (eventos, estado e elementos de UI relacionados).
-   ========================================================= */
 function setupRecipeGridClickGuard() {
   const grid = document.getElementById('recipe-grid');
   if (!grid) return;
@@ -6004,30 +5562,24 @@ window.applyFilters = function () {
 
 
 // Renderizar receitas filtradas
-
-/* =========================================================
-   FUNÇÃO: renderFilteredRecipes
-   PARA QUE SERVE:
-   - Renderiza/atualiza a UI relacionada a renderFilteredRecipes com base no estado atual do app.
-   ========================================================= */
 function renderFilteredRecipes(recipes) {
     if (!recipeGrid) return;
     
     if (recipes.length === 0) {
         recipeGrid.innerHTML = `
-  <div style="grid-column: 1/-1; text-align: center; padding: 3rem 1rem;">
-  <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
-  <h3 style="font-size: 1.25rem; color: #374151; margin-bottom: 0.5rem;">
-  Nenhuma receita encontrada
-  </h3>
-  <p style="color: #6b7280;">
-  Tente ajustar os filtros ou fazer uma busca diferente
-  </p>
-  <button onclick="clearFilters()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #16a34a; color: white; border: none; border-radius: 8px; cursor: pointer;">
-  Limpar Filtros
-  </button>
-  </div>
-  `;
+            <div style="grid-column: 1/-1; text-align: center; padding: 3rem 1rem;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+                <h3 style="font-size: 1.25rem; color: #374151; margin-bottom: 0.5rem;">
+                    Nenhuma receita encontrada
+                </h3>
+                <p style="color: #6b7280;">
+                    Tente ajustar os filtros ou fazer uma busca diferente
+                </p>
+                <button onclick="clearFilters()" style="margin-top: 1rem; padding: 0.75rem 1.5rem; background: #16a34a; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                    Limpar Filtros
+                </button>
+            </div>
+        `;
         return;
     }
     
@@ -6040,12 +5592,6 @@ function renderFilteredRecipes(recipes) {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: updateFiltersBadge
-   PARA QUE SERVE:
-   - Executa a lógica encapsulada em updateFiltersBadge.
-   ========================================================= */
 function updateFiltersBadge() {
     let count = 0;
 
@@ -6098,12 +5644,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
 // Atalho: usa o motor oficial já ligado no input (searchInput.addEventListener('input', ...))
-
-/* =========================================================
-   FUNÇÃO: filterRecipes
-   PARA QUE SERVE:
-   - Executa uma etapa do fluxo de receitas (seleção/abertura/renderização) em filterRecipes.
-   ========================================================= */
 function filterRecipes(query) {
   const input = document.getElementById('search-input');
   if (!input) return;
@@ -6114,12 +5654,6 @@ function filterRecipes(query) {
 
 
 
-
-/* =========================================================
-   FUNÇÃO: setupAdvancedFiltersAutoApply
-   PARA QUE SERVE:
-   - Inicializa e configura a rotina setupAdvancedFiltersAutoApply (eventos, estado e elementos de UI relacionados).
-   ========================================================= */
 function setupAdvancedFiltersAutoApply() {
   const panel = document.getElementById('filters-panel');
   if (!panel) return;
@@ -6161,3 +5695,26 @@ function setupAdvancedFiltersAutoApply() {
     });
   });
 }
+
+
+
+/* =========================================================
+   FUNÇÃO: updateGreetingUI
+   RESPONSABILIDADE:
+   - Exibe "Olá, Fulano" (primeiro nome) quando disponível
+   - Não altera regras, apenas UI
+   ========================================================= */
+function updateGreetingUI() {
+  const el = document.getElementById('user-greeting');
+  if (!el) return;
+
+  const firstName = String(localStorage.getItem('fit_user_firstname') || '').trim();
+  if (firstName) {
+    el.textContent = `Olá, ${firstName}`;
+  } else {
+    el.textContent = '';
+  }
+}
+
+// Expor para chamadas externas (ex.: após ativação)
+window.updateGreetingUI = updateGreetingUI;
