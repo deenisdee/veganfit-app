@@ -1,6 +1,6 @@
 // create-preference.js
 // - Cria uma preferência de pagamento no Mercado Pago (Checkout Pro)
-// - Retorna init_point para redirecionar o usuário
+// - Retorna init_point para redirecionar o usuário 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
