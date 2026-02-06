@@ -1291,8 +1291,6 @@ function updateUI() {
       updatePremiumButtons();
     }
   }
-    try { updateGreetingUI(); } catch (e) {}
-
 }
 
 
@@ -3170,18 +3168,6 @@ async function activatePremium() {
     return;
   }
 
-  // ✅ Fluxo "Já tenho um código": exige e-mail para validar com o Firebase
-  const redeemEmailInput = document.getElementById('premium-redeem-email');
-  const typedEmail = redeemEmailInput ? String(redeemEmailInput.value || '').trim().toLowerCase() : '';
-  const effectiveEmail = (typedEmail || String(userData.email || '').trim().toLowerCase());
-
-  // Se existe campo de e-mail na tela, ele é obrigatório para ativação
-  if (redeemEmailInput && !typedEmail) {
-    showNotification('Aviso', 'Digite o e-mail usado na compra');
-    redeemEmailInput.focus();
-    return;
-  }
-
   try {
     const response = await fetch('/api/validate-code', {
       method: 'POST',
@@ -4044,38 +4030,24 @@ window.openFAQModal = function() {
 
 
 
-window.openPremiumModal = function (origin, startTab) {
+
+window.openPremiumModal = function(origin) {
   if (!origin) origin = 'tab';
   haptic(10);
   console.log('[Premium] Aberto por:', origin);
-
+  
   const premiumModal = document.getElementById('premium-modal');
   if (!premiumModal) return;
-
+  
   premiumModal.classList.remove('hidden');
   document.body.classList.add('modal-open');
-
-  // ✅ Aba inicial (padrão: 1 = Cadastro)
-  const _startTab = Number.isFinite(Number(startTab)) ? Number(startTab) : 1;
-
-  // Se existir a função global switchTab, usa (mantém o que já funciona)
-  if (typeof window.switchTab === 'function') {
-    window.switchTab(_startTab);
-  }
-
-  // foco: se for aba 3, foca no e-mail (redeem), senão mantém o foco no código
+  
+  // foco simples (sem firula)
   setTimeout(() => {
-    const emailInput = document.getElementById('premium-redeem-email');
-    const codeInput = document.getElementById('premium-code-input');
-
-    if (_startTab === 3 && emailInput) {
-      emailInput.focus();
-    } else if (codeInput) {
-      codeInput.focus();
-    }
+    const input = document.getElementById('premium-code-input');
+    if (input) input.focus();
   }, 150);
 };
-
 
 // Função para processar pagamento via Mercado Pago
 window.openPremiumCheckout = async function(plan = 'premium-monthly') {
@@ -5137,35 +5109,6 @@ async function activateTrial() {
 	await new Promise(resolve => setTimeout(resolve, 500));
 	
     // ✅ FECHA MODAL
-    // ✅ Saudação (primeiro nome) para deixar a experiência mais pessoal
-    try {
-      const nameSource = String(userData.name || userData.nome || '').trim();
-      const emailSource = String(effectiveEmail || userData.email || '').trim().toLowerCase();
-
-      let firstName = '';
-      if (nameSource) {
-        firstName = nameSource.split(' ')[0];
-      } else if (emailSource && emailSource.includes('@')) {
-        // pega a primeira parte do e-mail (antes do @) e remove separadores comuns
-        firstName = emailSource.split('@')[0].split(/[._-]/)[0];
-      }
-
-      if (firstName) {
-        localStorage.setItem('fit_user_firstname', firstName);
-      }
-    } catch (e) {
-      // silencioso
-    }
-
-    // Atualiza saudação na UI
-    try {
-      if (typeof window.updateGreetingUI === 'function') {
-        window.updateGreetingUI();
-      }
-    } catch (e) {
-      // silencioso
-    }
-
     closePremiumModal();
     
     showNotification(
@@ -5313,7 +5256,7 @@ async function activatePremiumWithCode() {
 
 
 // Abrir modal
-function openPremiumModal(source, startTab) {
+function openPremiumModal(source) {
   const modal = document.getElementById('premium-modal');
   modal.classList.remove('hidden');
   
@@ -5324,9 +5267,8 @@ function openPremiumModal(source, startTab) {
   // Auto-preenche se já cadastrou antes
   autoFillForm();
   
-  // Aba inicial (padrão: 1 - Cadastro)
-  const _startTab = Number.isFinite(Number(startTab)) ? Number(startTab) : 1;
-  switchTab(_startTab);
+  // Sempre abre na aba 1
+  switchTab(1);
   
   console.log('[MODAL] Aberto de:', source);
 }
@@ -5709,26 +5651,3 @@ function setupAdvancedFiltersAutoApply() {
     });
   });
 }
-
-
-
-/* =========================================================
-   FUNÇÃO: updateGreetingUI
-   RESPONSABILIDADE:
-   - Exibe "Olá, Fulano" (primeiro nome) quando disponível
-   - Não altera regras, apenas UI
-   ========================================================= */
-function updateGreetingUI() {
-  const el = document.getElementById('user-greeting');
-  if (!el) return;
-
-  const firstName = String(localStorage.getItem('fit_user_firstname') || '').trim();
-  if (firstName) {
-    el.textContent = `Olá, ${firstName}`;
-  } else {
-    el.textContent = '';
-  }
-}
-
-// Expor para chamadas externas (ex.: após ativação)
-window.updateGreetingUI = updateGreetingUI;
