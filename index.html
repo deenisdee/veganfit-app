@@ -940,54 +940,66 @@
 <script src="js/app.js"></script>
 
 <script>
-  // Abre Premium automaticamente se vier da URL
+  // ==============================
+  // AUTO-OPEN PREMIUM / REDEEM
+  // ==============================
+
+  // Lê parâmetros da URL
   const urlParams = new URLSearchParams(window.location.search);
   const openParam = (urlParams.get('open') || '').toLowerCase();
   const codeParam = (urlParams.get('code') || '').trim();
 
+  // Guarda o código ANTES de limpar a URL
+  window.__redeemCodeFromUrl = codeParam;
+
   if (openParam === 'premium' || openParam === 'redeem') {
     setTimeout(function () {
-      // Abre o modal
+      // Abre o modal Premium
       if (typeof window.openPremiumModal === 'function') {
-        // startTab: 1 = Cadastro, 2 = Plano, 3 = Código
+        // startTab: 1 = Cadastro | 2 = Plano | 3 = Código
         const startTab = openParam === 'redeem' ? 3 : 1;
         window.openPremiumModal('url', startTab);
       } else if (typeof window.openPremium === 'function') {
         window.openPremium('url');
       }
 
-      // Pré-preenche o código (se veio pela URL) — com retry
-      if (openParam === 'redeem' && codeParam) {
+      // ==============================
+      // PRÉ-PREENCHER CÓDIGO (REDEEM)
+      // ==============================
+      if (openParam === 'redeem' && window.__redeemCodeFromUrl) {
         let tries = 0;
-        const maxTries = 10;
+        const maxTries = 15;
 
-        const fillCodeInterval = setInterval(() => {
+        const fillInterval = setInterval(() => {
           const codeInput = document.getElementById('premium-code-input');
 
           if (codeInput) {
-            codeInput.value = codeParam.toUpperCase();
+            codeInput.value = window.__redeemCodeFromUrl.toUpperCase();
 
+            // Dispara eventos para garantir sincronização
             codeInput.dispatchEvent(new Event('input', { bubbles: true }));
             codeInput.dispatchEvent(new Event('change', { bubbles: true }));
 
-            clearInterval(fillCodeInterval);
+            clearInterval(fillInterval);
 
+            // Foco no e-mail (fluxo correto)
             const emailInput = document.getElementById('premium-redeem-email');
             if (emailInput) emailInput.focus();
           }
 
           tries++;
           if (tries >= maxTries) {
-            clearInterval(fillCodeInterval);
+            clearInterval(fillInterval);
           }
         }, 200);
       }
 
-      // Limpa URL (mantém index.html limpo)
+      // Limpa a URL (mantém a home limpa)
       window.history.replaceState({}, '', 'index.html');
     }, 500);
   }
 </script>
+
 
 
 
