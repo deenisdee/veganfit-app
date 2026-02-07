@@ -775,13 +775,22 @@ function setPremiumLocalState(expiresAt, plan) {
     if (window.RF?.premium?.setActive) window.RF.premium.setActive(true);
   } catch (_) {}
 
+  // ✅ sincroniza botões/tab/hamb
   syncPremiumFromCore();
+
+  // ✅ FORÇA ATUALIZAÇÃO DO BADGE / UI SEM PRECISAR RELOAD
+  try { if (typeof updateUI === 'function') updateUI(); } catch (_) {}
+  try { if (typeof renderRecipes === 'function') renderRecipes(); } catch (_) {}
 }
+
 
 function clearPremiumLocalState() {
   try {
     if (typeof clearPremiumState === 'function') {
       clearPremiumState();
+      // ✅ mantém UI consistente mesmo usando clearPremiumState()
+      try { if (typeof updateUI === 'function') updateUI(); } catch (_) {}
+      try { if (typeof renderRecipes === 'function') renderRecipes(); } catch (_) {}
       return;
     }
   } catch (_) {}
@@ -797,7 +806,14 @@ function clearPremiumLocalState() {
   premiumExpires = null;
 
   syncPremiumFromCore();
+
+  // ✅ atualiza badge/receitas imediatamente
+  try { if (typeof updateUI === 'function') updateUI(); } catch (_) {}
+  try { if (typeof renderRecipes === 'function') renderRecipes(); } catch (_) {}
 }
+
+
+
 
 async function syncPremiumFromBackend(email, opts) {
   const options = opts || {};
