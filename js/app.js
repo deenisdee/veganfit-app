@@ -1,16 +1,7 @@
+
 // ============================================
-// ARQUIVO: js/app.js (CONSOLIDADO B — REVISADO)
-// - Remove dupla cobrança de crédito
-// - Remove duplicação de closeMealSelector (assumindo B: #meal-selector-modal no HTML)
-// - Centraliza RECIPES/allRecipes (fonte única)
-// - Premium preparado p/ evoluir pra token/KV sem quebrar nada
-// - Mantém visual e funcionalidades
+// ARQUIVO: js/app.js 
 // ============================================
-
-
-
-
-
 
 
 // ==============================
@@ -4235,8 +4226,76 @@ window.openFAQModal = function() {
 
 
 
+// =======================================
+// PREMIUM - BLOQUEIO DE PLANOS SEM CADASTRO
+// =======================================
+function vfNotify(title, message) {
+  // usa o popup padrão do site
+  if (typeof showNotification === 'function') {
+    showNotification(title, message);
+    return;
+  }
+  // fallback silencioso (sem alert feio)
+  console.warn('[VeganFit notify]', title, message);
+}
 
+function vfGetSignupData() {
+  // 1) tenta pegar do userData (se existir)
+  let data = {};
+  try {
+    if (typeof userData === 'object' && userData) data = { ...userData };
+  } catch (_) {}
 
+  // 2) tenta localStorage (se você já usa)
+  try {
+    const ls = JSON.parse(localStorage.getItem('vf_user_data') || '{}');
+    data = { ...ls, ...data };
+  } catch (_) {}
+
+  // 3) tenta inputs da Aba 1 (se existirem no DOM)
+  const nameEl  = document.querySelector('#signup-name, #premium-name, input[name="name"], input[name="fullName"]');
+  const emailEl = document.querySelector('#signup-email, #premium-email, input[name="email"]');
+  const phoneEl = document.querySelector('#signup-phone, #premium-phone, input[name="phone"], input[name="whatsapp"]');
+
+  const name  = String(data.name || data.fullName || nameEl?.value || '').trim();
+  const email = String(data.email || emailEl?.value || '').trim().toLowerCase();
+  const phone = String(data.phone || data.whatsapp || phoneEl?.value || '').trim();
+
+  return { name, email, phone };
+}
+
+function vfIsSignupComplete() {
+  const { name, email, phone } = vfGetSignupData();
+  const nameOk = name.length >= 3;
+  const emailOk = email.includes('@') && email.includes('.');
+  const phoneOk = phone.replace(/\D/g, '').length >= 10; // BR: DDD + número
+  return nameOk && emailOk && phoneOk;
+}
+
+function vfGoToPremiumTab(n) {
+  // 1) se você tem função de tabs
+  try {
+    if (typeof setPremiumTab === 'function') {
+      setPremiumTab(n);
+      return;
+    }
+  } catch (_) {}
+
+  // 2) fallback: tenta clicar em algum botão/aba comum
+  document.querySelector(`[data-premium-tab="${n}"]`)?.click();
+}
+
+function vfRequireSignupOrWarn() {
+  if (vfIsSignupComplete()) return true;
+
+  vfNotify(
+    'Cadastro obrigatório',
+    'Para continuar, preencha Nome, E-mail e WhatsApp na aba Cadastro (Aba 1) antes de escolher um plano.'
+  );
+
+  vfGoToPremiumTab(1);
+  return false;
+}
 
 
 
