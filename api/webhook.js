@@ -2,7 +2,7 @@
 const admin = require('firebase-admin');
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 
-/**
+/** 
  * getFirebaseServiceAccount()
  * - Aceita JSON puro (string começando com "{")
  * - Aceita Base64 de JSON
