@@ -5575,3 +5575,124 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+
+/* ============================================
+   MOBILE SPACE PATCH (ganhar área útil)
+   - Header compacto
+   - Banner/slide menor
+   - Conteúdo com padding correto
+   - Breakpoints comuns (iPhone / Galaxy / tablets)
+   ============================================ */
+
+/* iOS safe areas */
+:root {
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+}
+
+/* Ajuste base em mobile */
+@media (max-width: 768px) {
+
+  /* 1) Header/topo mais compacto */
+  .site-header,
+  header,
+  .topbar,
+  .rf-header {
+    padding-top: calc(8px + var(--safe-top));
+    padding-bottom: 8px;
+    min-height: 0;
+  }
+
+  /* 2) Logo menor */
+  .site-logo,
+  .logo,
+  header .logo img,
+  .rf-logo img {
+    max-height: 28px !important;
+    height: 28px !important;
+    width: auto !important;
+  }
+
+  /* 3) Busca mais baixa */
+  .search-bar,
+  .rf-search,
+  .search-container,
+  #searchContainer {
+    margin-top: 8px !important;
+  }
+
+  .search-bar input,
+  .rf-search input,
+  #searchInput {
+    height: 40px !important;
+    font-size: 14px !important;
+    padding: 0 12px !important;
+  }
+
+  /* 4) Badges compactos */
+  .credits-badge,
+  .premium-badge,
+  #creditsBadge {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+    border-radius: 999px !important;
+  }
+
+  /* 5) Slide/banner menor */
+  .hero-slider,
+  .banner-slider,
+  .rf-slider,
+  #homeSlider {
+    height: 120px !important;
+    max-height: 120px !important;
+    overflow: hidden !important;
+  }
+
+  .hero-slider img,
+  .banner-slider img,
+  .rf-slider img,
+  #homeSlider img {
+    height: 120px !important;
+    object-fit: cover !important;
+  }
+
+  /* 6) Garantir que o grid de receitas começa mais alto */
+  .recipe-grid,
+  #recipeGrid {
+    margin-top: 10px !important;
+  }
+
+  /* 7) Se seu header é sticky demais, limitar */
+  .sticky-header,
+  .header-sticky,
+  .rf-header.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+}
+
+/* Breakpoints finos por largura (principais devices) */
+
+/* iPhone SE / telas muito pequenas */
+@media (max-width: 375px) {
+  .hero-slider, .banner-slider, .rf-slider, #homeSlider { height: 105px !important; max-height: 105px !important; }
+  .search-bar input, .rf-search input, #searchInput { height: 38px !important; }
+}
+
+/* iPhone 12/13/14/15 e Galaxy S/A padrão */
+@media (min-width: 376px) and (max-width: 430px) {
+  .hero-slider, .banner-slider, .rf-slider, #homeSlider { height: 120px !important; max-height: 120px !important; }
+}
+
+/* Galaxy A55 geralmente fica aqui (largura maior) */
+@media (min-width: 431px) and (max-width: 500px) {
+  .hero-slider, .banner-slider, .rf-slider, #homeSlider { height: 130px !important; max-height: 130px !important; }
+}
+
+/* Tablets em pé */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hero-slider, .banner-slider, .rf-slider, #homeSlider { height: 170px !important; max-height: 170px !important; }
+}
