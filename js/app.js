@@ -23,13 +23,36 @@ function ensureMercadoPagoInstance() {
   }
 }
 
+
 function openMpCheckoutWithFallback(preferenceId, initPoint) {
   // ✅ Mobile: SEM modal. Vai direto pro redirect (fluxo mais estável)
   const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-  if (isMobile && initPoint) {
-    window.location.href = initPoint;
-    return true;
+  // ✅ Debug (pra testar rápido se está sendo chamada e se o initPoint existe)
+  try {
+    console.log('[MP] openMpCheckoutWithFallback()', {
+      isMobile,
+      preferenceId,
+      hasInitPoint: !!initPoint,
+      initPointPreview: initPoint ? String(initPoint).slice(0, 60) + '...' : '',
+    });
+  } catch (_) {}
+
+  // ✅ Mobile: sempre redirect (evita modal/iframe e bagunça de telas)
+  if (isMobile) {
+    if (initPoint) {
+      window.location.href = initPoint;
+      return true;
+    }
+
+    // Mobile detectado mas initPoint vazio -> não dá pra abrir checkout
+    console.warn('[MP] Mobile detectado, mas initPoint está vazio. Checkout não pode abrir.');
+
+    // Se você tiver popup padrão do site, tente usar:
+    if (typeof showNotification === 'function') {
+      showNotification('⚠️ Não foi possível abrir o pagamento', 'Tente novamente em alguns segundos.');
+    }
+    return false;
   }
 
   const canUseModal = ensureMercadoPagoInstance() && preferenceId;
@@ -46,6 +69,7 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
       setTimeout(() => {
         const hasMpIframe = !!document.querySelector('iframe[src*="mercadopago"]');
         if (!hasMpIframe && initPoint) {
+          console.warn('[MP] Modal não renderizou. Fazendo redirect para initPoint...');
           window.location.href = initPoint;
         }
       }, 700);
@@ -62,8 +86,10 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
     return true;
   }
 
+  console.warn('[MP] Sem initPoint. Nada a fazer.');
   return false;
 }
+
 
 
 
