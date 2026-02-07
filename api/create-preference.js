@@ -48,26 +48,23 @@ module.exports = async (req, res) => {
       return res.status(400).json({ ok: false, error: 'Plano inválido' });
     }
 
-    // ✅ Token ÚNICO (padrão MERCADO_PAGO_ACCESS_TOKEN)
-    // - Mantém fallback temporário para não te travar hoje
-    const accessToken =
-      process.env.MERCADO_PAGO_ACCESS_TOKEN ||
-      process.env.MP_ACCESS_TOKEN ||
-      process.env.MP_PUBLIC_KEY; // (não é token, mas evita undefined em debug; não será usado)
-
-    if (!process.env.MERCADO_PAGO_ACCESS_TOKEN && !process.env.MP_ACCESS_TOKEN) {
+    // ✅ Token ÚNICO (produção)
+    const accessToken = (process.env.MERCADO_PAGO_ACCESS_TOKEN || '').trim();
+    if (!accessToken) {
       return res.status(500).json({
         ok: false,
-        error: 'Token do Mercado Pago não configurado (MERCADO_PAGO_ACCESS_TOKEN ou MP_ACCESS_TOKEN)',
+        error: 'MERCADO_PAGO_ACCESS_TOKEN não configurado na Vercel',
       });
     }
 
     // Base URL do seu site (prioriza domínio final)
-    const siteBaseUrl =
-      process.env.PUBLIC_BASE_URL?.trim() ||
-      'https://www.veganfit.life';
+    const siteBaseUrl = (process.env.PUBLIC_BASE_URL || 'https://www.veganfit.life').trim().replace(/\/$/, '');
 
-    const webhookUrl = `${siteBaseUrl.replace(/\/$/, '')}/api/webhook`;
+    // ✅ garante que o webhook vai pro seu domínio certo
+    const webhookUrl = `${siteBaseUrl}/api/webhook`;
+
+    // ✅ back_urls com email na query (ajuda success.html a validar premium sem reload)
+    const emailQs = encodeURIComponent(email);
 
     const preference = {
       items: [
@@ -80,14 +77,15 @@ module.exports = async (req, res) => {
         },
       ],
       payer: { email },
+
       back_urls: {
-        success: `${siteBaseUrl}/success.html`,
+        success: `${siteBaseUrl}/success.html?email=${emailQs}`,
         failure: `${siteBaseUrl}/failure.html`,
         pending: `${siteBaseUrl}/pending.html`,
       },
+
       auto_return: 'approved',
 
-      // ✅ garante que o webhook vai pro seu domínio certo
       notification_url: webhookUrl,
 
       metadata: {
@@ -110,7 +108,7 @@ module.exports = async (req, res) => {
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${process.env.MERCADO_PAGO_ACCESS_TOKEN || process.env.MP_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(preference),
