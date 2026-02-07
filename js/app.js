@@ -4202,7 +4202,7 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
 
     // Inicializa MP se ainda não foi
     if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago('APP_USR-67c3876-933e-4078-aec5-f0920e66bbb2');
+      window.mp = new MercadoPago('APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2');
     }
 
     mp.checkout({
@@ -4955,7 +4955,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 // Inicializa Mercado Pago SDK (DECLARA APENAS UMA VEZ!)
 const mp = new MercadoPago(
-  'APP_USR-67c3876-933e-4078-aec5-f0920e66bbb2',
+  'APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2',
   { locale: 'pt-BR' }
 );
 
@@ -5061,7 +5061,7 @@ async function selectPlan(plan) {
 
     // Inicializa MP se ainda não foi
     if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago(process.env.MP_PUBLIC_KEY || 'APP_USR-67c3876-933e-4078-aec5-f0920e66bbb2');
+      window.mp = new MercadoPago(process.env.MP_PUBLIC_KEY || 'APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2');
     }
 
     mp.checkout({
@@ -5303,7 +5303,7 @@ async function processPayment(plan) {
 
     // Inicializa MP
     if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago('APP_USR-67c3876-933e-4078-aec5-f0920e66bbb2');
+      window.mp = new MercadoPago('APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2');
     }
 
     // Abre checkout
