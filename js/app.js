@@ -12,6 +12,61 @@
 
 
 
+
+// ==============================
+// MERCADO PAGO (INICIALIZAÇÃO ÚNICA + FALLBACK)
+// - Requer no HTML: <script src="https://sdk.mercadopago.com/js/v2"></script> ANTES do app.js
+// - Mantém uma instância global em window.mp
+// ==============================
+const MP_PUBLIC_KEY = 'APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2';
+
+function ensureMercadoPagoInstance() {
+  try {
+    if (window.mp && typeof window.mp.checkout === 'function') return true;
+    if (typeof MercadoPago === 'undefined') return false;
+    window.mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
+    return !!(window.mp && typeof window.mp.checkout === 'function');
+  } catch (e) {
+    console.warn('[MP] Falha ao inicializar SDK:', e);
+    return false;
+  }
+}
+
+function openMpCheckoutWithFallback(preferenceId, initPoint) {
+  const canUseModal = ensureMercadoPagoInstance() && preferenceId;
+
+  // Tenta modal
+  if (canUseModal) {
+    try {
+      window.mp.checkout({
+        preference: { id: preferenceId },
+        autoOpen: true,
+      });
+
+      // Se o modal não renderizar rápido, faz fallback para redirect
+      setTimeout(() => {
+        const hasMpIframe = !!document.querySelector('iframe[src*="mercadopago"]');
+        if (!hasMpIframe && initPoint) {
+          window.location.href = initPoint;
+        }
+      }, 700);
+
+      return true;
+    } catch (e) {
+      console.warn('[MP] Falha ao abrir modal, usando redirect:', e);
+    }
+  }
+
+  // Fallback (sempre funciona)
+  if (initPoint) {
+    window.location.href = initPoint;
+    return true;
+  }
+
+  return false;
+}
+
+
 // ===================================
 // DETECÇÃO DE RETORNO DO MERCADO PAGO
 // ===================================
@@ -45,7 +100,7 @@ window.addEventListener('DOMContentLoaded', function() {
           '';
 
         if (email && email.includes('@')) {
-          await syncPremiumFromBackend(email, { closeModal: false, successToast: true });
+          await syncPremiumFromBackend(email, { closeModal: false, successToast: true, reloadOnSuccess: true });
         } else {
           showNotification('✅ Pagamento aprovado!', 'Abra o Premium e digite o e-mail usado no pagamento para validar.');
         }
@@ -762,6 +817,14 @@ async function syncPremiumFromBackend(email, opts) {
 
     if (data?.ok && data?.premium === true) {
       setPremiumLocalState(data.expiresAt, data.plan || 'monthly');
+
+
+      // ✅ opcional: força refresh para atualizar badge/estado instantaneamente (sem reprocessar URL)
+      if (options.reloadOnSuccess) {
+        setTimeout(() => {
+          try { window.location.reload(); } catch (_) {}
+        }, 600);
+      }
 
       if (options.successToast) {
         showNotification('✅ Premium ativado!', 'Seu acesso já está liberado.');
@@ -4198,22 +4261,26 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
       body: JSON.stringify({ plan: plan, email: email })
     });
 
-    const { preferenceId } = await response.json();
+    const data = await response.json().catch(() => ({}));
 
-    // Inicializa MP se ainda não foi
-    if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago('APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2');
+    if (!response.ok || data?.ok === false) {
+      console.error('[openPremiumCheckout] Erro ao criar preferência:', data);
+      alert('Erro ao iniciar pagamento. Tente novamente.');
+      return;
     }
 
-    mp.checkout({
-      preference: { id: preferenceId },
-      autoOpen: true
-    });
+    const preferenceId = data.preferenceId || data.id;
+    const initPoint = data.initPoint || data.init_point;
 
+    const opened = openMpCheckoutWithFallback(preferenceId, initPoint);
+
+    if (!opened) {
+      alert('Não foi possível abrir o checkout. Tente novamente.');
+    }
   } catch (error) {
     console.error('Erro ao abrir checkout:', error);
     alert('Erro ao processar pagamento. Tente novamente.');
-  }
+}
 };
 
 
@@ -4953,14 +5020,6 @@ document.addEventListener('DOMContentLoaded', function(){
 // INTEGRAÇÃO MERCADO PAGO
 // ===================================
 
-// Inicializa Mercado Pago SDK (DECLARA APENAS UMA VEZ!)
-const mp = new MercadoPago(
-  'APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2',
-  { locale: 'pt-BR' }
-);
-
-
-
 // Função para abrir checkout do Mercado Pago
 window.openPremiumCheckout = async function(plan = 'premium-monthly') {
   try {
@@ -5057,19 +5116,23 @@ async function selectPlan(plan) {
       body: JSON.stringify({ plan: plan, email: email })
     });
 
-    const { preferenceId } = await response.json();
+    const data = await response.json().catch(() => ({}));
 
-    // Inicializa MP se ainda não foi
-    if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago(process.env.MP_PUBLIC_KEY || 'APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2');
+    if (!response.ok || data?.ok === false) {
+      console.error('[selectPlan] Erro ao criar preferência:', data);
+      alert('Erro ao iniciar pagamento. Tente novamente.');
+      return;
     }
 
-    mp.checkout({
-      preference: { id: preferenceId },
-      autoOpen: true
-    });
+    const preferenceId = data.preferenceId || data.id;
+    const initPoint = data.initPoint || data.init_point;
 
-  } catch (error) {
+    const opened = openMpCheckoutWithFallback(preferenceId, initPoint);
+    if (!opened) {
+      alert('Não foi possível abrir o checkout. Tente novamente.');
+      return;
+    }
+} catch (error) {
     console.error('Erro ao abrir checkout:', error);
     alert('Erro ao processar pagamento. Tente novamente.');
   }
@@ -5300,18 +5363,12 @@ async function processPayment(plan) {
       showNotification('Erro', 'Não foi possível iniciar o pagamento. Tente novamente.');
       return;
     }
-
-    // Inicializa MP
-    if (typeof mp === 'undefined') {
-      window.mp = new MercadoPago('APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2');
+    // Abre checkout (modal) com fallback para redirect
+    const opened = openMpCheckoutWithFallback(preferenceId, data?.initPoint || data?.init_point);
+    if (!opened) {
+      showNotification('Erro', 'Não foi possível abrir o checkout. Tente novamente.');
+      return;
     }
-
-    // Abre checkout
-    mp.checkout({
-      preference: { id: preferenceId },
-      autoOpen: true
-    });
-
     // ✅ Não muda para aba 3 nem pede código.
     // O Premium será ativado automaticamente via webhook + /api/premium-status no retorno (?return=success)
     showNotification('💳 Checkout aberto', 'Finalize o pagamento para liberar o Premium.');
