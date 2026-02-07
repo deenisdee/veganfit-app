@@ -18,39 +18,66 @@
 
 window.addEventListener('DOMContentLoaded', function() {
   const urlParams = new URLSearchParams(window.location.search);
-  const returnType = urlParams.get('return');
-  
-  if (returnType) {
-    // Remove o parâmetro da URL sem recarregar
+
+  const returnType = urlParams.get('return'); // success | pending | failure
+  const openPremium = urlParams.get('openPremium'); // 1
+  const tabParam = urlParams.get('tab'); // 1|2|3
+  const emailParam = (urlParams.get('email') || '').trim().toLowerCase();
+  const autoValidate = urlParams.get('autovalidate'); // 1
+
+  // Sempre tenta limpar a URL (evita reprocessar ao dar refresh)
+  if (returnType || openPremium || tabParam || emailParam || autoValidate) {
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl);
-    
-    // Aguarda 500ms pra garantir que tudo carregou
-    setTimeout(() => {
+  }
+
+  // 1) Retorno do Mercado Pago: NÃO abre modal (apenas popup + auto validação)
+  if (returnType) {
+    setTimeout(async () => {
       if (returnType === 'success') {
-        // Abre modal na aba 3
-        openPremiumModal('mp-success');
-        switchTab(3);
-        showNotification(
-          '✅ Pagamento Aprovado!',
-          'Digite o código que você recebeu por e-mail'
-        );
+        showNotification('✅ Pagamento aprovado!', 'Validando seu Premium automaticamente…');
+
+        // tenta achar o email pelo link, pelo storage ou pelo userData
+        const email =
+          emailParam ||
+          (function () { try { return (localStorage.getItem('vf_user_email') || '').trim().toLowerCase(); } catch (_) { return ''; } })() ||
+          (typeof userData === 'object' ? String(userData.email || '').trim().toLowerCase() : '') ||
+          '';
+
+        if (email && email.includes('@')) {
+          await syncPremiumFromBackend(email, { closeModal: false, successToast: true });
+        } else {
+          showNotification('✅ Pagamento aprovado!', 'Abra o Premium e digite o e-mail usado no pagamento para validar.');
+        }
       } else if (returnType === 'pending') {
-        showNotification(
-          '⏳ Pagamento Pendente',
-          'Você receberá o código assim que confirmarmos o pagamento'
-        );
-      } else if (returnType === 'failure') {
-        openPremiumModal('mp-failure');
-        switchTab(2); // Volta pra aba de planos
-        showNotification(
-          '❌ Pagamento Não Aprovado',
-          'Tente novamente ou escolha outro método de pagamento'
-        );
+        showNotification('⏳ Pagamento em análise', 'Assim que for aprovado, o Premium ativa automaticamente.');
+      } else {
+        showNotification('❌ Pagamento não aprovado', 'Tente novamente ou use outro método de pagamento.');
       }
     }, 500);
   }
+
+  // 2) Link do e-mail / ativação: abre o modal já na aba 3 (validação por e-mail)
+  if (openPremium === '1' || tabParam === '3') {
+    setTimeout(async () => {
+      openPremiumModal('email-link');
+      switchTab(3);
+
+      // garante UI da aba 3 (validação por email)
+      ensurePremiumEmailValidationUI();
+
+      if (emailParam) {
+        const inp = document.getElementById('premium-email-input');
+        if (inp) inp.value = emailParam;
+      }
+
+      if (autoValidate === '1' && emailParam) {
+        await activatePremium(); // agora valida por email
+      }
+    }, 350);
+  }
 });
+
 
 
 
@@ -624,6 +651,144 @@ function syncPremiumFromCore() {
     console.warn('[syncPremiumFromCore] Falha ao sincronizar:', e);
   }
 }
+
+// =======================================================
+// PREMIUM - FONTE DA VERDADE = BACKEND (premium_users)
+// - Validação por e-mail (sem depender de código)
+// - Mantém compatibilidade com UI existente (tabs / modal)
+// =======================================================
+
+function ensurePremiumEmailValidationUI() {
+  const tab3 = document.getElementById('tab-3');
+  if (!tab3) return;
+
+  // Esconde input de código (se existir)
+  const codeInput = document.getElementById('premium-code-input');
+  if (codeInput) {
+    // esconde o container mais próximo (tenta ser resiliente)
+    const wrap = codeInput.closest('.premium-field') || codeInput.parentElement;
+    if (wrap) wrap.style.display = 'none';
+    codeInput.style.display = 'none';
+  }
+
+  // Cria um bloco simples de validação por e-mail, se ainda não existir
+  if (!document.getElementById('premium-email-input')) {
+    const box = document.createElement('div');
+    box.className = 'premium-email-validate';
+    box.style.marginTop = '10px';
+
+    box.innerHTML = `
+      <div style="font-size:13px; opacity:0.9; margin-bottom:8px;">
+        Digite o <strong>e-mail usado no pagamento</strong> para validar seu Premium:
+      </div>
+      <input id="premium-email-input" type="email" placeholder="seuemail@exemplo.com"
+        style="width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,.12); outline:none; font-size:14px;"/>
+      <button id="premium-validate-email-btn" type="button"
+        style="margin-top:10px; width:100%; padding:12px 14px; border-radius:14px; border:none; font-weight:700; cursor:pointer;">
+        Validar meu Premium
+      </button>
+      <div style="font-size:12px; opacity:0.75; margin-top:8px;">
+        Dica: você pode usar alias tipo <strong>seuemail+01@hotmail.com</strong> para testar várias vezes.
+      </div>
+    `;
+
+    tab3.appendChild(box);
+
+    const btn = box.querySelector('#premium-validate-email-btn');
+    if (btn && !btn.dataset.bound) {
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', function () {
+        activatePremium(); // agora valida por email
+      });
+    }
+  }
+}
+
+function setPremiumLocalState(expiresAt, plan) {
+  isPremium = true;
+  premiumExpires = Number(expiresAt || 0) || null;
+  premiumToken = null; // token não é mais fonte da verdade
+
+  try {
+    localStorage.setItem('fit_premium', 'true');
+    localStorage.setItem('fit_premium_expires', premiumExpires ? String(premiumExpires) : '');
+    localStorage.setItem('fit_premium_token', '');
+  } catch (_) {}
+
+  // Compatibilidade
+  try {
+    if (window.RF?.premium?.setActive) window.RF.premium.setActive(true);
+  } catch (_) {}
+
+  syncPremiumFromCore();
+}
+
+function clearPremiumLocalState() {
+  try {
+    if (typeof clearPremiumState === 'function') {
+      clearPremiumState();
+      return;
+    }
+  } catch (_) {}
+
+  try {
+    localStorage.setItem('fit_premium', 'false');
+    localStorage.setItem('fit_premium_expires', '');
+    localStorage.setItem('fit_premium_token', '');
+  } catch (_) {}
+
+  isPremium = false;
+  premiumToken = null;
+  premiumExpires = null;
+
+  syncPremiumFromCore();
+}
+
+async function syncPremiumFromBackend(email, opts) {
+  const options = opts || {};
+  const normalized = String(email || '').trim().toLowerCase();
+  if (!normalized || !normalized.includes('@')) return { ok: false, error: 'email inválido' };
+
+  try {
+    const res = await fetch('/api/premium-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: normalized })
+    });
+
+    const data = await res.json();
+
+    if (data?.ok && data?.premium === true) {
+      setPremiumLocalState(data.expiresAt, data.plan || 'monthly');
+
+      if (options.successToast) {
+        showNotification('✅ Premium ativado!', 'Seu acesso já está liberado.');
+      }
+
+      if (options.closeModal !== false) {
+        try { closePremiumModal(); } catch (_) {}
+      }
+
+      return { ok: true, premium: true, expiresAt: data.expiresAt, plan: data.plan };
+    }
+
+    // não premium / expirado
+    clearPremiumLocalState();
+
+    if (options.failToast) {
+      showNotification('⚠️ Não encontrado', 'Não localizamos um Premium ativo para este e-mail.');
+    }
+
+    return { ok: true, premium: false };
+  } catch (err) {
+    console.warn('[PREMIUM] Falha ao sincronizar backend:', err);
+    if (options.errorToast) {
+      showNotification('Erro', 'Falha ao validar Premium. Tente novamente.');
+    }
+    return { ok: false, error: String(err?.message || err) };
+  }
+}
+
 
 RF.premium = {
   /**
@@ -3160,11 +3325,38 @@ async function redeemPremiumCode(code) {
 
 
 async function activatePremium() {
+  // ✅ Novo fluxo principal: valida Premium por e-mail (fonte da verdade = Firestore premium_users)
+  ensurePremiumEmailValidationUI();
+
+  const emailInput =
+    document.getElementById('premium-email-input') ||
+    document.getElementById('user-email') ||
+    null;
+
+  const email = emailInput ? String(emailInput.value || '').trim().toLowerCase() : '';
+
+  if (email && email.includes('@')) {
+    const result = await syncPremiumFromBackend(email, {
+      closeModal: true,
+      successToast: true,
+      failToast: true,
+      errorToast: true
+    });
+
+    if (result?.premium) {
+      // salva para facilitar próxima sessão
+      try { localStorage.setItem('vf_user_email', email); } catch (_) {}
+    }
+
+    return;
+  }
+
+  // (fallback) Se ainda existir um input de código e alguém quiser usar, mantém compatibilidade
   const input = document.getElementById('premium-code-input');
   const code = input ? input.value.trim().toUpperCase() : '';
-  
+
   if (!code) {
-    showNotification('Aviso', 'Digite um código válido');
+    showNotification('Aviso', 'Digite o e-mail usado no pagamento para validar.');
     return;
   }
 
@@ -3172,79 +3364,22 @@ async function activatePremium() {
     const response = await fetch('/api/validate-code', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: code })
+      body: JSON.stringify({ code: code, email: email || undefined })
     });
 
     const data = await response.json();
 
-    // ✅ CORRIGIDO: Verifica data.ok ao invés de data.valid
     if (!data.ok) {
-      showNotification('Código Inválido', data.error || 'Código inválido ou expirado');
+      showNotification('Código inválido', data.error || 'Código inválido ou expirado');
       return;
     }
 
-    // ✅ DEBUG
-    console.log('[ACTIVATE] API Response:', {
-      token: data.token,
-      expiresAt: data.expiresAt,
-      expiresInDays: data.expiresInDays
-    });
-
-    // ✅ ATIVA PREMIUM
-    isPremium = true;
-    premiumToken = data.token;
-    premiumExpires = data.expiresAt;
-
-    // ✅ Persiste no storage
-    await storage.set('fit_premium', 'true');
-    await storage.set('fit_premium_token', data.token);
-    await storage.set('fit_premium_expires', data.expiresAt.toString());
-
-    // ✅ Persiste no localStorage
-    try {
-      localStorage.setItem('fit_premium', 'true');
-      localStorage.setItem('fit_premium_token', data.token);
-      localStorage.setItem('fit_premium_expires', data.expiresAt.toString());
-    } catch (e) {
-      console.warn('[PREMIUM] localStorage falhou:', e);
-    }
-
-    // ✅ Sincroniza UI
-    if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
-      RF.premium.setActive(true);
-    } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
-      RF.premium.syncUI();
-    }
-
-    updateUI();
-
-    if (typeof window.updatePremiumButtons === 'function') {
-      window.updatePremiumButtons();
-    }
-
-    _setupPremiumTimers();
-
-    // ✅ Fecha modal
-    if (typeof window.closePremiumModal === 'function') {
-      window.closePremiumModal();
-    }
-
-    showNotification(
-      'Premium Ativado! 🎉',
-      `Você tem acesso ilimitado por ${data.expiresInDays} dias!`
-    );
-
-    console.log('[PREMIUM] Ativado!', { 
-      expires: new Date(data.expiresAt).toISOString() 
-    });
-
-  } catch (e) {
-    console.error('Erro ao ativar premium:', e);
-    if (String(e.message || '').includes('fetch')) {
-      showNotification('Erro de Conexão', 'Verifique sua internet e tente novamente.');
-    } else {
-      showNotification('Erro', 'Erro ao validar código. Tente novamente.');
-    }
+    setPremiumLocalState(data.expiresAt, data.plan || 'monthly');
+    showNotification('✅ Premium ativado!', 'Seu acesso já está liberado.');
+    closePremiumModal();
+  } catch (error) {
+    console.error('Erro ao ativar Premium:', error);
+    showNotification('Erro', 'Erro ao validar. Tente novamente.');
   }
 }
 
@@ -4960,7 +5095,8 @@ function switchTab(tabNumber) {
   document.querySelector(`.premium-tab-btn:nth-child(${tabNumber})`).classList.add('active');
   document.getElementById(`tab-${tabNumber}`).classList.add('active');
   
-  console.log('[TAB] Mudou para aba', tabNumber);
+    if (tabNumber === 3) { try { ensurePremiumEmailValidationUI(); } catch (_) {} }
+console.log('[TAB] Mudou para aba', tabNumber);
 }
 
 // Formulário de cadastro
@@ -5029,14 +5165,26 @@ function autoFillForm() {
 
 // Selecionar plano COM VALIDAÇÃO
 async function selectPlanWithValidation(plan) {
-  // ✅ VALIDA SE PREENCHEU CADASTRO
-  if (!userData.registered) {
-    showNotification('⚠️ Cadastro Necessário', 'Complete o cadastro antes de escolher um plano');
-    switchTab(1); // Força voltar pra aba 1
-    return;
-  }
-  
   try {
+    // ✅ Agora: só exige EMAIL (cadastro não é obrigatório)
+    if (!userData.email || !userData.email.includes('@')) {
+      // tenta pegar do storage
+      try {
+        const savedEmail = (localStorage.getItem('vf_user_email') || '').trim().toLowerCase();
+        if (savedEmail && savedEmail.includes('@')) userData.email = savedEmail;
+      } catch (_) {}
+
+      // se ainda não tiver, pede
+      if (!userData.email || !userData.email.includes('@')) {
+        const email = prompt('Digite o e-mail usado no pagamento (ou que você quer usar):');
+        if (!email) return;
+        userData.email = String(email).trim().toLowerCase();
+      }
+    }
+
+    // persistência leve
+    try { localStorage.setItem('vf_user_email', userData.email); } catch (_) {}
+
     if (plan === 'trial') {
       await activateTrial();
     } else {
@@ -5131,23 +5279,27 @@ async function processPayment(plan) {
     const response = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        plan: plan, 
+      body: JSON.stringify({
+        plan: plan,
         email: userData.email,
-        name: userData.name,      // ← ADICIONA
-        phone: userData.phone     // ← ADICIONA
+        name: userData.name,
+        phone: userData.phone
       })
     });
 
-    const { preferenceId } = await response.json();
+    const data = await response.json();
+    const preferenceId = data?.preferenceId;
+
+    if (!preferenceId) {
+      console.error('[PAY] Resposta inesperada:', data);
+      showNotification('Erro', 'Não foi possível iniciar o pagamento. Tente novamente.');
+      return;
+    }
 
     // Inicializa MP
     if (typeof mp === 'undefined') {
       window.mp = new MercadoPago('APP_USR-9e097327-7e68-41b4-be4b-382b6921803f');
     }
-
-    // Marca que está aguardando pagamento
-    sessionStorage.setItem('vf_awaiting_payment', 'true');
 
     // Abre checkout
     mp.checkout({
@@ -5155,18 +5307,11 @@ async function processPayment(plan) {
       autoOpen: true
     });
 
-    // Auto-switch pra aba 3
-    setTimeout(() => {
-      const isAwaiting = sessionStorage.getItem('vf_awaiting_payment');
-      if (isAwaiting === 'true') {
-        switchTab(3);
-        sessionStorage.removeItem('vf_awaiting_payment');
-        showNotification('💳 Pagamento Processado', 'Digite o código que você recebeu por e-mail');
-      }
-    }, 3000);
-
+    // ✅ Não muda para aba 3 nem pede código.
+    // O Premium será ativado automaticamente via webhook + /api/premium-status no retorno (?return=success)
+    showNotification('💳 Checkout aberto', 'Finalize o pagamento para liberar o Premium.');
   } catch (error) {
-    console.error('Erro ao processar pagamento:', error);
+    console.error('Erro ao abrir checkout:', error);
     showNotification('Erro', 'Erro ao processar pagamento. Tente novamente.');
   }
 }
@@ -5258,18 +5403,26 @@ async function activatePremiumWithCode() {
 // Abrir modal
 function openPremiumModal(source) {
   const modal = document.getElementById('premium-modal');
+  if (!modal) return;
+
   modal.classList.remove('hidden');
-  
+
   // Previne scroll do body (importante no iOS)
   document.body.classList.add('modal-open');
   document.body.style.overflow = 'hidden';
-  
-  // Auto-preenche se já cadastrou antes
-  autoFillForm();
-  
-  // Sempre abre na aba 1
-  switchTab(1);
-  
+
+  // Auto-preenche se já cadastrou antes (opcional)
+  try { autoFillForm(); } catch (_) {}
+
+  // ✅ Novo padrão:
+  // - Não obriga cadastro (aba 1)
+  // - Abre direto nos planos (aba 2)
+  const defaultTab = 2;
+  switchTab(defaultTab);
+
+  // Garante UI de validação na aba 3 (mesmo que o HTML não tenha sido editado)
+  ensurePremiumEmailValidationUI();
+
   console.log('[MODAL] Aberto de:', source);
 }
 
