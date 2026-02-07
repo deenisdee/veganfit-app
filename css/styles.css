@@ -5737,3 +5737,45 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 @media (min-width: 768px) and (max-width: 1024px) {
   .hero-slider, .banner-slider, .rf-slider, #homeSlider { height: 170px !important; max-height: 170px !important; }
 }
+
+
+
+/* ============================================
+   MOBILE: esconder badge "por trás" da busca ao rolar
+   ============================================ */
+
+@media (max-width: 768px) {
+
+  /* Garanta um contexto de posição no topo */
+  header, .site-header, .rf-header, .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: inherit;
+  }
+
+  /* Quando rolar: actions sobem e ficam atrás da busca */
+  body.vf-scrolled .header-actions {
+    position: absolute !important;
+    top: calc(6px + env(safe-area-inset-top)) !important;
+    right: 10px !important;
+    z-index: 1 !important;   /* menor que a busca */
+    pointer-events: none !important; /* não atrapalha toques */
+    opacity: 0.12 !important; /* opcional: “some” visualmente */
+  }
+
+  /* A busca fica na frente */
+  body.vf-scrolled .search-container,
+  body.vf-scrolled #searchContainer,
+  body.vf-scrolled .rf-search,
+  body.vf-scrolled .search-bar {
+    position: relative !important;
+    z-index: 5 !important;
+  }
+
+  /* Badge e botão premium: não ocupam espaço no layout ao rolar */
+  body.vf-scrolled #credits-badge,
+  body.vf-scrolled #premium-btn {
+    transform: translateY(-10px) !important;
+  }
+}
