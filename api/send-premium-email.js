@@ -35,8 +35,8 @@ export default async function handler(req, res) {
         ? Number(body.expiresAt)
         : null;
 
-    if (!to || !to.includes("@") || !codigo) {
-      return res.status(400).json({ ok: false, error: "Email e código são obrigatórios" });
+    if (!to || !to.includes("@")) {
+      return res.status(400).json({ ok: false, error: "Email é obrigatório" });
     }
 
     if (!process.env.RESEND_API_KEY) {
@@ -53,6 +53,9 @@ export default async function handler(req, res) {
 
     const subject = "Seu acesso Premium foi ativado ✅";
 
+    const baseUrl = process.env.PUBLIC_BASE_URL || "https://www.veganfit.life";
+    const activationLink = `${baseUrl.replace(/\/$/, "")}/?openPremium=1&tab=3&autovalidate=1&email=${encodeURIComponent(to)}`;
+
     const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111;">
         <h2 style="margin:0 0 8px;">Olá, ${escapeHtml(name)} 👋</h2>
@@ -61,11 +64,20 @@ export default async function handler(req, res) {
         </p>
 
         <div style="padding:14px 16px; border:1px solid #e5e7eb; border-radius:12px; background:#fafafa; margin: 0 0 14px;">
-          <div style="font-size:12px; color:#555; margin-bottom:6px;">Seu código</div>
-          <div style="font-size:18px; font-weight:800; letter-spacing:0.6px;">${escapeHtml(codigo)}</div>
+          <div style="font-size:12px; color:#555; margin-bottom:6px;">Ative em 1 clique</div>
+
+          <a href="${activationLink}"
+             style="display:inline-block; padding:12px 14px; border-radius:12px; text-decoration:none; font-weight:800;">
+            🔓 Abrir Veganfit e validar meu Premium
+          </a>
+
           <div style="font-size:12px; color:#555; margin-top:10px;">
             <strong>Plano:</strong> ${escapeHtml(plan)}
             ${expiresText ? `<br/><strong>Válido até:</strong> ${escapeHtml(expiresText)}` : ""}
+          </div>
+
+          <div style="font-size:12px; color:#555; margin-top:10px;">
+            <strong>E-mail da compra:</strong> ${escapeHtml(to)}
           </div>
         </div>
 
@@ -73,11 +85,20 @@ export default async function handler(req, res) {
           Se precisar de ajuda, é só responder este e-mail.
         </p>
 
-        <p style="margin:0; color:#555; font-size:12px;">
-          Veganfit.Life
+        <p style="margin:0; font-size:12px; color:#6b7280;">
+          Se o botão não abrir, copie e cole este link no navegador:<br/>
+          <span style="word-break:break-all;">${activationLink}</span>
         </p>
+
+        ${codigo ? `
+          <p style="margin:14px 0 0; font-size:12px; color:#6b7280;">
+            (Código interno de suporte: <strong>${escapeHtml(codigo)}</strong>)
+          </p>
+        ` : ""}
+
       </div>
     `;
+
 
     const result = await resend.emails.send({
       from,
