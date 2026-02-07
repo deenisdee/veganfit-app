@@ -5304,27 +5304,32 @@ function autoFillForm() {
   }
 }
 
+
 // Selecionar plano COM VALIDAÇÃO
 async function selectPlanWithValidation(plan) {
   try {
-    // ✅ Agora: só exige EMAIL (cadastro não é obrigatório)
-    if (!userData.email || !userData.email.includes('@')) {
-      // tenta pegar do storage
-      try {
-        const savedEmail = (localStorage.getItem('vf_user_email') || '').trim().toLowerCase();
-        if (savedEmail && savedEmail.includes('@')) userData.email = savedEmail;
-      } catch (_) {}
+    // ✅ Agora: cadastro é obrigatório (Nome, Email, WhatsApp)
+    const nameOk = !!(userData.name && userData.name.trim().length >= 3);
+    const emailOk = !!(userData.email && userData.email.includes('@') && userData.email.includes('.'));
+    const phoneOk = !!(userData.phone && userData.phone.replace(/\D/g, '').length >= 10);
 
-      // se ainda não tiver, pede
-      if (!userData.email || !userData.email.includes('@')) {
-        const email = prompt('Digite o e-mail usado no pagamento (ou que você quer usar):');
-        if (!email) return;
-        userData.email = String(email).trim().toLowerCase();
-      }
+    if (!nameOk || !emailOk || !phoneOk) {
+      showNotification(
+        'Cadastro obrigatório',
+        'Para continuar, preencha Nome, E-mail e WhatsApp na Aba 1 (Cadastro) antes de escolher um plano.'
+      );
+
+      // leva pra Aba 1
+      switchTab(1);
+      return;
     }
 
-    // persistência leve
-    try { localStorage.setItem('vf_user_email', userData.email); } catch (_) {}
+    // persistência leve (mantém seu comportamento atual)
+    try {
+      localStorage.setItem('vf_user_name', userData.name);
+      localStorage.setItem('vf_user_email', userData.email);
+      localStorage.setItem('vf_user_phone', userData.phone);
+    } catch (_) {}
 
     if (plan === 'trial') {
       await activateTrial();
@@ -5336,6 +5341,7 @@ async function selectPlanWithValidation(plan) {
     showNotification('Erro', 'Erro ao processar. Tente novamente.');
   }
 }
+
 
 
 
