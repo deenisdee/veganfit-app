@@ -5,7 +5,7 @@
 // - Centraliza RECIPES/allRecipes (fonte única)
 // - Premium preparado p/ evoluir pra token/KV sem quebrar nada
 // - Mantém visual e funcionalidades
-// ===========================================
+// ============================================
 
 
 
@@ -735,18 +735,16 @@ function ensurePremiumEmailValidationUI() {
     box.style.marginTop = '10px';
 
     box.innerHTML = `
-      <div style="font-size:13px; opacity:0.9; margin-bottom:8px;">
+      <div style="font-size:15px; opacity:0.9; margin-bottom:8px;">
         Digite o <strong>e-mail usado no pagamento</strong> para validar seu Premium:
       </div>
       <input id="premium-email-input" type="email" placeholder="seuemail@exemplo.com"
         style="width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,.12); outline:none; font-size:14px;"/>
       <button id="premium-validate-email-btn" type="button"
-        style="margin-top:10px; width:100%; padding:12px 14px; border-radius:14px; border:none; font-weight:700; cursor:pointer;">
-        Validar meu Premium
+        style="margin-top:10px; height: 47px; font-size: 16px; width:100%; padding:12px 14px; color:#fff; font-family: inherit; background:#16a34a; border-radius:12px; border:none; font-weight: 700; cursor:pointer;">
+        VALIDAR PREMIUM
       </button>
-      <div style="font-size:12px; opacity:0.75; margin-top:8px;">
-        Dica: você pode usar alias tipo <strong>seuemail+01@hotmail.com</strong> para testar várias vezes.
-      </div>
+     
     `;
 
     tab3.appendChild(box);
@@ -5845,7 +5843,7 @@ function setupAdvancedFiltersAutoApply() {
     if (typeof window.applyFilters === 'function') {
       window.applyFilters();
     }
-  }); 
+  });
 
   // 2) Sliders: mexeu = aplica
   const ids = ['filter-time', 'filter-protein', 'filter-calories'];
