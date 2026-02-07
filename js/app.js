@@ -5980,3 +5980,36 @@ function setupAdvancedFiltersAutoApply() {
     });
   });
 }
+
+
+
+// =======================================
+// MOBILE: header "slim" ao rolar (ganhar área útil)
+// =======================================
+(function setupMobileSlimHeaderOnScroll() {
+  let ticking = false;
+
+  function apply() {
+    ticking = false;
+
+    // só aplica em telas mobile
+    if (window.innerWidth > 768) {
+      document.body.classList.remove('vf-scrolled');
+      return;
+    }
+
+    const scrolled = window.scrollY > 24;
+    document.body.classList.toggle('vf-scrolled', scrolled);
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(apply);
+    }
+  }, { passive: true });
+
+  window.addEventListener('resize', apply, { passive: true });
+  document.addEventListener('DOMContentLoaded', apply);
+  apply();
+})();
