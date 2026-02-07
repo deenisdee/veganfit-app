@@ -23,11 +23,10 @@ window.addEventListener('DOMContentLoaded', function() {
   const openPremium = urlParams.get('openPremium'); // 1
   const tabParam = urlParams.get('tab'); // 1|2|3
   const emailParam = (urlParams.get('email') || '').trim().toLowerCase();
-  const codeParam = (urlParams.get('code') || '').trim().toUpperCase();
-  if (codeParam) window.__prefillPremiumCode = codeParam;
+  const autoValidate = urlParams.get('autovalidate'); // 1
 
   // Sempre tenta limpar a URL (evita reprocessar ao dar refresh)
-  if (returnType || openPremium || tabParam || emailParam || codeParam) {
+  if (returnType || openPremium || tabParam || emailParam || autoValidate) {
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl);
   }
@@ -45,7 +44,11 @@ window.addEventListener('DOMContentLoaded', function() {
           (typeof userData === 'object' ? String(userData.email || '').trim().toLowerCase() : '') ||
           '';
 
-        showNotification('✅ Pagamento aprovado!', 'Enviamos um e-mail com o botão de ativação. Se não encontrar, abra Premium → Validar e informe o e-mail e o código recebidos.');
+        if (email && email.includes('@')) {
+          await syncPremiumFromBackend(email, { closeModal: false, successToast: true });
+        } else {
+          showNotification('✅ Pagamento aprovado!', 'Abra o Premium e digite o e-mail usado no pagamento para validar.');
+        }
       } else if (returnType === 'pending') {
         showNotification('⏳ Pagamento em análise', 'Assim que for aprovado, o Premium ativa automaticamente.');
       } else {
@@ -68,7 +71,7 @@ window.addEventListener('DOMContentLoaded', function() {
         if (inp) inp.value = emailParam;
       }
 
-      if (false) {
+      if (autoValidate === '1' && emailParam) {
         await activatePremium(); // agora valida por email
       }
     }, 350);
@@ -659,12 +662,13 @@ function ensurePremiumEmailValidationUI() {
   const tab3 = document.getElementById('tab-3');
   if (!tab3) return;
 
-  // Garante que o input de código aparece (se existir no HTML)
+  // Esconde input de código (se existir)
   const codeInput = document.getElementById('premium-code-input');
   if (codeInput) {
+    // esconde o container mais próximo (tenta ser resiliente)
     const wrap = codeInput.closest('.premium-field') || codeInput.parentElement;
-    if (wrap) wrap.style.display = '';
-    codeInput.style.display = '';
+    if (wrap) wrap.style.display = 'none';
+    codeInput.style.display = 'none';
   }
 
   // Cria um bloco simples de validação por e-mail, se ainda não existir
@@ -675,85 +679,29 @@ function ensurePremiumEmailValidationUI() {
 
     box.innerHTML = `
       <div style="font-size:13px; opacity:0.9; margin-bottom:8px;">
-        Para liberar o acesso, confirme o <strong>e-mail usado na compra</strong>.
+        Digite o <strong>e-mail usado no pagamento</strong> para validar seu Premium:
       </div>
-
-      <div class="premium-field" style="margin-bottom:10px;">
-        <label style="display:block; font-size:12px; margin-bottom:6px;">E-mail da compra</label>
-        <input id="premium-email-input" type="email" placeholder="seuemail@..." style="width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.2); color:#fff;" />
-        <div style="font-size:12px; opacity:0.75; margin-top:6px;">
-          Dica: você pode testar com alias, ex: <strong>seuemail+01@hotmail.com</strong>
-        </div>
-      </div>
-
-      <button id="premium-validate-email-btn" class="premium-cta" style="width:100%; padding:12px 14px; border-radius:12px; font-weight:800;">
-        ✅ Validar e liberar acesso
+      <input id="premium-email-input" type="email" placeholder="seuemail@exemplo.com"
+        style="width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(0,0,0,.12); outline:none; font-size:14px;"/>
+      <button id="premium-validate-email-btn" type="button"
+        style="margin-top:10px; width:100%; padding:12px 14px; border-radius:14px; border:none; font-weight:700; cursor:pointer;">
+        Validar meu Premium
       </button>
-
-      <div id="premium-email-validate-msg" style="margin-top:10px; font-size:13px; opacity:0.9;"></div>
+      <div style="font-size:12px; opacity:0.75; margin-top:8px;">
+        Dica: você pode usar alias tipo <strong>seuemail+01@hotmail.com</strong> para testar várias vezes.
+      </div>
     `;
 
     tab3.appendChild(box);
 
-    const btn = document.getElementById('premium-validate-email-btn');
-    btn.addEventListener('click', async () => {
-      const code = String(document.getElementById('premium-code-input')?.value || '').trim().toUpperCase();
-      const email = String(document.getElementById('premium-email-input')?.value || '').trim().toLowerCase();
-
-      const msg = document.getElementById('premium-email-validate-msg');
-      if (msg) msg.textContent = '';
-
-      if (!code) {
-        if (msg) msg.textContent = 'Informe o código recebido no e-mail.';
-        return;
-      }
-      if (!email || !email.includes('@')) {
-        if (msg) msg.textContent = 'Informe o e-mail usado na compra.';
-        return;
-      }
-
-      try {
-        btn.disabled = true;
-        btn.textContent = 'Validando…';
-
-        const res = await fetch('/api/validate-code', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code, email })
-        });
-
-        const data = await res.json();
-
-        if (data?.ok) {
-          try { localStorage.setItem('vf_user_email', email); } catch (_) {}
-          // sincroniza pelo backend (premium_users)
-          await syncPremiumFromBackend(email, { closeModal: true, successToast: true });
-
-          if (msg) msg.textContent = '✅ Premium liberado!';
-
-          // opcional: fecha modal após um pequeno delay
-          setTimeout(() => {
-            try { closePremiumModal?.(); } catch (_) {}
-          }, 600);
-        } else {
-          if (msg) msg.textContent = data?.error || 'Não foi possível validar.';
-        }
-      } catch (err) {
-        if (msg) msg.textContent = 'Falha ao validar. Tente novamente.';
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '✅ Validar e liberar acesso';
-      }
-    });
-  }
-
-  // Prefill do código vindo da URL (ou global)
-  try {
-    const prefill = (window.__prefillPremiumCode || '').trim();
-    if (prefill && codeInput && !String(codeInput.value || '').trim()) {
-      codeInput.value = prefill;
+    const btn = box.querySelector('#premium-validate-email-btn');
+    if (btn && !btn.dataset.bound) {
+      btn.dataset.bound = '1';
+      btn.addEventListener('click', function () {
+        activatePremium(); // agora valida por email
+      });
     }
-  } catch (_) {}
+  }
 }
 
 function setPremiumLocalState(expiresAt, plan) {
