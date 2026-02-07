@@ -54,7 +54,7 @@ export default async function handler(req, res) {
     const subject = "Seu acesso Premium foi ativado ✅";
 
     const baseUrl = process.env.PUBLIC_BASE_URL || "https://www.veganfit.life";
-    const activationLink = `${baseUrl.replace(/\/$/, "")}/?openPremium=1&tab=3&autovalidate=1&email=${encodeURIComponent(to)}`;
+    const activationLink = `${baseUrl.replace(/\/$/, "")}/?tool=premium&tab=3&code=${encodeURIComponent(codigo)}`;
 
     const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111;">
@@ -90,12 +90,7 @@ export default async function handler(req, res) {
           <span style="word-break:break-all;">${activationLink}</span>
         </p>
 
-        ${codigo ? `
-          <p style="margin:14px 0 0; font-size:12px; color:#6b7280;">
-            (Código interno de suporte: <strong>${escapeHtml(codigo)}</strong>)
-          </p>
-        ` : ""}
-
+        
       </div>
     `;
 
