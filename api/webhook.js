@@ -1,4 +1,4 @@
-// /api/webhook.js
+// api/webhook.js
 const admin = require('firebase-admin');
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 
@@ -37,7 +37,6 @@ function initFirebase() {
     return;
   }
 
-  // Fallback (se você ainda tiver envs antigas)
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
@@ -50,7 +49,7 @@ function initFirebase() {
 /**
  * ensureMercadoPagoClient()
  * - Usa MERCADO_PAGO_ACCESS_TOKEN como padrão
- * - Aceita MP_ACCESS_TOKEN como fallback
+ * - Aceita MP_ACCESS_TOKEN como fallback (pra não te travar hoje)
  */
 function ensureMercadoPagoClient() {
   const accessToken =
@@ -58,7 +57,7 @@ function ensureMercadoPagoClient() {
     process.env.MP_ACCESS_TOKEN;
 
   if (!accessToken) {
-    throw new Error('MERCADO_PAGO_ACCESS_TOKEN não está definido na Vercel.');
+    throw new Error('Token do Mercado Pago ausente (MERCADO_PAGO_ACCESS_TOKEN / MP_ACCESS_TOKEN).');
   }
 
   return new MercadoPagoConfig({ accessToken });
@@ -87,14 +86,12 @@ function generateCode(plan) {
  * computeExpiresAtMs(plan)
  * - trial: 5 dias
  * - monthly: 30
- * - quarterly: 90
  * - annual: 365
  */
 function computeExpiresAtMs(plan) {
   let days = 30;
   if (plan === 'trial') days = 5;
   else if (plan === 'monthly') days = 30;
-  else if (plan === 'quarterly') days = 90;
   else if (plan === 'annual') days = 365;
 
   return Date.now() + days * 24 * 60 * 60 * 1000;
@@ -158,7 +155,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, duplicated: true });
     }
 
-    // ✅ Busca pagamento no MP (SDK nova)
+    // ✅ Busca pagamento no MP
     const client = ensureMercadoPagoClient();
     const paymentClient = new Payment(client);
 
@@ -176,7 +173,7 @@ module.exports = async function handler(req, res) {
 
     console.log('[WEBHOOK] payment.status:', payment?.status);
 
-    // ✅ SÓ PROCESSA SE APROVADO
+    // ✅ Só processa se aprovado
     if (payment?.status !== 'approved') {
       console.log('[WEBHOOK] ⚠️ Pagamento não aprovado, ignorando');
       return res.status(200).json({
@@ -186,13 +183,23 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    // ✅ Extrai dados do external_reference (prioridade)
-    const extRef = typeof payment.external_reference === 'string'
-      ? safeJsonParse(payment.external_reference)
-      : null;
+    // ✅ Dados do external_reference (prioridade)
+    const extRef =
+      typeof payment.external_reference === 'string'
+        ? safeJsonParse(payment.external_reference)
+        : null;
 
-    const plan = extRef?.plan || payment?.metadata?.plan || 'monthly';
-    const name = extRef?.name || payment?.metadata?.name || payment?.payer?.first_name || 'Cliente';
+    let plan = extRef?.plan || payment?.metadata?.plan || 'monthly';
+    // ✅ trava planos inválidos (evita quarterly “fantasma”)
+    if (plan !== 'trial' && plan !== 'monthly' && plan !== 'annual') {
+      plan = 'monthly';
+    }
+
+    const name =
+      extRef?.name ||
+      payment?.metadata?.name ||
+      payment?.payer?.first_name ||
+      'Cliente';
 
     const email = normalizeEmail(
       extRef?.email ||
@@ -219,24 +226,26 @@ module.exports = async function handler(req, res) {
     console.log('[WEBHOOK] 📧 Email:', email);
     console.log('[WEBHOOK] 📅 Expira em:', new Date(expiresAt).toISOString());
 
-    // ✅ Salva código com ID = code (histórico / compatível com validate-code.js)
-    await db.collection('premium_codes').doc(code).set({
-      code,
-      plan,
-      email,
-      name,
-      phone,
-      status: 'active',
-      expiresAt, // número em ms
-      usedBy: null,
-      usedAt: null,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      paymentId: String(paymentId),
-      paymentStatus: payment.status,
-    }, { merge: false });
+    // ✅ Salva código (histórico)
+    await db.collection('premium_codes').doc(code).set(
+      {
+        code,
+        plan,
+        email,
+        name,
+        phone,
+        status: 'active',
+        expiresAt, // número ms
+        usedBy: null,
+        usedAt: null,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        paymentId: String(paymentId),
+        paymentStatus: payment.status,
+      },
+      { merge: false }
+    );
 
-    // ✅✅✅ CRÍTICO: grava/atualiza premium_users/{email} (estado/fonte da verdade do app)
-    // Regra: sempre mantém a maior expiração (renovação nunca encurta)
+    // ✅ Atualiza premium_users/{email} (fonte da verdade do app)
     const userRef = db.collection('premium_users').doc(email);
 
     await db.runTransaction(async (tx) => {
@@ -268,7 +277,7 @@ module.exports = async function handler(req, res) {
       processedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    // ✅ Envia email automaticamente (não falha o webhook se email falhar)
+    // ✅ Envia email (não derruba o webhook se falhar)
     const baseUrl =
       (process.env.PUBLIC_BASE_URL && process.env.PUBLIC_BASE_URL.trim()) ||
       'https://www.veganfit.life';
@@ -287,7 +296,6 @@ module.exports = async function handler(req, res) {
       plan,
       expiresAt: new Date(expiresAt).toISOString(),
     });
-
   } catch (error) {
     console.error('[WEBHOOK] ❌ ERRO:', error?.message || error);
     return res.status(500).json({
@@ -297,3 +305,5 @@ module.exports = async function handler(req, res) {
     });
   }
 };
+
+// nextFunction()
