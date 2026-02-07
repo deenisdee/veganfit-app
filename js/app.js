@@ -24,9 +24,17 @@ function ensureMercadoPagoInstance() {
 }
 
 function openMpCheckoutWithFallback(preferenceId, initPoint) {
+  // ✅ Mobile: SEM modal. Vai direto pro redirect (fluxo mais estável)
+  const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  if (isMobile && initPoint) {
+    window.location.href = initPoint;
+    return true;
+  }
+
   const canUseModal = ensureMercadoPagoInstance() && preferenceId;
 
-  // Tenta modal
+  // Desktop: tenta modal
   if (canUseModal) {
     try {
       window.mp.checkout({
@@ -34,7 +42,7 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
         autoOpen: true,
       });
 
-      // Se o modal não renderizar rápido, faz fallback para redirect
+      // Se o modal não renderizar rápido, faz fallback pra redirect
       setTimeout(() => {
         const hasMpIframe = !!document.querySelector('iframe[src*="mercadopago"]');
         if (!hasMpIframe && initPoint) {
@@ -56,6 +64,7 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
 
   return false;
 }
+
 
 
 // ===================================
