@@ -5316,7 +5316,7 @@ async function selectPlanWithValidation(plan) {
     if (!nameOk || !emailOk || !phoneOk) {
       showNotification(
         'Cadastro obrigatório',
-        'Para continuar, preencha Nome, E-mail e WhatsApp na Aba 1 (Cadastro) antes de escolher um plano.'
+        'Para continuar, preencha o Cadastro antes de escolher um plano.'
       );
 
       // leva pra Aba 1
