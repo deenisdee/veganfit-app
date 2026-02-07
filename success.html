@@ -1,212 +1,94 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+<!doctype html>
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pagamento Aprovado - VeganFit</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pagamento aprovado • VeganFit</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #fff);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .container {
-    background: white;
-    border-radius: 22px;
-    padding: 48px;
-    max-width: 500px;
-    width: 100%;
-    text-align: center;
-    box-shadow: 0 20px 60px rgb(158 158 158 / 52%);
-    animation: fadeInUp 0.5s ease-out;
-    }
-
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .icon {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
-      animation: scaleIn 0.6s ease-out 0.2s both;
-    }
-
-    @keyframes scaleIn {
-      from {
-        transform: scale(0);
-      }
-      to {
-        transform: scale(1);
-      }
-    }
-
-    .icon svg {
-      width: 48px;
-      height: 48px;
-      stroke: white;
-      stroke-width: 3;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    h1 {
-      font-size: 32px;
-      font-weight: 800;
-      color: #16a34a;
-      margin-bottom: 16px;
-    }
-
-    p {
-      font-size: 16px;
-      color: #6b7280;
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-
-    .highlight {
-      color: #16a34a;
-      font-weight: 600;
-    }
-
-    .loader {
-      margin: 32px auto 16px;
-      width: 60px;
-      height: 60px;
-      border: 4px solid #e5e7eb;
-      border-top-color: #16a34a;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .redirect-text {
-      font-size: 14px;
-      color: #9ca3af;
-      margin-top: 16px;
-    }
-
-    .countdown {
-      display: inline-block;
-      font-weight: 700;
-      color: #16a34a;
-      min-width: 20px;
-    }
-
-    @media (max-width: 640px) {
-      .container {
-        padding: 32px 24px;
-      }
-
-      h1 {
-        font-size: 24px;
-      }
-
-      p {
-        font-size: 15px;
-      }
-    }
-	
-	
-	
-	
-	
-	
-	/* FIX PARA IPHONE */
-@supports (-webkit-touch-callout: none) {
-  body {
-    min-height: -webkit-fill-available;
-  }
-}
-
-/* Safe area para iPhones com notch */
-.container {
-  padding: max(48px, env(safe-area-inset-top) + 24px) 
-           max(48px, env(safe-area-inset-right) + 24px) 
-           max(48px, env(safe-area-inset-bottom) + 24px) 
-           max(48px, env(safe-area-inset-left) + 24px);
-}
-
-/* Ajuste de viewport */
-html {
-  height: -webkit-fill-available;
-}
-
-/* Previne zoom no input (causa desalinhamento) */
-input, select, textarea {
-  font-size: 16px !important;
-}
-
-
-
-
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial; background:#0b0f14; color:#e7eef7; margin:0; display:grid; place-items:center; min-height:100vh;}
+    .card{width:min(560px,92vw); background:#111826; border:1px solid #1f2a3a; border-radius:16px; padding:22px 18px; box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    h1{font-size:18px; margin:0 0 6px}
+    p{margin:0 0 14px; opacity:.9; line-height:1.45}
+    .muted{opacity:.7; font-size:13px}
+    .bar{height:10px; background:#0b1220; border:1px solid #1f2a3a; border-radius:999px; overflow:hidden}
+    .bar > div{height:100%; width:30%; background:#3b82f6; border-radius:999px; animation:load 1.1s infinite ease-in-out}
+    @keyframes load{0%{transform:translateX(-120%)} 100%{transform:translateX(420%)}}
+    .btn{display:inline-block; padding:10px 12px; border-radius:12px; border:1px solid #2a3952; color:#e7eef7; text-decoration:none; background:#162235}
+    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="icon">
-      <svg viewBox="0 0 24 24">
-        <polyline points="20 6 9 17 4 12"></polyline>
-      </svg>
+  <div class="card">
+    <h1>Pagamento aprovado ✅</h1>
+    <p>Estamos ativando seu Premium. Isso costuma levar poucos segundos.</p>
+    <div class="bar" aria-hidden="true"><div></div></div>
+    <p class="muted" id="status">Validando…</p>
+    <div class="row">
+      <a class="btn" href="index.html?return=success">Ir para o site</a>
+      <a class="btn" href="index.html">Home</a>
     </div>
-
-    <h1>Pagamento Aprovado! </h1>
-    
-    <p>Seu pedido foi processado com <span class="highlight">sucesso</span>!</p>
-    
-    <p>Em instantes você receberá um <span class="highlight">código premium</span> no seu e-mail.
-    
-    Use este código para ativar seu plano</p> <p> <span class="highlight">VeganFit Premium.</span></p>
-
-    <div class="loader"></div>
-    
-    <p class="redirect-text">
-      Redirecionando em <span class="countdown" id="countdown">10</span> segundos...
-    </p>
   </div>
 
   <script>
-    let seconds = 10;
-    const countdownEl = document.getElementById('countdown');
-    
-    const timer = setInterval(() => {
-      seconds--;
-      countdownEl.textContent = seconds;
-      
-      if (seconds <= 0) {
-        clearInterval(timer);
-        window.location.href = '/?return=success';
+    // Tenta descobrir email de forma “melhor esforço”
+    function getEmailCandidate() {
+      const url = new URL(location.href);
+      const fromUrl = url.searchParams.get('email');
+      const fromLs =
+        localStorage.getItem('fit_user_email') ||
+        localStorage.getItem('vf_user_email') ||
+        localStorage.getItem('user_email');
+      return (fromUrl || fromLs || '').trim().toLowerCase();
+    }
+
+    async function checkPremium(email) {
+      const res = await fetch('/api/premium-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      return res.json();
+    }
+
+    (async function main(){
+      const statusEl = document.getElementById('status');
+      const email = getEmailCandidate();
+
+      // Se não souber email, redireciona sem polling (o app resolve)
+      if (!email) {
+        statusEl.textContent = 'Quase lá… redirecionando.';
+        setTimeout(() => location.replace('index.html?return=success'), 800);
+        return;
       }
-    }, 1000);
+
+      // Polling: aguarda webhook gravar premium_users
+      const maxMs = 25000;
+      const start = Date.now();
+      let tries = 0;
+
+      while (Date.now() - start < maxMs) {
+        tries++;
+        try {
+          statusEl.textContent = `Validando Premium… (tentativa ${tries})`;
+          const data = await checkPremium(email);
+
+          if (data && data.ok && data.premium === true) {
+            statusEl.textContent = 'Premium ativado ✅ Redirecionando…';
+            // redireciona com email para o app sincronizar sem reload
+            setTimeout(() => {
+              location.replace(`index.html?return=success&email=${encodeURIComponent(email)}`);
+            }, 700);
+            return;
+          }
+        } catch (e) {}
+
+        await new Promise(r => setTimeout(r, 1500));
+      }
+
+      // Se não ativou a tempo, ainda assim volta pro app (ele pode tentar de novo)
+      statusEl.textContent = 'Estamos finalizando… redirecionando.';
+      setTimeout(() => location.replace(`index.html?return=success&email=${encodeURIComponent(email)}`), 1200);
+    })();
   </script>
-  
-  
 </body>
 </html>
