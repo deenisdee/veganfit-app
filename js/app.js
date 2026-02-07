@@ -5,7 +5,7 @@
 // - Centraliza RECIPES/allRecipes (fonte única)
 // - Premium preparado p/ evoluir pra token/KV sem quebrar nada
 // - Mantém visual e funcionalidades
-// ============================================
+// ===========================================
 
 
 
