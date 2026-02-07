@@ -5578,6 +5578,11 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
 
 
+
+
+
+
+
 /* ============================================
    MOBILE SPACE PATCH (ganhar área útil)
    - Header compacto
@@ -5585,17 +5590,18 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
    - Conteúdo com padding correto
    - Breakpoints comuns (iPhone / Galaxy / tablets)
    ============================================ */
+/* ============================================
+   MOBILE SPACE PATCH + SLIM ON SCROLL
+   ============================================ */
 
-/* iOS safe areas */
 :root {
   --safe-top: env(safe-area-inset-top);
   --safe-bottom: env(safe-area-inset-bottom);
 }
 
-/* Ajuste base em mobile */
 @media (max-width: 768px) {
 
-  /* 1) Header/topo mais compacto */
+  /* Header/topo mais compacto */
   .site-header,
   header,
   .topbar,
@@ -5605,7 +5611,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     min-height: 0;
   }
 
-  /* 2) Logo menor */
+  /* Logo menor */
   .site-logo,
   .logo,
   header .logo img,
@@ -5615,7 +5621,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     width: auto !important;
   }
 
-  /* 3) Busca mais baixa */
+  /* Busca mais baixa */
   .search-bar,
   .rf-search,
   .search-container,
@@ -5631,7 +5637,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     padding: 0 12px !important;
   }
 
-  /* 4) Badges compactos */
+  /* Badges compactos (estado normal) */
   .credits-badge,
   .premium-badge,
   #creditsBadge {
@@ -5640,7 +5646,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     border-radius: 999px !important;
   }
 
-  /* 5) Slide/banner menor */
+  /* Slide/banner menor */
   .hero-slider,
   .banner-slider,
   .rf-slider,
@@ -5658,41 +5664,76 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     object-fit: cover !important;
   }
 
-  /* 6) Garantir que o grid de receitas começa mais alto */
   .recipe-grid,
   #recipeGrid {
     margin-top: 10px !important;
   }
 
-  /* 7) Se seu header é sticky demais, limitar */
-  .sticky-header,
-  .header-sticky,
-  .rf-header.sticky {
-    position: sticky;
-    top: 0;
-    z-index: 50;
+  /* ============================================
+     MODO SLIM AO ROLAR (body.vf-scrolled)
+     - esconde badges
+     - reduz busca
+     - compacta o header
+     ============================================ */
+
+  body.vf-scrolled .site-header,
+  body.vf-scrolled header,
+  body.vf-scrolled .topbar,
+  body.vf-scrolled .rf-header {
+    padding-top: calc(6px + var(--safe-top)) !important;
+    padding-bottom: 6px !important;
+  }
+
+  /* some badges ao rolar */
+  body.vf-scrolled .credits-badge,
+  body.vf-scrolled .premium-badge,
+  body.vf-scrolled #creditsBadge,
+  body.vf-scrolled .badge,
+  body.vf-scrolled .header-badges,
+  body.vf-scrolled .rf-badges {
+    display: none !important;
+  }
+
+  /* busca fica mais baixa ao rolar */
+  body.vf-scrolled .search-bar input,
+  body.vf-scrolled .rf-search input,
+  body.vf-scrolled #searchInput {
+    height: 34px !important;
+    font-size: 13px !important;
+    padding: 0 10px !important;
+  }
+
+  body.vf-scrolled .search-bar,
+  body.vf-scrolled .rf-search,
+  body.vf-scrolled .search-container,
+  body.vf-scrolled #searchContainer {
+    margin-top: 6px !important;
+  }
+
+  /* opcional: logo ainda menor ao rolar */
+  body.vf-scrolled .site-logo,
+  body.vf-scrolled .logo,
+  body.vf-scrolled header .logo img,
+  body.vf-scrolled .rf-logo img {
+    max-height: 22px !important;
+    height: 22px !important;
   }
 }
 
-/* Breakpoints finos por largura (principais devices) */
-
-/* iPhone SE / telas muito pequenas */
+/* Breakpoints finos */
 @media (max-width: 375px) {
   .hero-slider, .banner-slider, .rf-slider, #homeSlider { height: 105px !important; max-height: 105px !important; }
   .search-bar input, .rf-search input, #searchInput { height: 38px !important; }
 }
 
-/* iPhone 12/13/14/15 e Galaxy S/A padrão */
 @media (min-width: 376px) and (max-width: 430px) {
   .hero-slider, .banner-slider, .rf-slider, #homeSlider { height: 120px !important; max-height: 120px !important; }
 }
 
-/* Galaxy A55 geralmente fica aqui (largura maior) */
 @media (min-width: 431px) and (max-width: 500px) {
   .hero-slider, .banner-slider, .rf-slider, #homeSlider { height: 130px !important; max-height: 130px !important; }
 }
 
-/* Tablets em pé */
 @media (min-width: 768px) and (max-width: 1024px) {
   .hero-slider, .banner-slider, .rf-slider, #homeSlider { height: 170px !important; max-height: 170px !important; }
 }
