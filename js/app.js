@@ -5845,7 +5845,7 @@ function setupAdvancedFiltersAutoApply() {
     if (typeof window.applyFilters === 'function') {
       window.applyFilters();
     }
-  });
+  }); 
 
   // 2) Sliders: mexeu = aplica
   const ids = ['filter-time', 'filter-protein', 'filter-calories'];
