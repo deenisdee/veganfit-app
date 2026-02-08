@@ -5781,7 +5781,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
    MOBILE: Galax A55
    ========================================= */
    
-@media (max-width: 340px) {
+@media (max-width: 420px) {
 
 .logo, .logo * {
     letter-spacing: -1px !important;
@@ -5808,6 +5808,18 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     grid-template-columns: 1fr 1fr!important;
     gap: 12px!important;
 }
+
+    body.premium-active #credits-badge {
+        position: relative !important;
+        left: 55% !important;
+        top: 0px !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        display: inline-flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        white-space: nowrap;
+    }
 
 
 }
