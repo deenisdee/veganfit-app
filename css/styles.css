@@ -5800,6 +5800,14 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
         flex: 0 1 auto !important;
     }
 
+.rf-filter-row {
+    max-width: 1100px!important;
+    margin: 16px -9px 0px -12px !important;
+    padding: 0 0px!important;
+    display: grid!important;
+    grid-template-columns: 1fr 1fr!important;
+    gap: 12px!important;
+}
 
 
 }
