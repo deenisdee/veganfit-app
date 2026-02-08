@@ -2685,7 +2685,7 @@ function renderRecipeDetail(recipeId) {
             <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
           </svg>
-          Adicionar à Lista de compras
+          Lista de compras
         </button>
 		<br>
 		<p class="planner-subtitle" style="display: block; margin-top: -0.5rem; clear: both;">Aproveite para adicionar os ingredientes desta receita na Lista de compras (Só para Usuário Premium)</p>
