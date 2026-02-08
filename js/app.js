@@ -1610,95 +1610,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 // ==============================
-// BADGE DE QUANTIDADE NA OPÇÃO "Lista de Compras" (MENU DO PLANNER)
-// - Mostra o número de itens
-// - Some apenas quando count < 1
-// - Reaplica quando o menu abre (MutationObserver)
-// ==============================
-
-(function plannerMenuBadgeBootstrap() {
-  // CSS (uma vez)
-  if (!document.getElementById('planner-menu-badge-style')) {
-    const style = document.createElement('style');
-    style.id = 'planner-menu-badge-style';
-    style.textContent = `
-      .planner-menu-badge {
-        position: absolute;
-        right: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        min-width: 22px;
-        height: 18px;
-        padding: 0 6px;
-        border-radius: 999px;
-        background: #ef4444;
-        color: #fff;
-        font-size: 12px;
-        font-weight: 800;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        pointer-events: none;
-      }
-      .planner-menu-badge.hidden { display:none !important; }
-    `;
-    document.head.appendChild(style);
-  }
-
-  // Observer: quando o menu do planner aparecer/atualizar DOM, tenta aplicar o badge
-  const obs = new MutationObserver(() => {
-    try {
-      const count = Array.isArray(window.shoppingList) ? window.shoppingList.length : 0;
-      updatePlannerMenuShoppingBadge(count);
-    } catch (_) {}
-  });
-
-  window.addEventListener('DOMContentLoaded', () => {
-    obs.observe(document.body, { childList: true, subtree: true });
-  });
-})();
-
-function findPlannerMenuRowListaDeCompras() {
-  // tenta achar a "linha" pelo texto
-  const candidates = Array.from(document.querySelectorAll('button, a, li, div'))
-    .filter(el => (el.textContent || '').trim().toLowerCase() === 'lista de compras');
-
-  if (candidates[0]) return candidates[0];
-
-  // fallback: se tiver variação no texto
-  return Array.from(document.querySelectorAll('button, a, li, div'))
-    .find(el => (el.textContent || '').trim().toLowerCase().includes('lista de compras')) || null;
-}
-
-function updatePlannerMenuShoppingBadge(count) {
-  const row = findPlannerMenuRowListaDeCompras();
-  if (!row) return;
-
-  // garante que o badge fica posicionado dentro da "linha"
-  const cs = getComputedStyle(row);
-  if (cs.position === 'static') row.style.position = 'relative';
-
-  let badge = row.querySelector('.planner-menu-badge');
-  if (!badge) {
-    badge = document.createElement('span');
-    badge.className = 'planner-menu-badge hidden';
-    row.appendChild(badge);
-  }
-
-  const n = Number(count || 0);
-  if (n > 0) {
-    badge.textContent = String(n);
-    badge.classList.remove('hidden');
-  } else {
-    badge.classList.add('hidden');
-  }
-}
-
-
-
-
-// ==============================
 // BOLINHA VERMELHA NO PLANNER (TABBAR)
 // - Mostra se Lista de Compras > 0
 // - Some apenas quando lista ficar vazia
@@ -2889,7 +2800,7 @@ function renderRecipeDetail(recipeId) {
           Lista de compras
         </button>
 		<br>
-		<p class="planner-subtitle" style="display: block; margin-top: -0.5rem; clear: both;">Aproveite para adicionar os ingredientes desta receita na Lista de compras (Só para Usuário Premium)</p>
+		<p class="planner-subtitle" style="display: block; margin-top: -0.5rem; clear: both;">Aproveite para adicionar os ingredientes desta receita na Lista de compras</p>
       </div>
 
       ${recipe.tags && recipe.tags.length > 0 ? `
@@ -2930,7 +2841,7 @@ function renderRecipeDetail(recipeId) {
           <i data-lucide="calendar-plus" class="section-icon"></i>
           Adicionar ao Planejamento Semanal
         </h3>
-        <p class="planner-subtitle">Selecione o dia da semana que você quer fazer esta receita (Só para Usuário Premium)</p>
+        <p class="planner-subtitle">Selecione o dia da semana que você quer fazer esta receita</p>
         <div class="planner-days">
           ${['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].map(day => `
             <button class="planner-day" onclick="addToWeekPlan('${day}', ${recipe.id})">${day}</button>
