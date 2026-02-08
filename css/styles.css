@@ -62,7 +62,7 @@ a { color:inherit; text-decoration:none; }
 .search-container{ flex:1; max-width:500px; position:relative; }
 .search-input{
   width:100%;
-  height: 40px !important;
+  height: 48px !important;
   padding:.875rem 3rem .875rem 1rem;
   border:2px solid #e5e7eb;
   border-radius:9999px;
@@ -123,7 +123,7 @@ a { color:inherit; text-decoration:none; }
   font-size: 0.95rem; /* ← MESMO TAMANHO */
 
   white-space:nowrap;
-  height:38px !important;
+  height:48px !important;
   flex-shrink:0;
 }
 
@@ -364,7 +364,7 @@ a { color:inherit; text-decoration:none; }
 
 .recipe-button{
   width:100%;
-  padding:.875rem;
+  padding:.575rem;
   border:none;
   border-radius:.75rem;
   font-weight:600;
@@ -1520,6 +1520,7 @@ body.premium-active #premium-btn {
 
 /* Botão Adicionar à Lista */
 .btn-add-shopping {
+	height: 40px;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -1624,6 +1625,7 @@ body.premium-active #premium-btn {
 /* Botão "Agora não" - ESTADO NORMAL */
 #premium-modal .btn-cancel,
 .btn-cancel {
+	
   width: 100%;
   padding: 0.875rem;
   background: #16a34a;
@@ -2430,8 +2432,8 @@ body .hamburger-btn,
   /* FIX: seletor correto (tinha typo .premium-btnhover) */
   #premium-btn:hover, .btn-premium:hover, .premium-btn:hover {
     background: #15803d;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    transform: none!important;
+    box-shadow: none !important;
   }
 }
 
@@ -2498,8 +2500,8 @@ body .hamburger-btn,
 .recipe-content { display: flex; flex-direction: column; flex: 1; }
 
 .recipe-title {
-  min-height: 3.2em;
-  line-height: 1.6;
+    min-height: 2.2em;
+
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -2518,7 +2520,7 @@ body .hamburger-btn,
   .btn-label-desktop { display: none; }
   .btn-label-mobile { display: inline; }
 
-  .recipe-button.locked { padding: 12px 10px; gap: 8px; }
+  .recipe-button.locked { padding: 8px 10px; gap: 8px; }
 
   .recipe-button.locked .btn-label-mobile {
     font-weight: 700;
@@ -3123,6 +3125,7 @@ body.premium-modal-open.premium-open--hamburger .badge {
 }
 
 .hamburger-premium-btn {
+	height: 40px;
   background: #16a34a !important;
   color: #fff !important;
   display: flex;
@@ -4780,7 +4783,8 @@ input[type="range"]::-moz-range-thumb:hover {
 
 .btn-clear-filters,
 .btn-apply-filters {
-    flex: 1;
+	height:40px !important;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -5725,3 +5729,66 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
 
 
+/* =========================================
+   MOBILE: reduzir altura do banner (slider)
+   Seletor confirmado pelo seu HTML
+   ========================================= */
+   
+  @media (max-width: 480px) {
+    .hero-slider-fullwidth {
+        height: 180px;
+    }
+} 
+   
+@media (max-width: 768px) {
+  /* a “janela” do banner */
+  #sliderTrack {
+    height: 180px;            /* ajuste aqui (ex: 180, 200, 240) */
+    overflow: hidden;
+
+  }
+
+.badge {
+    background: #3b82f6;
+    color: #fff;
+    padding: .75rem 1.5rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    height: 38px !important;
+    flex-shrink: 0;
+}
+
+.search-input {
+    width: 100%;
+    height: 40px !important;
+    padding: .875rem 3rem .875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 9999px;
+    font-size: 1rem;
+    transition: border-color .2s;
+    font-weight: 400;
+}
+
+  /* cada slide ocupa a altura do track */
+  #sliderTrack .slide-new {
+    height: 180px;
+  }
+
+  /* imagem se adapta sem esticar */
+  #sliderTrack .slide-new > img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* overlay acompanha o tamanho */
+  #sliderTrack .slide-overlay-new {
+    height: 140px;
+  }
+}
