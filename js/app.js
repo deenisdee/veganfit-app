@@ -1566,18 +1566,219 @@ function updateUI() {
 
 
 
-
+// ====================
+// ====================
+// ====================
+// ====================
+// ====================
+// TESTANDO CONTADOR EM LISTA DE COMPRAS
+// ====================
+// ====================
+// ====================
+// ====================
+// ====================
 
 
 function updateShoppingCounter() {
   if (!shoppingCounter) return;
-  if (shoppingList.length > 0) {
-    shoppingCounter.textContent = shoppingList.length;
+
+  const count = Array.isArray(shoppingList) ? shoppingList.length : 0;
+
+  if (count > 0) {
+    shoppingCounter.textContent = count;
     shoppingCounter.classList.remove('hidden');
   } else {
     shoppingCounter.classList.add('hidden');
   }
+
+  updatePlannerDot(count);
+
+  // ✅ NOVO: badge com número no menu do Planner
+  updatePlannerMenuShoppingBadge(count);
 }
+
+
+window.addEventListener('DOMContentLoaded', () => {
+  try {
+    // se sua lista já foi restaurada do localStorage em algum lugar, isso já resolve o "dot após reload"
+    if (typeof updateShoppingCounter === 'function') {
+      updateShoppingCounter();
+    }
+  } catch (_) {}
+});
+
+
+
+// ==============================
+// BADGE DE QUANTIDADE NA OPÇÃO "Lista de Compras" (MENU DO PLANNER)
+// - Mostra o número de itens
+// - Some apenas quando count < 1
+// - Reaplica quando o menu abre (MutationObserver)
+// ==============================
+
+(function plannerMenuBadgeBootstrap() {
+  // CSS (uma vez)
+  if (!document.getElementById('planner-menu-badge-style')) {
+    const style = document.createElement('style');
+    style.id = 'planner-menu-badge-style';
+    style.textContent = `
+      .planner-menu-badge {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        min-width: 22px;
+        height: 18px;
+        padding: 0 6px;
+        border-radius: 999px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        pointer-events: none;
+      }
+      .planner-menu-badge.hidden { display:none !important; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Observer: quando o menu do planner aparecer/atualizar DOM, tenta aplicar o badge
+  const obs = new MutationObserver(() => {
+    try {
+      const count = Array.isArray(window.shoppingList) ? window.shoppingList.length : 0;
+      updatePlannerMenuShoppingBadge(count);
+    } catch (_) {}
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    obs.observe(document.body, { childList: true, subtree: true });
+  });
+})();
+
+function findPlannerMenuRowListaDeCompras() {
+  // tenta achar a "linha" pelo texto
+  const candidates = Array.from(document.querySelectorAll('button, a, li, div'))
+    .filter(el => (el.textContent || '').trim().toLowerCase() === 'lista de compras');
+
+  if (candidates[0]) return candidates[0];
+
+  // fallback: se tiver variação no texto
+  return Array.from(document.querySelectorAll('button, a, li, div'))
+    .find(el => (el.textContent || '').trim().toLowerCase().includes('lista de compras')) || null;
+}
+
+function updatePlannerMenuShoppingBadge(count) {
+  const row = findPlannerMenuRowListaDeCompras();
+  if (!row) return;
+
+  // garante que o badge fica posicionado dentro da "linha"
+  const cs = getComputedStyle(row);
+  if (cs.position === 'static') row.style.position = 'relative';
+
+  let badge = row.querySelector('.planner-menu-badge');
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'planner-menu-badge hidden';
+    row.appendChild(badge);
+  }
+
+  const n = Number(count || 0);
+  if (n > 0) {
+    badge.textContent = String(n);
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+
+
+
+// ==============================
+// BOLINHA VERMELHA NO PLANNER (TABBAR)
+// - Mostra se Lista de Compras > 0
+// - Some apenas quando lista ficar vazia
+// ==============================
+(function plannerDotBootstrap(){
+  // injeta o CSS uma vez (pra não depender do styles.css)
+  if (!document.getElementById('planner-dot-style')) {
+    const style = document.createElement('style');
+    style.id = 'planner-dot-style';
+    style.textContent = `
+      .planner-dot {
+        position: absolute;
+        top: 6px;
+		    left: 62px;
+        right: 14px;
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        background: #ef4444;
+        box-shadow: 0 0 0 2px rgba(255,255,255,.9);
+        pointer-events: none;
+      }
+      .planner-dot.hidden { display: none !important; }
+    `;
+    document.head.appendChild(style);
+  }
+})();
+
+function getPlannerTabButton() {
+  const tabbar = document.querySelector('.tab-bar');
+  if (!tabbar) return null;
+
+  // Mesmo critério que você já usa pro Planner: ícone de calendário
+  return Array.from(tabbar.querySelectorAll('button')).find(btn =>
+    btn.querySelector('svg.lucide-calendar, svg.lucide.lucide-calendar')
+  ) || null;
+}
+
+function ensurePlannerDotEl() {
+  const btn = getPlannerTabButton();
+  if (!btn) return null;
+
+  // garante contexto pro absolute
+  const cs = getComputedStyle(btn);
+  if (cs.position === 'static') btn.style.position = 'relative';
+
+  let dot = btn.querySelector('.planner-dot');
+  if (!dot) {
+    dot = document.createElement('span');
+    dot.className = 'planner-dot hidden';
+    btn.appendChild(dot);
+  }
+  return dot;
+}
+
+function updatePlannerDot(shoppingCount) {
+  const dot = ensurePlannerDotEl();
+  if (!dot) return;
+
+  if ((shoppingCount || 0) > 0) dot.classList.remove('hidden');
+  else dot.classList.add('hidden');
+}
+
+
+
+// ====================
+// ====================
+// ====================
+// ====================
+// ====================
+// TESTANDO CONTADOR EM LISTA DE COMPRAS
+// ====================
+// ====================
+// ====================
+// ====================
+// ====================
+
+
+
+
 
 // ==============================
 // SLIDER + CATEGORIAS
