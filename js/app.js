@@ -1170,60 +1170,6 @@ const sliderDots = document.getElementById('sliderDots');
 const categoriesGrid = document.getElementById('categoriesGrid');
 
 const faqBtn = document.getElementById('faq-btn');
-
-// ==============================
-// PATCH: Reader tool gating (Calculator / Shopping / Planner)
-// - Bloqueia apenas para degustação SEM cadastro
-// - Premium ou cadastrado (trial) => libera
-// - FAQ permanece livre
-// ==============================
-
-(function setupReaderToolGating(){
-  if (window.__readerToolGatingReady) return;
-  window.__readerToolGatingReady = true;
-
-  function hasRegisteredUser() {
-    try {
-      const e = (localStorage.getItem('vf_user_email') || '').trim().toLowerCase();
-      return e && e.includes('@');
-    } catch(_) { return false; }
-  }
-
-  function canUsePremiumTool() {
-    try {
-      if (window.RF && RF.premium && typeof RF.premium.isActive === 'function' && RF.premium.isActive()) return true;
-    } catch(_){}
-    return hasRegisteredUser();
-  }
-
-  function blockIfNeeded(e) {
-    if (canUsePremiumTool()) return false;
-    e && (e.preventDefault(), e.stopPropagation());
-    if (typeof showNotification === 'function') {
-      showNotification('🔒 Recurso Premium', 'Ative agora para liberar esta ferramenta.');
-    } else {
-      alert('Recurso Premium. Ative agora.');
-    }
-    return true;
-  }
-
-  try {
-    if (calculatorBtn && !calculatorBtn.dataset.gated) {
-      calculatorBtn.dataset.gated = '1';
-      calculatorBtn.addEventListener('click', function(e){ if (blockIfNeeded(e)) return; }, true);
-    }
-    if (shoppingBtn && !shoppingBtn.dataset.gated) {
-      shoppingBtn.dataset.gated = '1';
-      shoppingBtn.addEventListener('click', function(e){ if (blockIfNeeded(e)) return; }, true);
-    }
-    if (plannerBtn && !plannerBtn.dataset.gated) {
-      plannerBtn.dataset.gated = '1';
-      plannerBtn.addEventListener('click', function(e){ if (blockIfNeeded(e)) return; }, true);
-    }
-  } catch(err) {
-    console.warn('[ReaderToolGating] falha ao aplicar:', err);
-  }
-})();
 const faqModal = document.getElementById('faq-modal');
 
 // Modal (B) — modal de refeição existente no HTML
@@ -4227,6 +4173,134 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
     if (e.target === modal) modal.classList.add('hidden');
   };
 }
+
+// ==============================
+// PATCH V2: Gating consistente (modal com 2 botões)
+// - Degustação (SEM cadastro e SEM premium): bloqueia e mostra popup
+// - Cadastrado (trial) OU Premium ativo: libera
+// - Aplica em:
+//   1) Reader tools: Calculadora / Lista / Planner (FAQ livre)
+//   2) Home (antes dos cards): Buscar por ingredientes + chips/tags (FAQ livre)
+// ==============================
+(function vfGatingV2(){
+  if (window.__vfGatingV2Ready) return;
+  window.__vfGatingV2Ready = true;
+
+  function hasRegisteredUser() {
+    try {
+      if (window.userData && userData.registered === true) return true;
+      var e = (localStorage.getItem('vf_user_email') || '').trim().toLowerCase();
+      return !!(e && e.indexOf('@') !== -1);
+    } catch(_) { return false; }
+  }
+
+  function isPremiumActive() {
+    try { if (typeof isPremium !== 'undefined' && isPremium === true) return true; } catch(_) {}
+    try {
+      if (window.RF && RF.premium && typeof RF.premium.isActive === 'function') return !!RF.premium.isActive();
+    } catch(_) {}
+    return false;
+  }
+
+  function canUsePremiumFeatures() {
+    return isPremiumActive() || hasRegisteredUser();
+  }
+
+  function openPremium(origin) {
+    try { if (typeof openPremiumModal === 'function') openPremiumModal(origin || 'premium'); } catch(_) {}
+  }
+
+  function showPremiumPopup(title, msg, origin) {
+    try {
+      if (typeof showConfirmWithLabels === 'function') {
+        showConfirmWithLabels(
+          title || 'Recurso Premium 🔒',
+          msg || 'Este é um recurso Premium.\n\nAtive agora para liberar.',
+          'Ativar agora',
+          'Agora não',
+          function(){ openPremium(origin || 'premium'); }
+        );
+        return;
+      }
+    } catch(_) {}
+    try {
+      if (typeof showConfirm === 'function') {
+        showConfirm(title || 'Recurso Premium 🔒', msg || 'Este é um recurso Premium.', function(){ openPremium(origin || 'premium'); });
+        return;
+      }
+    } catch(_) {}
+    try {
+      if (typeof showNotification === 'function') showNotification(title || 'Recurso Premium', msg || 'Ative agora para liberar.');
+      else alert((title || 'Recurso Premium') + '\n\n' + (msg || 'Ative agora para liberar.'));
+    } catch(_) {}
+  }
+
+  function gateEvent(e, title, msg, origin) {
+    if (canUsePremiumFeatures()) return false;
+    try {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+      }
+    } catch(_) {}
+    showPremiumPopup(title, msg, origin);
+    return true;
+  }
+
+  function bindGateClickById(btnId, title, msg, origin) {
+    var el = document.getElementById(btnId);
+    if (!el) return;
+    if (el.dataset && el.dataset.vfGateV2 === '1') return;
+    if (el.dataset) el.dataset.vfGateV2 = '1';
+    el.addEventListener('click', function(e){ gateEvent(e, title, msg, origin); }, true);
+  }
+
+  // 1) Reader tools / Header tools
+  bindGateClickById('calculator-btn',
+    'Recurso Premium 🔒',
+    'A Calculadora de Calorias é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+    'reader'
+  );
+  bindGateClickById('shopping-btn',
+    'Recurso Premium 🔒',
+    'A Lista de Compras é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+    'reader'
+  );
+  bindGateClickById('planner-btn',
+    'Recurso Premium 🔒',
+    'O Planejador de Refeições é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+    'reader'
+  );
+  // FAQ livre (não bloqueia)
+
+  // 2) Home: Buscar por ingredientes
+  bindGateClickById('rfIngToggle',
+    'Recurso Premium 🔒',
+    'Buscar por ingredientes é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+    'filters'
+  );
+
+  // 2.2) Home: Chips/tags no painel de filtros
+  var filtersPanel = document.getElementById('filters-panel');
+  if (filtersPanel) {
+    if (!(filtersPanel.dataset && filtersPanel.dataset.vfGateV2 === '1')) {
+      if (filtersPanel.dataset) filtersPanel.dataset.vfGateV2 = '1';
+      filtersPanel.addEventListener('click', function(e){
+        var chip = e && e.target && e.target.closest ? e.target.closest('.rf-chip') : null;
+        if (!chip) return;
+        gateEvent(
+          e,
+          'Recurso Premium 🔒',
+          'Filtros por tags e objetivos são recursos Premium.\n\nAtive agora para liberar o acesso completo.',
+          'filters'
+        );
+      }, true);
+    }
+  }
+})();
+
+
 
 
 
