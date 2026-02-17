@@ -4096,6 +4096,7 @@ window.closeNotification = function() {
   }
 };
 
+
 function showConfirm(title, message, onConfirm) {
   const modal = document.getElementById('confirm-modal');
   if (!modal) return;
@@ -4129,6 +4130,51 @@ function showConfirm(title, message, onConfirm) {
     if (e.target === modal) modal.classList.add('hidden');
   };
 }
+
+/**
+ * showConfirmWithLabels
+ * - Igual ao showConfirm, mas permite trocar texto dos botões
+ * - Uso: popup "Recurso Premium" com CTA sem abrir cadastro direto
+ */
+function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
+  const modal = document.getElementById('confirm-modal');
+  if (!modal) return;
+
+  const titleEl = modal.querySelector('.confirm-title');
+  const messageEl = modal.querySelector('.confirm-message');
+  const yesBtn = modal.querySelector('.confirm-yes');
+  const noBtn = modal.querySelector('.confirm-no');
+
+  if (titleEl) titleEl.textContent = title;
+  if (messageEl) messageEl.textContent = message;
+
+  // troca rótulos dos botões
+  if (yesBtn && yesLabel) yesBtn.textContent = yesLabel;
+  if (noBtn && noLabel) noBtn.textContent = noLabel;
+
+  const cleanup = () => {
+    if (yesBtn) yesBtn.onclick = null;
+    if (noBtn) noBtn.onclick = null;
+    modal.classList.add('hidden');
+  };
+
+  if (yesBtn) {
+    yesBtn.onclick = () => {
+      cleanup();
+      if (typeof onConfirm === 'function') onConfirm();
+    };
+  }
+
+  if (noBtn) noBtn.onclick = cleanup;
+
+  modal.classList.remove('hidden');
+
+  modal.onclick = (e) => {
+    if (e.target === modal) modal.classList.add('hidden');
+  };
+}
+
+
 
 // ==============================
 // HAPTIC
@@ -4271,7 +4317,6 @@ function setActiveTab(index) {
 
 
 
-
 // ================================
 // DROPDOWN PLANNER - FUNÇÕES (VERSÃO FINAL)
 // ================================
@@ -4281,54 +4326,82 @@ window.openCalorieCalculator = function() {
   // fecha o dropdown primeiro
   closePlannerDropdown();
 
-  /* // se for FREE, deve abrir premium com foco
-  if (window.RF?.premium?.isActive && !window.RF.premium.isActive()) {
-    openPremiumModal('planner');
+  // ✅ Só no clique do ITEM: mostra popup premium (não abre cadastro direto)
+  const premiumActive =
+    (isPremium === true) ||
+    (window.RF?.premium?.isActive && window.RF.premium.isActive());
+
+  if (!premiumActive) {
+    showConfirmWithLabels(
+      'Recurso Premium 🔒',
+      'A Calculadora de Calorias é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'Ativar agora',
+      'Agora não',
+      () => openPremiumModal('planner')
+    );
     return;
-  } */
+  }
 
   // se for premium, abre a calculadora normal
   const calcBtn = document.getElementById('calculator-btn');
   if (calcBtn) calcBtn.click();
   openModal(calculatorModal);
-  
-  
 };
+
+
 
 window.openShoppingList = function() {
   haptic(10);
 
   closePlannerDropdown();
 
-/*   if (window.RF?.premium?.isActive && !window.RF.premium.isActive()) {
-    openPremiumModal('planner');
+  const premiumActive =
+    (isPremium === true) ||
+    (window.RF?.premium?.isActive && window.RF.premium.isActive());
+
+  if (!premiumActive) {
+    showConfirmWithLabels(
+      'Recurso Premium 🔒',
+      'A Lista de Compras é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'Ativar agora',
+      'Agora não',
+      () => openPremiumModal('planner')
+    );
     return;
-  } */
+  }
 
   const shoppingBtn = document.getElementById('shopping-btn');
   if (shoppingBtn) shoppingBtn.click();
-    renderShoppingList();
+  renderShoppingList();
   openModal(shoppingModal);
-  
-  
 };
+
+
 
 window.openWeekPlanner = function() {
   haptic(10);
 
   closePlannerDropdown();
 
-/*   if (window.RF?.premium?.isActive && !window.RF.premium.isActive()) {
-    openPremiumModal('planner');
+  const premiumActive =
+    (isPremium === true) ||
+    (window.RF?.premium?.isActive && window.RF.premium.isActive());
+
+  if (!premiumActive) {
+    showConfirmWithLabels(
+      'Recurso Premium 🔒',
+      'O Planejador Semanal é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'Ativar agora',
+      'Agora não',
+      () => openPremiumModal('planner')
+    );
     return;
-  } */
+  }
 
   const plannerBtn = document.getElementById('planner-btn');
   if (plannerBtn) plannerBtn.click();
-    renderWeekPlanner();
+  renderWeekPlanner();
   openModal(plannerModal);
-  
-  
 };
 
 
