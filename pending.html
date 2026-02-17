@@ -63,20 +63,20 @@
       font-size: 32px;
       font-weight: 800;
       color: #f59e0b;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     p {
       font-size: 16px;
       color: #6b7280;
       line-height: 1.6;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .highlight { color: #f59e0b; font-weight: 700; }
 
     .loader {
-      margin: 30px auto 10px;
+      margin: 26px auto 10px;
       width: 62px;
       height: 62px;
       border: 4px solid #e5e7eb;
@@ -86,17 +86,31 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .redirect-text {
+    .meta {
       font-size: 14px;
       color: #9ca3af;
-      margin-top: 12px;
+      margin-top: 10px;
     }
-    .countdown {
+
+    .status {
+      margin-top: 14px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .btn {
+      margin-top: 18px;
       display: inline-block;
-      font-weight: 800;
-      color: #f59e0b;
-      min-width: 20px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      color: #111827;
+      font-weight: 700;
+      cursor: pointer;
     }
+
+    .btn:active { transform: scale(0.99); }
 
     @media (max-width: 640px) {
       .container { padding: 32px 24px; }
@@ -124,29 +138,140 @@
 
     <h1>Pagamento Pendente</h1>
 
-    <p>Seu pagamento está sendo <span class="highlight">processado</span>.</p>
-    <p>Assim que confirmarmos o pagamento, você receberá o <span class="highlight">código premium</span> no seu e-mail.</p>
+    <p>Seu Pix está sendo <span class="highlight">confirmado</span>.</p>
+    <p>Assim que o pagamento for aprovado, seu acesso premium será <span class="highlight">ativado automaticamente</span>.</p>
     <p><strong>Isso pode levar alguns minutos.</strong></p>
 
     <div class="loader" aria-hidden="true"></div>
 
-    <p class="redirect-text">
-      Redirecionando em <span class="countdown" id="countdown">9</span> segundos...
-    </p>
+    <div class="meta" id="meta">Verificando status…</div>
+    <div class="status" id="status"></div>
+
+    <button class="btn" id="btnTryNow" type="button">Verificar agora</button>
+    <button class="btn" id="btnBack" type="button" style="margin-left:8px;">Voltar para a loja</button>
   </div>
 
   <script>
-    let seconds = 9;
-    const countdownEl = document.getElementById('countdown');
+    // Config (ajuste se quiser)
+    const POLL_EVERY_MS = 4000;
+    const MAX_WAIT_MS = 3 * 60 * 1000; // 3 minutos
+    const APPROVED_REDIRECT = '/?return=approved'; // troque se preferir
 
-    const timer = setInterval(() => {
-      seconds--;
-      countdownEl.textContent = seconds;
-      if (seconds <= 0) {
-        clearInterval(timer);
-        window.location.href = '/?return=pending';
+    const metaEl = document.getElementById('meta');
+    const statusEl = document.getElementById('status');
+    const btnTryNow = document.getElementById('btnTryNow');
+    const btnBack = document.getElementById('btnBack');
+
+    function getEmail() {
+      const qsEmail = new URLSearchParams(location.search).get('email');
+      const lsEmail = localStorage.getItem('premium_email');
+      return (qsEmail || lsEmail || '').trim().toLowerCase();
+    }
+
+    function setMeta(text) {
+      metaEl.textContent = text;
+    }
+
+    function setStatus(text) {
+      statusEl.textContent = text || '';
+    }
+
+    async function checkPremiumOnce() {
+      const email = getEmail();
+
+      if (!email) {
+        setMeta('Não encontrei seu e-mail para verificar automaticamente.');
+        setStatus('Volte para a loja e tente novamente (ou finalize pelo link do e-mail, se necessário).');
+        return { ok: false, premium: false };
       }
-    }, 1000);
+
+      // mantém para os próximos retornos no mobile
+      localStorage.setItem('premium_email', email);
+
+      try {
+        const resp = await fetch(`/api/premium-status?email=${encodeURIComponent(email)}`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-store'
+        });
+
+        if (!resp.ok) {
+          setMeta('Confirmando com o servidor…');
+          setStatus(`Status HTTP: ${resp.status}`);
+          return { ok: false, premium: false };
+        }
+
+        const data = await resp.json();
+
+        // Aceita alguns formatos comuns (pra não depender de 1 nome exato)
+        const premium =
+          data?.premium === true ||
+          data?.premiumActive === true ||
+          data?.active === true ||
+          data?.isPremium === true;
+
+        const payStatus = data?.paymentStatus || data?.status || data?.mpStatus;
+
+        if (premium) {
+          setMeta('Pagamento aprovado ✅');
+          setStatus('Ativando seu acesso premium…');
+          return { ok: true, premium: true };
+        }
+
+        setMeta('Ainda pendente…');
+        setStatus(payStatus ? `Status: ${payStatus}` : 'Aguardando confirmação do Pix.');
+        return { ok: true, premium: false };
+
+      } catch (err) {
+        setMeta('Falha ao verificar. Tentando novamente…');
+        setStatus(String(err?.message || err));
+        return { ok: false, premium: false };
+      }
+    }
+
+    async function startPolling() {
+      const startedAt = Date.now();
+      setMeta('Verificando status do Pix…');
+      setStatus('');
+
+      // primeira verificação imediata
+      let r = await checkPremiumOnce();
+      if (r.premium) {
+        window.location.href = APPROVED_REDIRECT;
+        return;
+      }
+
+      const timer = setInterval(async () => {
+        const elapsed = Date.now() - startedAt;
+
+        if (elapsed > MAX_WAIT_MS) {
+          clearInterval(timer);
+          setMeta('Ainda não confirmamos o Pix.');
+          setStatus('Se já pagou, aguarde mais um pouco e toque em "Verificar agora".');
+          return;
+        }
+
+        const res = await checkPremiumOnce();
+        if (res.premium) {
+          clearInterval(timer);
+          window.location.href = APPROVED_REDIRECT;
+        }
+      }, POLL_EVERY_MS);
+
+      btnTryNow.addEventListener('click', async () => {
+        const res = await checkPremiumOnce();
+        if (res.premium) {
+          clearInterval(timer);
+          window.location.href = APPROVED_REDIRECT;
+        }
+      });
+    }
+
+    btnBack.addEventListener('click', () => {
+      window.location.href = '/?return=pending';
+    });
+
+    startPolling();
   </script>
 </body>
 </html>
