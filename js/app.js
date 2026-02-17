@@ -9,7 +9,7 @@
 // - Requer no HTML: <script src="https://sdk.mercadopago.com/js/v2"></script> ANTES do app.js
 // - Mantém uma instância global em window.mp
 // ==============================
-const MP_PUBLIC_KEY = 'APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2';
+const MP_PUBLIC_KEY = 'APP_USR-9a3547c8-2f6d-4cde-b502-027d0e817746';
 
 function ensureMercadoPagoInstance() {
   try {
@@ -5245,41 +5245,33 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
   try {
     const email = prompt('Digite seu email para continuar:');
     if (!email) return;
-    
-    console.log('1. Enviando requisição...');
-    
+
+    // 🔐 salva para pending.html conseguir recuperar
+    localStorage.setItem('premium_email', email.toLowerCase());
+
     const response = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: plan, email: email })
+      body: JSON.stringify({ plan, email })
     });
-    
-    console.log('2. Status:', response.status);
-    console.log('3. OK:', response.ok);
-    
+
     const data = await response.json();
-    
-    console.log('4. Data recebida:', data);
-    
-    if (!data.preferenceId) {
-      throw new Error('PreferenceId não retornado');
+
+    if (!response.ok || !data.preferenceId) {
+      throw new Error('Falha ao criar preferência');
     }
-    
-    console.log('5. Abrindo checkout com preferenceId:', data.preferenceId);
-    
-    mp.checkout({
-      preference: { id: data.preferenceId },
-      autoOpen: true
-    });
-    
+
+    const preferenceId = data.preferenceId;
+    const initPoint = data.initPoint;
+
+    // ✅ AQUI ESTÁ A CORREÇÃO
+    openMpCheckoutWithFallback(preferenceId, initPoint);
+
   } catch (error) {
-    console.error('ERRO DETALHADO:', error);
-    alert('Erro ao processar pagamento: ' + error.message);
+    alert('Erro ao iniciar pagamento. Tente novamente.');
+    console.error(error);
   }
 };
-
-
-
 
 
 
