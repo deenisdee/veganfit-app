@@ -9,7 +9,7 @@
 // - Requer no HTML: <script src="https://sdk.mercadopago.com/js/v2"></script> ANTES do app.js
 // - Mantém uma instância global em window.mp
 // ==============================
-const MP_PUBLIC_KEY = 'APP_USR-6f7c3876-933e-4078-aec5-f0920e66bbb2';
+const MP_PUBLIC_KEY = 'APP_USR-9a3547c8-2f6d-4cde-b502-027d0e817746';
 
 function ensureMercadoPagoInstance() {
   try {
