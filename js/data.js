@@ -6084,7 +6084,7 @@ image: 'image/macarrao-integral-ao-pesto-vegano.webp',
   allergens: ['Pode conter glúten (dependendo do caldo)'],
   
   
-image: 'image/risoto-de-cogumelos.JPEG',
+image: 'image/risoto-de-cogumelos.webp',
   
   
   ingredients: [
@@ -6111,7 +6111,7 @@ image: 'image/risoto-de-cogumelos.JPEG',
 	
 	
     images: {
-      hero: 'image/risoto-de-cogumelos.JPEG',
+      hero: 'risoto-de-cogumelos.webp',
       steps: [ ]
     },
 	
