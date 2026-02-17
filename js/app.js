@@ -4156,7 +4156,20 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
     if (yesBtn) yesBtn.onclick = null;
     if (noBtn) noBtn.onclick = null;
     modal.classList.add('hidden');
-  };
+  
+    // ✅ HOOK opcional: permite fechar painéis ao fechar a popup
+    try {
+      if (typeof window.__vfOnConfirmClose === 'function') {
+        const fn = window.__vfOnConfirmClose;
+        window.__vfOnConfirmClose = null;
+        fn();
+      } else {
+        window.__vfOnConfirmClose = null;
+      }
+    } catch (_) {
+      window.__vfOnConfirmClose = null;
+    }
+};
 
   if (yesBtn) {
     yesBtn.onclick = () => {
@@ -4238,6 +4251,23 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
 
   function gateEvent(e, title, msg, origin) {
     if (!isTasting()) return false;
+
+    // ✅ Se a popup foi aberta por "filters", ao fechar ela vamos fechar o painel de filtros também
+    try {
+      if (origin === 'filters') {
+        window.__vfOnConfirmClose = function () {
+          try {
+            if (typeof window.closeAdvancedFiltersPanel === 'function') {
+              window.closeAdvancedFiltersPanel();
+            }
+          } catch (_) {}
+        };
+      } else {
+        // não mantém hook pendurado de outras origens
+        window.__vfOnConfirmClose = null;
+      }
+    } catch (_) {}
+
     try {
       if (e) {
         e.preventDefault();
@@ -4245,6 +4275,7 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
         if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
       }
     } catch(_) {}
+
     showPremiumPopup(title, msg, origin);
     return true;
   }
