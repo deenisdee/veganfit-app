@@ -50,8 +50,21 @@ function initFirebase() {
   });
 }
 
-function normalizeEmail(email) {
-  return String(email || '').trim().toLowerCase();
+/**
+ * normalizeEmailForDocId()
+ * - Garante que o email usado como docId
+ *   seja exatamente o mesmo salvo pelo webhook
+ * - Corrige:
+ *   • espaço virando "+"
+ *   • "%2B" literal
+ *   • trim / lowercase
+ */
+function normalizeEmailForDocId(email) {
+  return String(email || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '+')
+    .replace(/%2b/gi, '+');
 }
 
 module.exports = async (req, res) => {
@@ -74,7 +87,8 @@ module.exports = async (req, res) => {
         ? req.body
         : (typeof req.body === 'string' ? JSON.parse(req.body) : {});
 
-    const email = normalizeEmail(body.email);
+    // ✅ AQUI ESTÁ A CORREÇÃO QUE VOCÊ PEDIU
+    const email = normalizeEmailForDocId(body.email);
 
     if (!email || !email.includes('@')) {
       return res.status(400).json({
