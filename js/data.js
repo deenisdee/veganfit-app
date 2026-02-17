@@ -5129,7 +5129,7 @@ image: 'image/falafel-assado-com-salada-arabe.webp',
     
     allergens: ['Nenhum'],
     
-image: 'image/risoto-de-cogumelos.jpeg',
+image: 'image/risoto-de-cogumelos.JPEG',
     
     ingredients: [
         { icon: 'wheat', quantity: '1 xícara', text: 'arroz arbóreo' },
@@ -5165,7 +5165,7 @@ image: 'image/risoto-de-cogumelos.jpeg',
 	
 	
     images: {
-      hero: 'image/risoto-de-cogumelos.jpeg',
+      hero: 'image/risoto-de-cogumelos.JPEG',
       steps: [ ]
     },
 	
