@@ -1,277 +1,144 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pagamento Pendente - VeganFit</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagamento em análise</title>
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html { height: -webkit-fill-available; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #fff;
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      height: 100vh;
+      margin: 0;
     }
 
-    .container {
-      background: white;
-      border-radius: 22px;
-      padding: 48px;
-      max-width: 520px;
+    .box {
+      max-width: 420px;
       width: 100%;
+      background: #020617;
+      border-radius: 12px;
+      padding: 24px;
       text-align: center;
-      box-shadow: 0 20px 60px rgb(158 158 158 / 52%);
-      animation: fadeInUp 0.5s ease-out;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .icon {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
-      animation: scaleIn 0.6s ease-out 0.2s both;
-    }
-
-    @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
-
-    .icon svg {
-      width: 48px;
-      height: 48px;
-      stroke: white;
-      stroke-width: 3;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      box-shadow: 0 20px 40px rgba(0,0,0,.4);
     }
 
     h1 {
-      font-size: 32px;
-      font-weight: 800;
-      color: #f59e0b;
-      margin-bottom: 12px;
+      font-size: 20px;
+      margin-bottom: 8px;
     }
 
     p {
-      font-size: 16px;
-      color: #6b7280;
-      line-height: 1.6;
-      margin-bottom: 10px;
-    }
-
-    .highlight { color: #f59e0b; font-weight: 700; }
-
-    .loader {
-      margin: 26px auto 10px;
-      width: 62px;
-      height: 62px;
-      border: 4px solid #e5e7eb;
-      border-top-color: #f59e0b;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .meta {
       font-size: 14px;
-      color: #9ca3af;
-      margin-top: 10px;
+      opacity: .9;
+      margin-bottom: 20px;
     }
 
     .status {
-      margin-top: 14px;
+      margin-bottom: 16px;
       font-size: 14px;
-      color: #6b7280;
+      min-height: 20px;
     }
 
-    .btn {
-      margin-top: 18px;
-      display: inline-block;
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      background: #fff;
-      color: #111827;
-      font-weight: 700;
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-weight: 600;
       cursor: pointer;
+      background: #22c55e;
+      color: #052e16;
+      margin-bottom: 10px;
     }
 
-    .btn:active { transform: scale(0.99); }
-
-    @media (max-width: 640px) {
-      .container { padding: 32px 24px; }
-      h1 { font-size: 24px; }
-      p { font-size: 15px; }
+    button.secondary {
+      background: transparent;
+      color: #94a3b8;
+      border: 1px solid #334155;
     }
-
-    .container {
-      padding: max(48px, env(safe-area-inset-top) + 24px)
-               max(48px, env(safe-area-inset-right) + 24px)
-               max(48px, env(safe-area-inset-bottom) + 24px)
-               max(48px, env(safe-area-inset-left) + 24px);
-    }
-    input, select, textarea { font-size: 16px !important; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 6 12 12 16 14"></polyline>
-      </svg>
+
+  <div class="box">
+    <h1>⏳ Pagamento em análise</h1>
+    <p>
+      Recebemos seu pagamento via Pix.<br>
+      A confirmação pode levar alguns instantes.
+    </p>
+
+    <div id="status" class="status">
+      Aguardando confirmação…
     </div>
 
-    <h1>Pagamento Pendente</h1>
-
-    <p>Seu Pix está sendo <span class="highlight">confirmado</span>.</p>
-    <p>Assim que o pagamento for aprovado, seu acesso premium será <span class="highlight">ativado automaticamente</span>.</p>
-    <p><strong>Isso pode levar alguns minutos.</strong></p>
-
-    <div class="loader" aria-hidden="true"></div>
-
-    <div class="meta" id="meta">Verificando status…</div>
-    <div class="status" id="status"></div>
-
-    <button class="btn" id="btnTryNow" type="button">Verificar agora</button>
-    <button class="btn" id="btnBack" type="button" style="margin-left:8px;">Voltar para a loja</button>
+    <button id="checkNow">Verificar agora</button>
+    <button class="secondary" onclick="window.location.href='/'">
+      Voltar para a loja
+    </button>
   </div>
 
   <script>
-    // Config (ajuste se quiser)
-    const POLL_EVERY_MS = 4000;
-    const MAX_WAIT_MS = 3 * 60 * 1000; // 3 minutos
-    const APPROVED_REDIRECT = '/?return=approved'; // troque se preferir
+    (function () {
+      const qs = new URLSearchParams(window.location.search);
+      const email = (qs.get('email') || '').trim().toLowerCase();
 
-    const metaEl = document.getElementById('meta');
-    const statusEl = document.getElementById('status');
-    const btnTryNow = document.getElementById('btnTryNow');
-    const btnBack = document.getElementById('btnBack');
+      const statusEl = document.getElementById('status');
+      const btn = document.getElementById('checkNow');
 
-    function getEmail() {
-      const qsEmail = new URLSearchParams(location.search).get('email');
-      const lsEmail = localStorage.getItem('premium_email');
-      return (qsEmail || lsEmail || '').trim().toLowerCase();
-    }
-
-    function setMeta(text) {
-      metaEl.textContent = text;
-    }
-
-    function setStatus(text) {
-      statusEl.textContent = text || '';
-    }
-
-    async function checkPremiumOnce() {
-      const email = getEmail();
-
-      if (!email) {
-        setMeta('Não encontrei seu e-mail para verificar automaticamente.');
-        setStatus('Volte para a loja e tente novamente (ou finalize pelo link do e-mail, se necessário).');
-        return { ok: false, premium: false };
+      function setStatus(msg) {
+        statusEl.textContent = msg;
       }
 
-      // mantém para os próximos retornos no mobile
-      localStorage.setItem('premium_email', email);
-
-      try {
-        const resp = await fetch(`/api/premium-status?email=${encodeURIComponent(email)}`, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
-          cache: 'no-store'
-        });
-
-        if (!resp.ok) {
-          setMeta('Confirmando com o servidor…');
-          setStatus(`Status HTTP: ${resp.status}`);
-          return { ok: false, premium: false };
-        }
-
-        const data = await resp.json();
-
-        // Aceita alguns formatos comuns (pra não depender de 1 nome exato)
-        const premium =
-          data?.premium === true ||
-          data?.premiumActive === true ||
-          data?.active === true ||
-          data?.isPremium === true;
-
-        const payStatus = data?.paymentStatus || data?.status || data?.mpStatus;
-
-        if (premium) {
-          setMeta('Pagamento aprovado ✅');
-          setStatus('Ativando seu acesso premium…');
-          return { ok: true, premium: true };
-        }
-
-        setMeta('Ainda pendente…');
-        setStatus(payStatus ? `Status: ${payStatus}` : 'Aguardando confirmação do Pix.');
-        return { ok: true, premium: false };
-
-      } catch (err) {
-        setMeta('Falha ao verificar. Tentando novamente…');
-        setStatus(String(err?.message || err));
-        return { ok: false, premium: false };
-      }
-    }
-
-    async function startPolling() {
-      const startedAt = Date.now();
-      setMeta('Verificando status do Pix…');
-      setStatus('');
-
-      // primeira verificação imediata
-      let r = await checkPremiumOnce();
-      if (r.premium) {
-        window.location.href = APPROVED_REDIRECT;
-        return;
-      }
-
-      const timer = setInterval(async () => {
-        const elapsed = Date.now() - startedAt;
-
-        if (elapsed > MAX_WAIT_MS) {
-          clearInterval(timer);
-          setMeta('Ainda não confirmamos o Pix.');
-          setStatus('Se já pagou, aguarde mais um pouco e toque em "Verificar agora".');
+      async function checkPremium() {
+        if (!email || !email.includes('@')) {
+          setStatus('Não foi possível identificar o e-mail da compra.');
           return;
         }
 
-        const res = await checkPremiumOnce();
-        if (res.premium) {
-          clearInterval(timer);
-          window.location.href = APPROVED_REDIRECT;
+        setStatus('Verificando ativação…');
+
+        try {
+          const res = await fetch(
+            `/api/premium-status?email=${encodeURIComponent(email)}`,
+            { cache: 'no-store' }
+          );
+
+          const data = await res.json();
+
+          if (data && data.ok && data.active === true) {
+            setStatus('✅ Premium ativado! Redirecionando…');
+
+            setTimeout(() => {
+              window.location.href =
+                `/?return=success&openPremium=1&autovalidate=1&email=${encodeURIComponent(email)}`;
+            }, 800);
+
+            return;
+          }
+
+          setStatus(
+            'Ainda em análise. Se você pagou via Pix, a confirmação pode levar até alguns minutos.'
+          );
+        } catch (err) {
+          console.error(err);
+          setStatus('Erro ao verificar. Tente novamente em instantes.');
         }
-      }, POLL_EVERY_MS);
+      }
 
-      btnTryNow.addEventListener('click', async () => {
-        const res = await checkPremiumOnce();
-        if (res.premium) {
-          clearInterval(timer);
-          window.location.href = APPROVED_REDIRECT;
-        }
-      });
-    }
+      // botão manual (sem loop)
+      btn.addEventListener('click', checkPremium);
 
-    btnBack.addEventListener('click', () => {
-      window.location.href = '/?return=pending';
-    });
-
-    startPolling();
+      // UMA verificação automática ao abrir (sem interval)
+      if (email) {
+        setTimeout(checkPremium, 1200);
+      }
+    })();
   </script>
+
 </body>
 </html>
