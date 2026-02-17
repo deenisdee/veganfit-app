@@ -4175,16 +4175,17 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
 }
 
 // ==============================
-// PATCH V3: Gating consistente (modal com 2 botões) + bind seguro
+// PATCH V4: Gating consistente (modal com 2 botões) + Ingredientes "abre e bloqueia no clique"
 // - Degustação (SEM cadastro e SEM premium): bloqueia e mostra popup (Ativar agora / Agora não)
 // - Cadastrado (trial) OU Premium ativo: libera
 // - Aplica em:
 //   1) Reader tools: Calculadora / Lista / Planner (FAQ livre)
-//   2) Home (antes dos cards): Buscar por ingredientes + chips/tags + sliders do painel de filtros
+//   2) Home: Filtros (chips/tags + sliders) -> popup
+//   3) Home: Ingredientes -> ABRE normal, mas ao clicar em ingrediente, popup
 // ==============================
-(function vfGatingV3(){
-  if (window.__vfGatingV3Ready) return;
-  window.__vfGatingV3Ready = true;
+(function vfGatingV4(){
+  if (window.__vfGatingV4Ready) return;
+  window.__vfGatingV4Ready = true;
 
   function hasRegisteredUser() {
     try {
@@ -4251,8 +4252,8 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
   function bindGateClickById(btnId, title, msg, origin) {
     var el = document.getElementById(btnId);
     if (!el) return;
-    if (el.dataset && el.dataset.vfGateV3 === '1') return;
-    if (el.dataset) el.dataset.vfGateV3 = '1';
+    if (el.dataset && el.dataset.vfGateV4 === '1') return;
+    if (el.dataset) el.dataset.vfGateV4 = '1';
     el.addEventListener('click', function(e){ gateEvent(e, title, msg, origin); }, true);
   }
 
@@ -4260,8 +4261,8 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
     var panel = document.getElementById('filters-panel');
     if (!panel) return;
 
-    if (!(panel.dataset && panel.dataset.vfGateV3 === '1')) {
-      if (panel.dataset) panel.dataset.vfGateV3 = '1';
+    if (!(panel.dataset && panel.dataset.vfGateV4 === '1')) {
+      if (panel.dataset) panel.dataset.vfGateV4 = '1';
 
       // Chips/tags
       panel.addEventListener('click', function(e){
@@ -4291,6 +4292,40 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
     }
   }
 
+  function bindIngredientsPanel() {
+    // ✅ Não bloqueia o toggle (rfIngToggle). Deixa ABRIR.
+    // Bloqueia quando clica em um ingrediente dentro do painel.
+    var panel = document.getElementById('rfIngPanel');
+    var grid  = document.getElementById('rfIngGrid');
+    var root = grid || panel;
+    if (!root) return;
+
+    if (!(root.dataset && root.dataset.vfGateV4 === '1')) {
+      if (root.dataset) root.dataset.vfGateV4 = '1';
+
+      root.addEventListener('click', function(e){
+        // tenta achar um item de ingrediente clicado
+        var el = e && e.target && e.target.closest ? e.target.closest('[data-ingredient], [data-ing], .rf-ing, .ingredient-chip, button') : null;
+        if (!el) return;
+
+        // não bloquear botões de limpar/fechar (se existirem)
+        var id = (el.id || '').toLowerCase();
+        var txt = (el.textContent || '').trim().toLowerCase();
+        if (id.includes('clear') || id.includes('close') || txt === 'limpar' || txt === 'fechar') return;
+
+        // se o clique foi no próprio painel sem alvo real, ignora
+        if (el === root) return;
+
+        gateEvent(
+          e,
+          'Recurso Premium 🔒',
+          'Buscar por ingredientes é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+          'filters'
+        );
+      }, true);
+    }
+  }
+
   function bindAll() {
     // 1) Tools (Reader/Header)
     bindGateClickById('calculator-btn',
@@ -4308,30 +4343,26 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
       'O Planejador de Refeições é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
       'reader'
     );
-    // FAQ livre (não bloqueia)
+    // FAQ livre
 
-    // 2) Home: buscar por ingredientes
-    bindGateClickById('rfIngToggle',
-      'Recurso Premium 🔒',
-      'Buscar por ingredientes é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
-      'filters'
-    );
-
-    // 3) Painel de filtros (chips/tags + sliders)
+    // 2) Filtros
     bindFiltersPanel();
+
+    // 3) Ingredientes (abre normal, bloqueia no clique)
+    bindIngredientsPanel();
   }
 
-  // ✅ garante bind mesmo se o script rodar antes do DOM existir
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bindAll, { once: true });
   } else {
     bindAll();
   }
-
-  // ✅ reforço: alguns elementos podem aparecer depois (ex: painel renderizado)
   setTimeout(bindAll, 300);
   setTimeout(bindAll, 1200);
 })();
+
+
+
 
 
 
