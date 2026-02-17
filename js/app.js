@@ -1170,6 +1170,60 @@ const sliderDots = document.getElementById('sliderDots');
 const categoriesGrid = document.getElementById('categoriesGrid');
 
 const faqBtn = document.getElementById('faq-btn');
+
+// ==============================
+// PATCH: Reader tool gating (Calculator / Shopping / Planner)
+// - Bloqueia apenas para degustação SEM cadastro
+// - Premium ou cadastrado (trial) => libera
+// - FAQ permanece livre
+// ==============================
+
+(function setupReaderToolGating(){
+  if (window.__readerToolGatingReady) return;
+  window.__readerToolGatingReady = true;
+
+  function hasRegisteredUser() {
+    try {
+      const e = (localStorage.getItem('vf_user_email') || '').trim().toLowerCase();
+      return e && e.includes('@');
+    } catch(_) { return false; }
+  }
+
+  function canUsePremiumTool() {
+    try {
+      if (window.RF && RF.premium && typeof RF.premium.isActive === 'function' && RF.premium.isActive()) return true;
+    } catch(_){}
+    return hasRegisteredUser();
+  }
+
+  function blockIfNeeded(e) {
+    if (canUsePremiumTool()) return false;
+    e && (e.preventDefault(), e.stopPropagation());
+    if (typeof showNotification === 'function') {
+      showNotification('🔒 Recurso Premium', 'Ative agora para liberar esta ferramenta.');
+    } else {
+      alert('Recurso Premium. Ative agora.');
+    }
+    return true;
+  }
+
+  try {
+    if (calculatorBtn && !calculatorBtn.dataset.gated) {
+      calculatorBtn.dataset.gated = '1';
+      calculatorBtn.addEventListener('click', function(e){ if (blockIfNeeded(e)) return; }, true);
+    }
+    if (shoppingBtn && !shoppingBtn.dataset.gated) {
+      shoppingBtn.dataset.gated = '1';
+      shoppingBtn.addEventListener('click', function(e){ if (blockIfNeeded(e)) return; }, true);
+    }
+    if (plannerBtn && !plannerBtn.dataset.gated) {
+      plannerBtn.dataset.gated = '1';
+      plannerBtn.addEventListener('click', function(e){ if (blockIfNeeded(e)) return; }, true);
+    }
+  } catch(err) {
+    console.warn('[ReaderToolGating] falha ao aplicar:', err);
+  }
+})();
 const faqModal = document.getElementById('faq-modal');
 
 // Modal (B) — modal de refeição existente no HTML
