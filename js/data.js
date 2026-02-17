@@ -5104,93 +5104,6 @@ image: 'image/falafel-assado-com-salada-arabe.webp',
 },
 
 {
-    id: 65,
-    name: 'Risoto de Cogumelos',
-    category: 'Almoço',
-    calories: 360,
-    protein: 10,
-    carbs: 54,
-    fats: 12,
-    fiber: 4,
-    time: 40,
-    servings: 2,
-    difficulty: 'Médio',
-    featured: false,
-    description: 'Risoto cremoso vegano com mix de cogumelos e vinho branco',
-    
-    tags: ['Vegano', 'Italiano', 'Gourmet', 'Cremoso'],
-    
-    benefits: [
-        'Cremoso sem laticínios',
-        'Rico em umami natural',
-        'Fonte de vitamina D',
-        'Conforto gastronômico'
-    ],
-    
-    allergens: ['Nenhum'],
-    
-image: 'image/risoto-de-cogumelos.JPEG',
-    
-    ingredients: [
-        { icon: 'wheat', quantity: '1 xícara', text: 'arroz arbóreo' },
-        { icon: 'leaf', quantity: '300g', text: 'mix de cogumelos' },
-        { icon: 'circle', quantity: '1 unidade', text: 'cebola picada' },
-        { icon: 'flower-2', quantity: '3 dentes', text: 'alho picado' },
-        { icon: 'droplet', quantity: '1/2 xícara', text: 'vinho branco seco' },
-        { icon: 'droplet', quantity: '4 xícaras', text: 'caldo de legumes quente' },
-        { icon: 'droplets', quantity: '3 col sopa', text: 'azeite' },
-        { icon: 'leaf', quantity: 'a gosto', text: 'tomilho e salsinha' }
-    ],
-    
-    instructions: [
-        'Refogue cogumelos no azeite até dourar, reserve',
-        'Na mesma panela, refogue cebola até transparente',
-        'Adicione alho e arroz, torre 2min mexendo',
-        'Adicione vinho, mexa até evaporar',
-        'Adicione 1 concha de caldo, mexa até absorver',
-        'Continue adicionando caldo aos poucos',
-        'Mexa constantemente por 18-20min',
-        'Quando cremoso, adicione cogumelos reservados',
-        'Finalize com azeite, ervas e pimenta',
-        'Sirva imediatamente'
-    ],
-    
-    tips: [
-        'Paciência é essencial - mexa constantemente',
-        'Caldo sempre quente para não interromper cozimento',
-        'Arroz deve ficar al dente no centro',
-        'Adicione fermento nutricional para sabor queijo'
-    ],
-    
-	
-	
-    images: {
-      hero: 'image/risoto-de-cogumelos.JPEG',
-      steps: [ ]
-    },
-	
-	
-    
-    searchMeta: {
-        mainIngredients: ['arroz-arboreo', 'cogumelos', 'vinho'],
-        objectives: ['gourmet', 'cremoso', 'especial'],
-        dishType: ['risoto', 'italiano'],
-        dietary: {
-            vegetarian: true,
-            vegan: true,
-            glutenFree: true,
-            dairyFree: true,
-            soyFree: true,
-            nutFree: true,
-            raw: false,
-            lowCarb: false
-        },
-        mealTime: ['almoco', 'jantar'],
-        keywords: ['risoto', 'cogumelos', 'cremoso', 'gourmet']
-    }
-},
-
-{
     id: 66,
     name: 'Strogonoff de Palmito',
     category: 'Almoço',
@@ -6171,7 +6084,7 @@ image: 'image/macarrao-integral-ao-pesto-vegano.webp',
   allergens: ['Pode conter glúten (dependendo do caldo)'],
   
   
-image: 'image/',
+image: 'image/risoto-de-cogumelos.JPEG',
   
   
   ingredients: [
@@ -6198,7 +6111,7 @@ image: 'image/',
 	
 	
     images: {
-      hero: 'image/',
+      hero: 'image/risoto-de-cogumelos.JPEG',
       steps: [ ]
     },
 	
