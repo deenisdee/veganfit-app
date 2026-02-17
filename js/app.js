@@ -4317,9 +4317,6 @@ function setActiveTab(index) {
 
 
 
-
-
-
 // ================================
 // DROPDOWN PLANNER - FUNÇÕES (VERSÃO FINAL)
 // ================================
@@ -4329,45 +4326,49 @@ window.openCalorieCalculator = function() {
   // fecha o dropdown primeiro
   closePlannerDropdown();
 
-  // ✅ BLOQUEIO NO MODO DEGUSTAÇÃO (não cadastrado e não premium)
-  // - Premium: libera
-  // - Cadastrado (mesmo trial/grátis): libera
-  // - Degustação: bloqueia com popup e NÃO abre modal premium
-  try {
-    const isTasting = (isPremium !== true) && !(userData && userData.registered);
-    if (isTasting) {
-      if (typeof vfNotify === 'function') {
-        vfNotify('⭐ Recurso Premium', 'A Calculadora de Calorias é um recurso Premium. Cadastre-se e ative um plano para liberar.');
-      } else if (typeof showNotification === 'function') {
-        showNotification('⭐ Recurso Premium', 'A Calculadora de Calorias é um recurso Premium. Cadastre-se e ative um plano para liberar.');
-      }
-      return;
-    }
-  } catch (_) {}
+  // ✅ Só no clique do ITEM: mostra popup premium (não abre cadastro direto)
+  const premiumActive =
+    (isPremium === true) ||
+    (window.RF?.premium?.isActive && window.RF.premium.isActive());
 
-  // se for premium/cadastrado, abre a calculadora normal
+  if (!premiumActive) {
+    showConfirmWithLabels(
+      'Recurso Premium 🔒',
+      'A Calculadora de Calorias é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'Ativar agora',
+      'Agora não',
+      () => openPremiumModal('planner')
+    );
+    return;
+  }
+
+  // se for premium, abre a calculadora normal
   const calcBtn = document.getElementById('calculator-btn');
   if (calcBtn) calcBtn.click();
   openModal(calculatorModal);
 };
+
+
 
 window.openShoppingList = function() {
   haptic(10);
 
   closePlannerDropdown();
 
-  // ✅ BLOQUEIO NO MODO DEGUSTAÇÃO (não cadastrado e não premium)
-  try {
-    const isTasting = (isPremium !== true) && !(userData && userData.registered);
-    if (isTasting) {
-      if (typeof vfNotify === 'function') {
-        vfNotify('⭐ Recurso Premium', 'A Lista de Compras é um recurso Premium. Cadastre-se e ative um plano para liberar.');
-      } else if (typeof showNotification === 'function') {
-        showNotification('⭐ Recurso Premium', 'A Lista de Compras é um recurso Premium. Cadastre-se e ative um plano para liberar.');
-      }
-      return;
-    }
-  } catch (_) {}
+  const premiumActive =
+    (isPremium === true) ||
+    (window.RF?.premium?.isActive && window.RF.premium.isActive());
+
+  if (!premiumActive) {
+    showConfirmWithLabels(
+      'Recurso Premium 🔒',
+      'A Lista de Compras é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'Ativar agora',
+      'Agora não',
+      () => openPremiumModal('planner')
+    );
+    return;
+  }
 
   const shoppingBtn = document.getElementById('shopping-btn');
   if (shoppingBtn) shoppingBtn.click();
@@ -4375,33 +4376,33 @@ window.openShoppingList = function() {
   openModal(shoppingModal);
 };
 
+
+
 window.openWeekPlanner = function() {
   haptic(10);
 
   closePlannerDropdown();
 
-  // ✅ BLOQUEIO NO MODO DEGUSTAÇÃO (não cadastrado e não premium)
-  try {
-    const isTasting = (isPremium !== true) && !(userData && userData.registered);
-    if (isTasting) {
-      if (typeof vfNotify === 'function') {
-        vfNotify('⭐ Recurso Premium', 'O Planejador Semanal é um recurso Premium. Cadastre-se e ative um plano para liberar.');
-      } else if (typeof showNotification === 'function') {
-        showNotification('⭐ Recurso Premium', 'O Planejador Semanal é um recurso Premium. Cadastre-se e ative um plano para liberar.');
-      }
-      return;
-    }
-  } catch (_) {}
+  const premiumActive =
+    (isPremium === true) ||
+    (window.RF?.premium?.isActive && window.RF.premium.isActive());
+
+  if (!premiumActive) {
+    showConfirmWithLabels(
+      'Recurso Premium 🔒',
+      'O Planejador Semanal é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'Ativar agora',
+      'Agora não',
+      () => openPremiumModal('planner')
+    );
+    return;
+  }
 
   const plannerBtn = document.getElementById('planner-btn');
   if (plannerBtn) plannerBtn.click();
   renderWeekPlanner();
   openModal(plannerModal);
 };
-
-
-
-
 
 
 
