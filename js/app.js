@@ -809,7 +809,6 @@ function setPremiumLocalState(expiresAt, plan) {
   try { if (typeof renderRecipes === 'function') renderRecipes(); } catch (_) {}
 }
 
-
 function clearPremiumLocalState() {
   try {
     if (typeof clearPremiumState === 'function') {
@@ -838,12 +837,24 @@ function clearPremiumLocalState() {
   try { if (typeof renderRecipes === 'function') renderRecipes(); } catch (_) {}
 }
 
+// ✅ NOVO: normaliza e-mail para lookup (resolve "+" virando espaço no mobile/redirect)
+function normalizeEmailForLookup(email) {
+  let e = String(email || '').trim().toLowerCase();
 
+  // Se vier de URL/redirect ou algum decode, pode virar espaço.
+  // Espaço não existe em e-mail => tratamos como "+" (caso clássico do alias do Gmail).
+  e = e.replace(/\s+/g, '+');
 
+  // Se alguém passou "%2B" literal por engano, também corrige.
+  e = e.replace(/%2b/gi, '+');
+
+  return e;
+}
 
 async function syncPremiumFromBackend(email, opts) {
   const options = opts || {};
-  const normalized = String(email || '').trim().toLowerCase();
+  const normalized = normalizeEmailForLookup(email);
+
   if (!normalized || !normalized.includes('@')) return { ok: false, error: 'email inválido' };
 
   try {
@@ -857,7 +868,6 @@ async function syncPremiumFromBackend(email, opts) {
 
     if (data?.ok && data?.premium === true) {
       setPremiumLocalState(data.expiresAt, data.plan || 'monthly');
-
 
       // ✅ opcional: força refresh para atualizar badge/estado instantaneamente (sem reprocessar URL)
       if (options.reloadOnSuccess) {
@@ -894,7 +904,6 @@ async function syncPremiumFromBackend(email, opts) {
   }
 }
 
-
 RF.premium = {
   /**
    * isActive
@@ -910,6 +919,8 @@ RF.premium = {
       return false;
     }
   },
+  
+  
 
   /**
    * setActive
