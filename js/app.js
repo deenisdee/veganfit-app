@@ -4175,16 +4175,16 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
 }
 
 // ==============================
-// PATCH V2: Gating consistente (modal com 2 botões)
-// - Degustação (SEM cadastro e SEM premium): bloqueia e mostra popup
+// PATCH V3: Gating consistente (modal com 2 botões) + bind seguro
+// - Degustação (SEM cadastro e SEM premium): bloqueia e mostra popup (Ativar agora / Agora não)
 // - Cadastrado (trial) OU Premium ativo: libera
 // - Aplica em:
 //   1) Reader tools: Calculadora / Lista / Planner (FAQ livre)
-//   2) Home (antes dos cards): Buscar por ingredientes + chips/tags (FAQ livre)
+//   2) Home (antes dos cards): Buscar por ingredientes + chips/tags + sliders do painel de filtros
 // ==============================
-(function vfGatingV2(){
-  if (window.__vfGatingV2Ready) return;
-  window.__vfGatingV2Ready = true;
+(function vfGatingV3(){
+  if (window.__vfGatingV3Ready) return;
+  window.__vfGatingV3Ready = true;
 
   function hasRegisteredUser() {
     try {
@@ -4202,8 +4202,8 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
     return false;
   }
 
-  function canUsePremiumFeatures() {
-    return isPremiumActive() || hasRegisteredUser();
+  function isTasting() {
+    return !isPremiumActive() && !hasRegisteredUser();
   }
 
   function openPremium(origin) {
@@ -4236,7 +4236,7 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
   }
 
   function gateEvent(e, title, msg, origin) {
-    if (canUsePremiumFeatures()) return false;
+    if (!isTasting()) return false;
     try {
       if (e) {
         e.preventDefault();
@@ -4251,42 +4251,20 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
   function bindGateClickById(btnId, title, msg, origin) {
     var el = document.getElementById(btnId);
     if (!el) return;
-    if (el.dataset && el.dataset.vfGateV2 === '1') return;
-    if (el.dataset) el.dataset.vfGateV2 = '1';
+    if (el.dataset && el.dataset.vfGateV3 === '1') return;
+    if (el.dataset) el.dataset.vfGateV3 = '1';
     el.addEventListener('click', function(e){ gateEvent(e, title, msg, origin); }, true);
   }
 
-  // 1) Reader tools / Header tools
-  bindGateClickById('calculator-btn',
-    'Recurso Premium 🔒',
-    'A Calculadora de Calorias é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
-    'reader'
-  );
-  bindGateClickById('shopping-btn',
-    'Recurso Premium 🔒',
-    'A Lista de Compras é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
-    'reader'
-  );
-  bindGateClickById('planner-btn',
-    'Recurso Premium 🔒',
-    'O Planejador de Refeições é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
-    'reader'
-  );
-  // FAQ livre (não bloqueia)
+  function bindFiltersPanel() {
+    var panel = document.getElementById('filters-panel');
+    if (!panel) return;
 
-  // 2) Home: Buscar por ingredientes
-  bindGateClickById('rfIngToggle',
-    'Recurso Premium 🔒',
-    'Buscar por ingredientes é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
-    'filters'
-  );
+    if (!(panel.dataset && panel.dataset.vfGateV3 === '1')) {
+      if (panel.dataset) panel.dataset.vfGateV3 = '1';
 
-  // 2.2) Home: Chips/tags no painel de filtros
-  var filtersPanel = document.getElementById('filters-panel');
-  if (filtersPanel) {
-    if (!(filtersPanel.dataset && filtersPanel.dataset.vfGateV2 === '1')) {
-      if (filtersPanel.dataset) filtersPanel.dataset.vfGateV2 = '1';
-      filtersPanel.addEventListener('click', function(e){
+      // Chips/tags
+      panel.addEventListener('click', function(e){
         var chip = e && e.target && e.target.closest ? e.target.closest('.rf-chip') : null;
         if (!chip) return;
         gateEvent(
@@ -4296,9 +4274,67 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
           'filters'
         );
       }, true);
+
+      // Sliders
+      panel.addEventListener('input', function(e){
+        var t = e && e.target ? e.target : null;
+        if (!t) return;
+        if (t.id === 'filter-time' || t.id === 'filter-protein' || t.id === 'filter-calories') {
+          gateEvent(
+            e,
+            'Recurso Premium 🔒',
+            'Filtros avançados são recursos Premium.\n\nAtive agora para liberar o acesso completo.',
+            'filters'
+          );
+        }
+      }, true);
     }
   }
+
+  function bindAll() {
+    // 1) Tools (Reader/Header)
+    bindGateClickById('calculator-btn',
+      'Recurso Premium 🔒',
+      'A Calculadora de Calorias é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'reader'
+    );
+    bindGateClickById('shopping-btn',
+      'Recurso Premium 🔒',
+      'A Lista de Compras é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'reader'
+    );
+    bindGateClickById('planner-btn',
+      'Recurso Premium 🔒',
+      'O Planejador de Refeições é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'reader'
+    );
+    // FAQ livre (não bloqueia)
+
+    // 2) Home: buscar por ingredientes
+    bindGateClickById('rfIngToggle',
+      'Recurso Premium 🔒',
+      'Buscar por ingredientes é um recurso Premium.\n\nAtive agora para liberar o acesso completo.',
+      'filters'
+    );
+
+    // 3) Painel de filtros (chips/tags + sliders)
+    bindFiltersPanel();
+  }
+
+  // ✅ garante bind mesmo se o script rodar antes do DOM existir
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindAll, { once: true });
+  } else {
+    bindAll();
+  }
+
+  // ✅ reforço: alguns elementos podem aparecer depois (ex: painel renderizado)
+  setTimeout(bindAll, 300);
+  setTimeout(bindAll, 1200);
 })();
+
+
+
 
 
 
