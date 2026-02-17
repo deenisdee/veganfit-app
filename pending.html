@@ -1,144 +1,258 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pagamento em análise</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamento Pendente - VeganFit</title>
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { height: -webkit-fill-available; }
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #fff;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      margin: 0;
+      padding: 20px;
     }
 
-    .box {
-      max-width: 420px;
+    .container {
+      background: white;
+      border-radius: 22px;
+      padding: 48px;
+      max-width: 520px;
       width: 100%;
-      background: #020617;
-      border-radius: 12px;
-      padding: 24px;
       text-align: center;
-      box-shadow: 0 20px 40px rgba(0,0,0,.4);
+      box-shadow: 0 20px 60px rgb(158 158 158 / 52%);
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      animation: scaleIn 0.6s ease-out 0.2s both;
+    }
+
+    @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+    .icon svg {
+      width: 48px;
+      height: 48px;
+      stroke: white;
+      stroke-width: 3;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     h1 {
-      font-size: 20px;
-      margin-bottom: 8px;
+      font-size: 32px;
+      font-weight: 800;
+      color: #f59e0b;
+      margin-bottom: 16px;
     }
 
     p {
-      font-size: 14px;
-      opacity: .9;
-      margin-bottom: 20px;
+      font-size: 16px;
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 12px;
     }
 
-    .status {
-      margin-bottom: 16px;
+    .highlight { color: #f59e0b; font-weight: 700; }
+
+    .loader {
+      margin: 30px auto 10px;
+      width: 62px;
+      height: 62px;
+      border: 4px solid #e5e7eb;
+      border-top-color: #f59e0b;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .redirect-text {
       font-size: 14px;
-      min-height: 20px;
+      color: #9ca3af;
+      margin-top: 12px;
+    }
+    .countdown {
+      display: inline-block;
+      font-weight: 800;
+      color: #f59e0b;
+      min-width: 20px;
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      font-weight: 600;
+    /* ✅ Botões (mantendo visual limpo e consistente) */
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 800;
       cursor: pointer;
-      background: #22c55e;
-      color: #052e16;
-      margin-bottom: 10px;
+      min-width: 190px;
+      transition: transform .05s ease;
+    }
+    .btn:active { transform: scale(0.99); }
+
+    .btn-primary {
+      background: #16a34a;
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(22,163,74,.22);
+    }
+    .btn-ghost {
+      background: #fff;
+      color: #374151;
+      border: 2px solid #e5e7eb;
     }
 
-    button.secondary {
-      background: transparent;
-      color: #94a3b8;
-      border: 1px solid #334155;
+    .small {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-top: 12px;
     }
+
+    @media (max-width: 640px) {
+      .container { padding: 32px 24px; }
+      h1 { font-size: 24px; }
+      p { font-size: 15px; }
+      .btn { width: 100%; min-width: unset; }
+    }
+
+    .container {
+      padding: max(48px, env(safe-area-inset-top) + 24px)
+               max(48px, env(safe-area-inset-right) + 24px)
+               max(48px, env(safe-area-inset-bottom) + 24px)
+               max(48px, env(safe-area-inset-left) + 24px);
+    }
+    input, select, textarea { font-size: 16px !important; }
   </style>
 </head>
 <body>
-
-  <div class="box">
-    <h1>⏳ Pagamento em análise</h1>
-    <p>
-      Recebemos seu pagamento via Pix.<br>
-      A confirmação pode levar alguns instantes.
-    </p>
-
-    <div id="status" class="status">
-      Aguardando confirmação…
+  <div class="container">
+    <div class="icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
     </div>
 
-    <button id="checkNow">Verificar agora</button>
-    <button class="secondary" onclick="window.location.href='/'">
-      Voltar para a loja
-    </button>
+    <h1>Pagamento Pendente</h1>
+
+    <p>Seu pagamento está sendo <span class="highlight">processado</span>.</p>
+    <p>Assim que confirmarmos o pagamento, você receberá o <span class="highlight">código premium</span> no seu e-mail.</p>
+    <p><strong>Isso pode levar alguns minutos.</strong></p>
+
+    <div class="loader" aria-hidden="true"></div>
+
+    <p class="redirect-text">
+      Vamos verificar automaticamente em <span class="countdown" id="countdown">12</span> segundos...
+    </p>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btnCheck">Verificar agora</button>
+      <button class="btn btn-ghost" id="btnBack">Voltar para a loja</button>
+    </div>
+
+    <p class="small" id="emailHint" style="display:none;"></p>
   </div>
 
   <script>
-    (function () {
-      const qs = new URLSearchParams(window.location.search);
-      const email = (qs.get('email') || '').trim().toLowerCase();
+    // ============================
+    // PENDING (PIX) - fluxo estável
+    // - Mantém layout
+    // - Evita loop infinito
+    // - Passa email na volta pra home para o app validar
+    // ============================
 
-      const statusEl = document.getElementById('status');
-      const btn = document.getElementById('checkNow');
+    function getEmailFromUrlOrStorage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const emailFromUrl = (urlParams.get('email') || '').trim().toLowerCase();
 
-      function setStatus(msg) {
-        statusEl.textContent = msg;
-      }
+      let emailFromStorage = '';
+      try {
+        emailFromStorage = (localStorage.getItem('vf_user_email') || '').trim().toLowerCase();
+      } catch (_) {}
 
-      async function checkPremium() {
-        if (!email || !email.includes('@')) {
-          setStatus('Não foi possível identificar o e-mail da compra.');
-          return;
-        }
+      const email = emailFromUrl || emailFromStorage || '';
+      return (email && email.includes('@')) ? email : '';
+    }
 
-        setStatus('Verificando ativação…');
+    function buildReturnUrl() {
+      const email = getEmailFromUrlOrStorage();
+      const base = '/';
+      const qs = new URLSearchParams();
+      qs.set('return', 'pending');
 
-        try {
-          const res = await fetch(
-            `/api/premium-status?email=${encodeURIComponent(email)}`,
-            { cache: 'no-store' }
-          );
-
-          const data = await res.json();
-
-          if (data && data.ok && data.active === true) {
-            setStatus('✅ Premium ativado! Redirecionando…');
-
-            setTimeout(() => {
-              window.location.href =
-                `/?return=success&openPremium=1&autovalidate=1&email=${encodeURIComponent(email)}`;
-            }, 800);
-
-            return;
-          }
-
-          setStatus(
-            'Ainda em análise. Se você pagou via Pix, a confirmação pode levar até alguns minutos.'
-          );
-        } catch (err) {
-          console.error(err);
-          setStatus('Erro ao verificar. Tente novamente em instantes.');
-        }
-      }
-
-      // botão manual (sem loop)
-      btn.addEventListener('click', checkPremium);
-
-      // UMA verificação automática ao abrir (sem interval)
+      // ✅ Se tiver email, manda junto pra sua home conseguir autovalidar
       if (email) {
-        setTimeout(checkPremium, 1200);
+        qs.set('email', email);
+        // se seu app já usa esses params, ajuda muito no mobile
+        qs.set('openPremium', '1');
+        qs.set('autovalidate', '1');
+      }
+
+      return base + '?' + qs.toString();
+    }
+
+    function goHomeForCheck() {
+      // ✅ evita ficar preso no pending.html
+      window.location.href = buildReturnUrl();
+    }
+
+    // UI: mostra dica do email se existir
+    (function showEmailHint() {
+      const email = getEmailFromUrlOrStorage();
+      const el = document.getElementById('emailHint');
+      if (!el) return;
+      if (email) {
+        el.style.display = 'block';
+        el.textContent = `Verificando com o e-mail: ${email}`;
+      } else {
+        // Sem email: ainda redireciona, mas sem autovalidate.
+        el.style.display = 'block';
+        el.textContent = 'Dica: volte para a loja e abra o Premium para validar com o e-mail usado na compra.';
       }
     })();
-  </script>
 
+    // Botões
+    document.getElementById('btnCheck')?.addEventListener('click', goHomeForCheck);
+    document.getElementById('btnBack')?.addEventListener('click', () => { window.location.href = '/'; });
+
+    // ✅ Countdown (uma vez) e redireciona para home checar
+    let seconds = 12;
+    const countdownEl = document.getElementById('countdown');
+
+    const timer = setInterval(() => {
+      seconds--;
+      if (countdownEl) countdownEl.textContent = String(Math.max(seconds, 0));
+      if (seconds <= 0) {
+        clearInterval(timer);
+        goHomeForCheck();
+      }
+    }, 1000);
+  </script>
 </body>
 </html>
