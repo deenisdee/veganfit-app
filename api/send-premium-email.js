@@ -40,10 +40,13 @@ export default async function handler(req, res) {
     }
 
     if (!process.env.RESEND_API_KEY) {
-      return res.status(500).json({ ok: false, error: "RESEND_API_KEY não configurada" });
+      return res
+        .status(500)
+        .json({ ok: false, error: "RESEND_API_KEY não configurada" });
     }
 
-    const from = process.env.RESEND_FROM || "Veganfit.Life <noreply@veganfit.life>";
+    const from =
+      process.env.RESEND_FROM || "Veganfit.Life <noreply@veganfit.life>";
     const replyTo = "suporte@veganfit.life";
 
     const expiresText =
@@ -54,7 +57,23 @@ export default async function handler(req, res) {
     const subject = "Seu acesso Premium foi ativado ✅";
 
     const baseUrl = process.env.PUBLIC_BASE_URL || "https://www.veganfit.life";
-    const activationLink = `${baseUrl.replace(/\/$/, "")}/?openPremium=1&tab=3&autovalidate=1&email=${encodeURIComponent(to)}`;
+    const activationLink = `${baseUrl.replace(
+      /\/$/,
+      ""
+    )}/?openPremium=1&tab=3&autovalidate=1&email=${encodeURIComponent(to)}`;
+
+    // ✅ Botão verde (texto branco)
+    const buttonStyle = [
+      "display:inline-block",
+      "padding:14px 18px",
+      "border-radius:12px",
+      "text-decoration:none",
+      "font-weight:800",
+      "background:#16a34a",
+      "color:#ffffff",
+      "border:1px solid #15803d",
+      "box-shadow:0 6px 18px rgba(22,163,74,0.25)",
+    ].join(";");
 
     const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111;">
@@ -64,14 +83,13 @@ export default async function handler(req, res) {
         </p>
 
         <div style="padding:14px 16px; border:1px solid #e5e7eb; border-radius:12px; background:#fafafa; margin: 0 0 14px;">
-          <div style="font-size:12px; color:#555; margin-bottom:6px;">Ative em 1 clique</div>
+          <div style="font-size:12px; color:#555; margin-bottom:10px;">Ative em 1 clique</div>
 
-          <a href="${activationLink}"
-             style="display:inline-block; padding:12px 14px; border-radius:12px; text-decoration:none; font-weight:800;">
-            🔓 Abrir Veganfit e validar meu Premium
+          <a href="${activationLink}" style="${buttonStyle}">
+            Acessar Premium
           </a>
 
-          <div style="font-size:12px; color:#555; margin-top:10px;">
+          <div style="font-size:12px; color:#555; margin-top:12px;">
             <strong>Plano:</strong> ${escapeHtml(plan)}
             ${expiresText ? `<br/><strong>Válido até:</strong> ${escapeHtml(expiresText)}` : ""}
           </div>
@@ -99,13 +117,12 @@ export default async function handler(req, res) {
       </div>
     `;
 
-
     const result = await resend.emails.send({
       from,
       to,
       subject,
       html,
-      replyTo
+      replyTo,
     });
 
     return res.status(200).json({ ok: true, result });
