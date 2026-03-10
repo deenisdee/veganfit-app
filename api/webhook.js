@@ -90,7 +90,7 @@ function generateCode(plan) {
  */
 function computeExpiresAtMs(plan) {
   let days = 30;
-  if (plan === 'trial') days = 2;
+  if (plan === 'trial') days = 5;
   else if (plan === 'monthly') days = 30;
   else if (plan === 'annual') days = 365;
 
@@ -134,8 +134,13 @@ module.exports = async function handler(req, res) {
     console.log('[WEBHOOK] Body:', JSON.stringify(body, null, 2));
 
     // ✅ Aceita formato padrão do MP: { type:'payment', data:{id} }
-    const type = body.type || body.topic || null;
-    const paymentId = body?.data?.id || body?.id;
+    const type = body.type || body.topic || body.action || null;
+    const paymentId =
+      body?.data?.id ||
+      body?.id ||
+      body?.resource?.split('/').pop() ||
+      req.query?.['data.id'] ||
+      req.query?.id;
 
     if (type && type !== 'payment') {
       console.log('[WEBHOOK] ⚠️ Tipo de notificação ignorado:', type);
