@@ -28,24 +28,39 @@ module.exports = async (req, res) => {
 
   try {
     const { name, email, phone, plan, code, expiresAt } = req.body;
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    const normalizedPlan = String(plan || '').trim().toLowerCase();
+    const expiresAtMs = expiresAt ? Number(expiresAt) : null;
 
-    if (!name || !email || !phone || !plan) {
+    if (!name || !normalizedEmail || !phone || !normalizedPlan) {
       return res.status(400).json({ error: 'Dados incompletos' });
     }
 
     // Salva usuário no Firestore
-    await db.collection('users').doc(email).set({
+    await db.collection('users').doc(normalizedEmail).set({
       name,
-      email,
+      email: normalizedEmail,
       phone,
-      plan,
+      plan: normalizedPlan,
       code: code || null,
-      expiresAt: expiresAt ? new Date(expiresAt) : null,
+      expiresAt: expiresAtMs ? new Date(expiresAtMs) : null,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       status: 'active'
-    });
+    }, { merge: true });
 
-    console.log('[USER] Criado:', { email, plan });
+    // Fonte da verdade do Premium no app
+    if (expiresAtMs && Number.isFinite(expiresAtMs)) {
+      await db.collection('premium_users').doc(normalizedEmail).set({
+        email: normalizedEmail,
+        plan: normalizedPlan,
+        expiresAt: expiresAtMs,
+        code: code || null,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    }
+
+    console.log('[USER] Criado:', { email: normalizedEmail, plan: normalizedPlan });
 
     res.status(200).json({
       ok: true,
