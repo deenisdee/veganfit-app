@@ -24,39 +24,59 @@ function ensureMercadoPagoInstance() {
 }
 
 
-function getStoredCheckoutEmail() {
-  try {
-    return normalizeEmailForLookup(
-      localStorage.getItem('vf_user_email') ||
-      localStorage.getItem('premium_email') ||
-      ''
-    );
-  } catch (_) {
-    return '';
-  }
+
+function normalizePremiumPlan(plan) {
+  const raw = String(plan || '').trim().toLowerCase();
+  if (raw === 'premium-monthly' || raw === 'mensal' || raw === 'month' || raw === 'monthly') return 'monthly';
+  if (raw === 'premium-annual' || raw === 'anual' || raw === 'year' || raw === 'annual') return 'annual';
+  if (raw === 'trial') return 'trial';
+  return raw;
 }
 
-function persistCheckoutEmail(email) {
-  const normalized = normalizeEmailForLookup(email);
-  if (!normalized || !normalized.includes('@')) return '';
-
-  try { localStorage.setItem('vf_user_email', normalized); } catch (_) {}
-  try { localStorage.setItem('premium_email', normalized); } catch (_) {}
-  return normalized;
-}
-
-function isPremiumAccessActive() {
+function getStoredPremiumEmail() {
   try {
-    if (typeof isPremiumValidNow === 'function') return !!isPremiumValidNow();
-  } catch (_) {}
+    const candidates = [
+      localStorage.getItem('vf_user_email'),
+      localStorage.getItem('premium_email'),
+      (typeof userData === 'object' ? userData.email : '')
+    ];
 
-  try {
-    if (window.RF && RF.premium && typeof RF.premium.isActive === 'function') {
-      return !!RF.premium.isActive();
+    for (const value of candidates) {
+      const normalized = String(value || '').trim().toLowerCase().replace(/\s+/g, '+').replace(/%2b/gi, '+');
+      if (normalized && normalized.includes('@')) return normalized;
     }
   } catch (_) {}
+  return '';
+}
 
-  return isPremium === true;
+function persistPremiumEmail(email) {
+  const normalized = String(email || '').trim().toLowerCase();
+  if (!normalized || !normalized.includes('@')) return;
+  try { localStorage.setItem('vf_user_email', normalized); } catch (_) {}
+  try { localStorage.setItem('premium_email', normalized); } catch (_) {}
+}
+
+async function validateExistingPremiumSession() {
+  try {
+    const flagged = localStorage.getItem('fit_premium') === 'true';
+    if (!flagged) return;
+
+    const email = getStoredPremiumEmail();
+    if (!email) {
+      clearPremiumLocalState();
+      return;
+    }
+
+    await syncPremiumFromBackend(email, {
+      closeModal: false,
+      successToast: false,
+      failToast: false,
+      errorToast: false,
+      reloadOnSuccess: false,
+    });
+  } catch (err) {
+    console.warn('[PREMIUM] Falha ao validar sessão existente:', err);
+  }
 }
 
 function openMpCheckoutWithFallback(preferenceId, initPoint) {
@@ -133,15 +153,15 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
 // ===================================
 
 window.addEventListener('DOMContentLoaded', function() {
+  try { validateExistingPremiumSession(); } catch (_) {}
+
   const urlParams = new URLSearchParams(window.location.search);
 
   const returnType = urlParams.get('return'); // success | pending | failure
   const openPremium = urlParams.get('openPremium'); // 1
   const tabParam = urlParams.get('tab'); // 1|2|3
-  const emailParam = normalizeEmailForLookup(urlParams.get('email') || '');
+  const emailParam = (urlParams.get('email') || '').trim().toLowerCase();
   const autoValidate = urlParams.get('autovalidate'); // 1
-  const shouldOpenValidationTab = (openPremium === '1' || tabParam === '3');
-  const shouldAutoValidate = (returnType === 'success' && autoValidate === '1' && !!emailParam);
 
   // Sempre tenta limpar a URL (evita reprocessar ao dar refresh)
   if (returnType || openPremium || tabParam || emailParam || autoValidate) {
@@ -149,32 +169,21 @@ window.addEventListener('DOMContentLoaded', function() {
     window.history.replaceState({}, document.title, cleanUrl);
   }
 
-  // Guarda o e-mail usado no checkout para o retorno conseguir validar corretamente
-  if (emailParam) {
-    persistCheckoutEmail(emailParam);
-  }
-
-  // 1) Retorno do Mercado Pago: só valida automaticamente em SUCCESS.
+  // 1) Retorno do Mercado Pago: NÃO abre modal (apenas popup + auto validação)
   if (returnType) {
     setTimeout(async () => {
       if (returnType === 'success') {
         showNotification('✅ Pagamento aprovado!', 'Validando seu Premium automaticamente…');
 
+        // tenta achar o email pelo link, pelo storage ou pelo userData
         const email =
           emailParam ||
-          getStoredCheckoutEmail() ||
-          (typeof userData === 'object' ? normalizeEmailForLookup(userData.email || '') : '') ||
+          (function () { try { return (localStorage.getItem('vf_user_email') || localStorage.getItem('premium_email') || '').trim().toLowerCase(); } catch (_) { return ''; } })() ||
+          (typeof userData === 'object' ? String(userData.email || '').trim().toLowerCase() : '') ||
           '';
 
         if (email && email.includes('@')) {
-          persistCheckoutEmail(email);
-          await syncPremiumFromBackend(email, {
-            closeModal: false,
-            successToast: true,
-            failToast: true,
-            errorToast: true,
-            reloadOnSuccess: true
-          });
+          await syncPremiumFromBackend(email, { closeModal: false, successToast: true, reloadOnSuccess: true });
         } else {
           showNotification('✅ Pagamento aprovado!', 'Abra o Premium e digite o e-mail usado no pagamento para validar.');
         }
@@ -186,27 +195,29 @@ window.addEventListener('DOMContentLoaded', function() {
     }, 500);
   }
 
-  // 2) Link do e-mail / ativação: abre o modal na aba 3.
-  // 🔒 Importante: NÃO autoativa Premium fora do retorno SUCCESS.
-  if (shouldOpenValidationTab) {
+
+
+  // 2) Link do e-mail / ativação: abre o modal já na aba 3 (validação por e-mail)
+  if (openPremium === '1' || tabParam === '3') {
     setTimeout(async () => {
       openPremiumModal('email-link');
       switchTab(3);
 
+      // garante UI da aba 3 (validação por email)
       ensurePremiumEmailValidationUI();
 
-      const fallbackEmail = emailParam || getStoredCheckoutEmail();
-      if (fallbackEmail) {
+      if (emailParam) {
         const inp = document.getElementById('premium-email-input');
-        if (inp) inp.value = fallbackEmail;
+        if (inp) inp.value = emailParam;
       }
 
-      if (shouldAutoValidate) {
-        await activatePremium();
+      if (autoValidate === '1' && emailParam) {
+        await activatePremium(); // agora valida por email
       }
     }, 350);
   }
 });
+
 
 
 
@@ -1485,6 +1496,10 @@ async function loadUserData() {
     } else if (window.RF && RF.premium && typeof RF.premium.syncUI === 'function') {
       RF.premium.syncUI();
     }
+  } catch (_) {}
+
+  try {
+    await validateExistingPremiumSession();
   } catch (_) {}
 
   // ✅ 7) Timers de expiração (se existirem no seu fluxo)
@@ -3607,7 +3622,7 @@ async function activatePremium() {
     document.getElementById('user-email') ||
     null;
 
-  const email = emailInput ? normalizeEmailForLookup(emailInput.value || '') : '';
+  const email = emailInput ? String(emailInput.value || '').trim().toLowerCase() : '';
 
   if (email && email.includes('@')) {
     const result = await syncPremiumFromBackend(email, {
@@ -3619,7 +3634,7 @@ async function activatePremium() {
 
     if (result?.premium) {
       // salva para facilitar próxima sessão
-      persistCheckoutEmail(email);
+      try { localStorage.setItem('vf_user_email', email); } catch (_) {}
     }
 
     return;
@@ -4599,7 +4614,9 @@ window.openCalorieCalculator = function() {
   closePlannerDropdown();
 
   // ✅ Só no clique do ITEM: mostra popup premium (não abre cadastro direto)
-  const premiumActive = isPremiumAccessActive();
+  const premiumActive =
+    (isPremium === true) ||
+    (window.RF?.premium?.isActive && window.RF.premium.isActive());
 
   if (!premiumActive) {
     showConfirmWithLabels(
@@ -4625,7 +4642,9 @@ window.openShoppingList = function() {
 
   closePlannerDropdown();
 
-  const premiumActive = isPremiumAccessActive();
+  const premiumActive =
+    (isPremium === true) ||
+    (window.RF?.premium?.isActive && window.RF.premium.isActive());
 
   if (!premiumActive) {
     showConfirmWithLabels(
@@ -4651,7 +4670,9 @@ window.openWeekPlanner = function() {
 
   closePlannerDropdown();
 
-  const premiumActive = isPremiumAccessActive();
+  const premiumActive =
+    (isPremium === true) ||
+    (window.RF?.premium?.isActive && window.RF.premium.isActive());
 
   if (!premiumActive) {
     showConfirmWithLabels(
@@ -4820,18 +4841,15 @@ window.openPremiumModal = function(origin) {
 };
 
 // Função para processar pagamento via Mercado Pago
-window.openPremiumCheckout = async function(plan = 'premium-monthly') {
+window.openPremiumCheckout = async function(plan = 'monthly') {
   try {
-    const typedEmail = prompt('Digite seu email para continuar:');
-    const email = normalizeEmailForLookup(typedEmail);
-    if (!email || !email.includes('@')) return;
-
-    persistCheckoutEmail(email);
+    const email = prompt('Digite seu email para continuar:');
+    if (!email) return;
 
     const response = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan, email })
+      body: JSON.stringify({ plan: plan, email: email })
     });
 
     const data = await response.json().catch(() => ({}));
@@ -4853,7 +4871,7 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
   } catch (error) {
     console.error('Erro ao abrir checkout:', error);
     alert('Erro ao processar pagamento. Tente novamente.');
-  }
+}
 };
 
 
@@ -5256,7 +5274,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // CONTROLE DE PLANO
   // ===============================
   function isPremium(){
-    return isPremiumAccessActive();
+    return localStorage.getItem('fit_premium') === 'true';
   }
 
   function syncPremiumUI(){
@@ -5594,39 +5612,37 @@ document.addEventListener('DOMContentLoaded', function(){
 // ===================================
 
 // Função para abrir checkout do Mercado Pago
-window.openPremiumCheckout = async function(plan = 'premium-monthly') {
+window.openPremiumCheckout = async function(plan = 'monthly') {
   try {
-    const typedEmail = prompt('Digite seu email para continuar:');
-    const email = normalizeEmailForLookup(typedEmail);
-    if (!email || !email.includes('@')) return;
+    const email = prompt('Digite seu email para continuar:');
+    if (!email) return;
 
-    persistCheckoutEmail(email);
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    const normalizedPlan = normalizePremiumPlan(plan);
+
+    persistPremiumEmail(normalizedEmail);
 
     const response = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan, email })
+      body: JSON.stringify({ plan: normalizedPlan, email: normalizedEmail })
     });
 
-    const data = await response.json().catch(() => ({}));
+    const data = await response.json();
 
-    if (!response.ok || data?.ok === false) {
-      console.error('[openPremiumCheckout] Erro ao criar preferência:', data);
-      alert('Erro ao iniciar pagamento. Tente novamente.');
-      return;
+    if (!response.ok || !data.preferenceId) {
+      throw new Error('Falha ao criar preferência');
     }
 
-    const preferenceId = data.preferenceId || data.id;
-    const initPoint = data.initPoint || data.init_point;
+    const preferenceId = data.preferenceId;
+    const initPoint = data.initPoint;
 
-    const opened = openMpCheckoutWithFallback(preferenceId, initPoint);
+    // ✅ AQUI ESTÁ A CORREÇÃO
+    openMpCheckoutWithFallback(preferenceId, initPoint);
 
-    if (!opened) {
-      alert('Não foi possível abrir o checkout. Tente novamente.');
-    }
   } catch (error) {
-    console.error('Erro ao abrir checkout:', error);
-    alert('Erro ao processar pagamento. Tente novamente.');
+    alert('Erro ao iniciar pagamento. Tente novamente.');
+    console.error(error);
   }
 };
 
@@ -5919,11 +5935,14 @@ async function activateTrial() {
 
 async function processPayment(plan) {
   try {
+    const normalizedPlan = normalizePremiumPlan(plan);
+    persistPremiumEmail(userData.email);
+
     const response = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        plan: plan,
+        plan: normalizedPlan,
         email: userData.email,
         name: userData.name,
         phone: userData.phone
