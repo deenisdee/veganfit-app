@@ -60,7 +60,7 @@ module.exports = async (req, res) => {
     const doc = codeSnap.docs[0];
     const data = doc.data();
 
-    const codeEmail = String(data.email || '').toLowerCase();
+    const codeEmail = String(data.email || '').trim().toLowerCase();
     const plan = String(data.plan || 'monthly');
 
     const expiresAt =
