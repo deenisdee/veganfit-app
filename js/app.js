@@ -11,6 +11,21 @@
 // ==============================
 const MP_PUBLIC_KEY = 'APP_USR-9a3547c8-2f6d-4cde-b502-027d0e817746';
 
+// ===================================
+// CHECKOUT GUARD (V6)
+// ===================================
+function markCheckoutStarted() {
+  try {
+    localStorage.setItem('mp_checkout_started', '1');
+  } catch (_) {}
+}
+
+function clearCheckoutStarted() {
+  try {
+    localStorage.removeItem('mp_checkout_started');
+  } catch (_) {}
+}
+
 function ensureMercadoPagoInstance() {
   try {
     if (window.mp && typeof window.mp.checkout === 'function') return true;
@@ -25,6 +40,9 @@ function ensureMercadoPagoInstance() {
 
 
 function openMpCheckoutWithFallback(preferenceId, initPoint) {
+	
+	markCheckoutStarted();
+	
   // ✅ Mobile: SEM modal. Vai direto pro redirect (fluxo mais estável)
   const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -105,6 +123,34 @@ window.addEventListener('DOMContentLoaded', function() {
   const tabParam = urlParams.get('tab'); // 1|2|3
   const emailParam = (urlParams.get('email') || '').trim().toLowerCase();
   const autoValidate = urlParams.get('autovalidate'); // 1
+  
+  // V6 - usuário iniciou checkout mas voltou sem status
+const mpCheckoutStarted = (function () {
+  try {
+    return localStorage.getItem('mp_checkout_started') === '1';
+  } catch (_) {
+    return false;
+  }
+})();
+
+if (mpCheckoutStarted && !returnType) {
+  clearCheckoutStarted();
+
+  try {
+    if (typeof clearPremiumLocalState === 'function') {
+      clearPremiumLocalState();
+    }
+  } catch (_) {}
+
+  setTimeout(() => {
+    if (typeof showNotification === 'function') {
+      showNotification(
+        'Pagamento não concluído',
+        'Finalize o pagamento para ativar o Premium.'
+      );
+    }
+  }, 300);
+}
 
   // Sempre tenta limpar a URL (evita reprocessar ao dar refresh)
   if (returnType || openPremium || tabParam || emailParam || autoValidate) {
@@ -113,7 +159,9 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 
   // 1) Retorno do Mercado Pago: NÃO abre modal (apenas popup + auto validação)
-  if (returnType) {
+ if (returnType) {
+  clearCheckoutStarted();
+  
     setTimeout(async () => {
       if (returnType === 'success') {
         showNotification('✅ Pagamento aprovado!', 'Validando seu Premium automaticamente…');
