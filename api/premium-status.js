@@ -74,7 +74,7 @@ module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ ok: false, error: 'Use POST' });
   }
 
@@ -87,8 +87,8 @@ module.exports = async (req, res) => {
         ? req.body
         : (typeof req.body === 'string' ? JSON.parse(req.body) : {});
 
-    // ✅ AQUI ESTÁ A CORREÇÃO QUE VOCÊ PEDIU
-    const email = normalizeEmailForDocId(body.email);
+    const rawEmail = body.email || req.query?.email || '';
+    const email = normalizeEmailForDocId(decodeURIComponent(String(rawEmail || '')));
 
     if (!email || !email.includes('@')) {
       return res.status(400).json({
