@@ -27,6 +27,7 @@ function ensureMercadoPagoInstance() {
 function getStoredCheckoutEmail() {
   try {
     return normalizeEmailForLookup(
+      localStorage.getItem('vf_checkout_email') ||
       localStorage.getItem('vf_user_email') ||
       localStorage.getItem('premium_email') ||
       ''
@@ -40,9 +41,24 @@ function persistCheckoutEmail(email) {
   const normalized = normalizeEmailForLookup(email);
   if (!normalized || !normalized.includes('@')) return '';
 
+  try { localStorage.setItem('vf_checkout_email', normalized); } catch (_) {}
   try { localStorage.setItem('vf_user_email', normalized); } catch (_) {}
   try { localStorage.setItem('premium_email', normalized); } catch (_) {}
   return normalized;
+}
+
+function getCheckoutStartedAt() {
+  try {
+    return parseInt(localStorage.getItem('vf_checkout_started_at') || '0', 10) || 0;
+  } catch (_) {
+    return 0;
+  }
+}
+
+function isCheckoutPendingRecent(maxAgeMs) {
+  const startedAt = getCheckoutStartedAt();
+  if (!startedAt) return false;
+  return (Date.now() - startedAt) <= (maxAgeMs || (45 * 60 * 1000));
 }
 
 function isPremiumAccessActive() {
@@ -168,27 +184,58 @@ window.addEventListener('DOMContentLoaded', function() {
 
         if (email && email.includes('@')) {
           persistCheckoutEmail(email);
-          await syncPremiumFromBackend(email, {
+          const result = await syncPremiumFromBackend(email, {
             closeModal: false,
             successToast: true,
-            failToast: true,
-            errorToast: true,
+            failToast: false,
+            errorToast: false,
             reloadOnSuccess: true
           });
+
+          if (!result || !result.premium) {
+            await autoRecoverPremiumAfterCheckout({
+              email: email,
+              retries: 10,
+              intervalMs: 2500,
+              successToast: true,
+              reloadOnSuccess: true,
+              closeModal: false
+            });
+          }
         } else {
-          clearCheckoutPendingState();
           showNotification('✅ Pagamento aprovado!', 'Abra o Premium e digite o e-mail usado no pagamento para validar.');
         }
       } else if (returnType === 'pending') {
-        clearCheckoutPendingState();
         sanitizeSuspiciousPaidPremium('mp-return-pending');
-        showNotification('⏳ Pagamento em análise', 'Assim que for aprovado, o Premium ativa automaticamente.');
+        showNotification('⏳ Pagamento em análise', 'Assim que o pagamento for aprovado, o Premium será ativado automaticamente.');
+        await autoRecoverPremiumAfterCheckout({
+          email: emailParam || getStoredCheckoutEmail(),
+          retries: 12,
+          intervalMs: 2500,
+          successToast: true,
+          reloadOnSuccess: true,
+          closeModal: false
+        });
       } else {
         clearCheckoutPendingState();
         sanitizeSuspiciousPaidPremium('mp-return-failure');
         showNotification('❌ Pagamento não aprovado', 'Tente novamente ou use outro método de pagamento.');
       }
     }, 500);
+  }
+
+  // 1.1) Se voltou do pending.html para a home sem query, tenta recuperar automaticamente.
+  if (!returnType && !isPremiumAccessActive()) {
+    setTimeout(async () => {
+      await autoRecoverPremiumAfterCheckout({
+        email: emailParam || getStoredCheckoutEmail(),
+        retries: 8,
+        intervalMs: 2500,
+        successToast: true,
+        reloadOnSuccess: true,
+        closeModal: false
+      });
+    }, 900);
   }
 
   // 2) Link do e-mail / ativação: abre o modal na aba 3.
@@ -925,6 +972,7 @@ function clearCheckoutPendingState() {
     localStorage.removeItem('vf_checkout_pending');
     localStorage.removeItem('vf_checkout_plan');
     localStorage.removeItem('vf_checkout_started_at');
+    localStorage.removeItem('vf_checkout_email');
   } catch (_) {}
 }
 
@@ -933,6 +981,7 @@ function markCheckoutPending(plan) {
     localStorage.setItem('vf_checkout_pending', '1');
     localStorage.setItem('vf_checkout_plan', String(plan || '').trim().toLowerCase());
     localStorage.setItem('vf_checkout_started_at', String(Date.now()));
+    if (userData && userData.email) persistCheckoutEmail(userData.email);
   } catch (_) {}
 }
 
@@ -1021,6 +1070,51 @@ async function syncPremiumFromBackend(email, opts) {
     }
     return { ok: false, error: String(err?.message || err) };
   }
+}
+
+
+async function autoRecoverPremiumAfterCheckout(opts) {
+  const options = opts || {};
+  const email = normalizeEmailForLookup(options.email || getStoredCheckoutEmail() || '');
+  const shouldTry = !!email && email.includes('@') && (hasPendingCheckout() || isCheckoutPendingRecent(options.maxAgeMs || (45 * 60 * 1000)));
+
+  if (!shouldTry) return { ok: false, skipped: true };
+  if (isPremiumAccessActive()) {
+    clearCheckoutPendingState();
+    return { ok: true, premium: true, alreadyActive: true };
+  }
+
+  const tries = Math.max(1, parseInt(options.retries || 8, 10));
+  const intervalMs = Math.max(800, parseInt(options.intervalMs || 2500, 10));
+
+  for (let attempt = 1; attempt <= tries; attempt++) {
+    const result = await syncPremiumFromBackend(email, {
+      closeModal: options.closeModal,
+      successToast: attempt === 1 ? !!options.successToast : false,
+      failToast: false,
+      errorToast: false,
+      reloadOnSuccess: !!options.reloadOnSuccess
+    });
+
+    if (result && result.premium) {
+      if (options.openModalOnSuccess) {
+        try {
+          openPremiumModal('auto-recovery');
+          switchTab(3);
+          ensurePremiumEmailValidationUI();
+          const inp = document.getElementById('premium-email-input');
+          if (inp) inp.value = email;
+        } catch (_) {}
+      }
+      return { ok: true, premium: true, attempt: attempt };
+    }
+
+    if (attempt < tries) {
+      await new Promise(function(resolve) { setTimeout(resolve, intervalMs); });
+    }
+  }
+
+  return { ok: true, premium: false };
 }
 
 RF.premium = {
@@ -1473,10 +1567,13 @@ window.confirmUnlockRecipe = function () {
 // - Tem um “guard” no começo que limpa premium inválido antes de qualquer UI renderizar
 async function loadUserData() {
   try {
-    // ✅ 0) Se havia checkout pendente e sobrou premium local suspeito, limpa antes de renderizar
+    // ✅ 0) Se havia checkout pendente e sobrou premium local suspeito, limpa o premium local suspeito,
+    // mas preserva o marcador do checkout por um tempo para permitir a autoativação após o pending.
     if (hasPendingCheckout()) {
       sanitizeSuspiciousPaidPremium('startup-with-pending-checkout');
-      clearCheckoutPendingState();
+      if (!isCheckoutPendingRecent(45 * 60 * 1000)) {
+        clearCheckoutPendingState();
+      }
     }
 
     // ✅ 0.1) Guard: se alguém deixou fit_premium = true mas expirou, limpa ANTES de qualquer coisa
