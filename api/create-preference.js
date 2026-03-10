@@ -20,7 +20,18 @@ module.exports = async (req, res) => {
         ? req.body
         : (typeof req.body === 'string' ? JSON.parse(req.body) : {});
 
-    const plan = String(body.plan || '').trim();
+    const rawPlan = String(body.plan || '').trim().toLowerCase();
+    const planAliases = {
+      monthly: 'monthly',
+      'premium-monthly': 'monthly',
+      mensal: 'monthly',
+      annual: 'annual',
+      'premium-annual': 'annual',
+      anual: 'annual',
+      year: 'annual',
+      yearly: 'annual'
+    };
+    const plan = planAliases[rawPlan] || rawPlan;
     const email = String(body.email || '').trim().toLowerCase();
 
     if (!email || !email.includes('@') || !plan) {
@@ -65,6 +76,9 @@ module.exports = async (req, res) => {
 
     // ✅ back_urls com email na query (ajuda success.html a validar premium sem reload)
     const emailQs = encodeURIComponent(email);
+    const successUrl = `${siteBaseUrl}/success.html?return=success&email=${emailQs}`;
+    const failureUrl = `${siteBaseUrl}/failure.html?return=failure&email=${emailQs}`;
+    const pendingUrl = `${siteBaseUrl}/pending.html?return=pending&email=${emailQs}`;
 
     const preference = {
       items: [
@@ -79,9 +93,9 @@ module.exports = async (req, res) => {
       payer: { email },
 
       back_urls: {
-        success: `${siteBaseUrl}/success.html?email=${emailQs}`,
-        failure: `${siteBaseUrl}/failure.html`,
-        pending: `${siteBaseUrl}/pending.html`,
+        success: successUrl,
+        failure: failureUrl,
+        pending: pendingUrl,
       },
 
       auto_return: 'approved',
