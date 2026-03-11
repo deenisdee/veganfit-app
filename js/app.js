@@ -174,7 +174,7 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
           position: fixed;
           inset: 0 auto auto 0;
           width: 100%;
-          height: 3px;
+          height: 4px;
           z-index: 99999;
           pointer-events: none;
           opacity: 1;
@@ -191,7 +191,7 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
           height: 100%;
           transform-origin: left center;
           transform: scaleX(0);
-          background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 45%, #93c5fd 100%);
+          background: linear-gradient(90deg, #3b82f6 0%, #3b82f6 100%, #3b82f6 100%);
           box-shadow: 0 0 10px rgba(59,130,246,.45);
           transition: transform .22s ease-out;
           will-change: transform;
@@ -1198,16 +1198,11 @@ function sanitizeSuspiciousPaidPremium(reason) {
   }
 }
 
-
-
 async function syncPremiumFromBackend(email, opts) {
   const options = opts || {};
   const normalized = normalizeEmailForLookup(email);
 
-  if (!normalized || !normalized.includes('@')) {
-    document.documentElement.style.setProperty('--show-premium-btn', 'inline-flex');
-    return { ok: false, error: 'email inválido' };
-  }
+  if (!normalized || !normalized.includes('@')) return { ok: false, error: 'email inválido' };
 
   try {
     const res = await fetch('/api/premium-status', {
@@ -1219,9 +1214,6 @@ async function syncPremiumFromBackend(email, opts) {
     const data = await res.json();
 
     if (data?.ok && data?.premium === true) {
-      // Premium ativo -> esconder botão verde
-      document.documentElement.style.setProperty('--show-premium-btn', 'none');
-
       setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
       clearCheckoutPendingState();
 
@@ -1243,9 +1235,7 @@ async function syncPremiumFromBackend(email, opts) {
       return { ok: true, premium: true, expiresAt: data.expiresAt, plan: data.plan };
     }
 
-    // não premium / expirado -> mostrar botão verde
-    document.documentElement.style.setProperty('--show-premium-btn', 'inline-flex');
-
+    // não premium / expirado
     clearPremiumLocalState();
 
     if (options.failToast) {
@@ -1255,17 +1245,12 @@ async function syncPremiumFromBackend(email, opts) {
     return { ok: true, premium: false };
   } catch (err) {
     console.warn('[PREMIUM] Falha ao sincronizar backend:', err);
-
-    // em caso de erro, mantém comportamento de usuário não premium
-    document.documentElement.style.setProperty('--show-premium-btn', 'inline-flex');
-
     if (options.errorToast) {
       showNotification('Erro', 'Falha ao validar Premium. Tente novamente.');
     }
     return { ok: false, error: String(err?.message || err) };
   }
 }
-
 
 
 async function autoRecoverPremiumAfterCheckout(opts) {
