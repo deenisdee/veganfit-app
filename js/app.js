@@ -6430,22 +6430,3 @@ function setupAdvancedFiltersAutoApply() {
 
 
 
-function updateGreeting() {
-  const el = document.getElementById("user-greeting");
-  if (!el) return;
-
-  let name = null;
-
-  try {
-    name = localStorage.getItem("vf_user_name");
-  } catch (e) {}
-
-  if (name && name.trim().length > 1) {
-    const firstName = name.trim().split(" ")[0];
-    el.textContent = `Olá, ${firstName} 👋`;
-  } else {
-    el.textContent = "Olá 👋";
-  }
-}
-
-document.addEventListener("DOMContentLoaded", updateGreeting);
