@@ -1045,6 +1045,26 @@ body.premium-active #premium-btn {
   display: none !important;
 }
 
+/* Lock de hidratação inicial: impede flash dos badges/botões no boot */
+body.rf-badge-lock .header-actions {
+  visibility: hidden !important;
+}
+
+body.rf-badge-lock #credits-badge,
+body.rf-badge-lock #premium-btn,
+body.rf-badge-lock #premium-badge,
+body.rf-badge-lock .premium-btn,
+body.rf-badge-lock .btn-premium {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+body:not(.rf-badge-lock) #credits-badge,
+body:not(.rf-badge-lock) #premium-badge {
+  visibility: visible !important;
+}
+
 /* ================================
    FIX: Centralização Mobile/iPhone
    ================================ */
@@ -2268,10 +2288,15 @@ body .hamburger-btn,
 }
 
 @media (max-width: 768px) {
-  .premium-btn {
+  body:not(.rf-badge-lock):not(.premium-active) .premium-btn {
     opacity: 1 !important;
     pointer-events: auto !important;
     z-index: 10 !important;
+  }
+
+  body.rf-badge-lock .premium-btn {
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 }
 
@@ -2285,8 +2310,18 @@ body .hamburger-btn,
     display: none !important;
   }
 
-  #credits-badge,
-  #premium-btn { display: flex !important; }
+  #credits-badge {
+    display: flex !important;
+  }
+
+  body:not(.rf-badge-lock):not(.premium-active) #premium-btn {
+    display: flex !important;
+  }
+
+  body.rf-badge-lock #premium-btn,
+  body.premium-active #premium-btn {
+    display: none !important;
+  }
 }
 
 /* =========================================================
@@ -2872,13 +2907,12 @@ html {
     flex: 0 0 44px !important;
   }
 
-  /* 5) Evita “pulo” quando Premium some/aparece (display troca causa reflow).
-        Em vez de display:none, mantém espaço com visibility/opacity quando possível */
+  /* 5) Em Premium ativo, o botão verde não pode reaparecer no mobile */
   body.premium-active #premium-btn{
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
-    display: inline-flex !important; /* mantém espaço */
+    display: none !important;
   }
 }
 
@@ -5822,4 +5856,20 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     }
 
 
+}
+
+/* Segurança final contra flash do badge verde durante a hidratação */
+body.rf-badge-lock #premium-btn,
+body.rf-badge-lock .premium-btn,
+body.rf-badge-lock .btn-premium {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  body.rf-badge-lock #credits-badge,
+  body.rf-badge-lock #premium-badge,
+  body.rf-badge-lock #premium-btn {
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
 }
