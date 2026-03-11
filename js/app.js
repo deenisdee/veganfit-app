@@ -164,7 +164,8 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
         html.rf-badge-lock #credits-badge,
         html.rf-badge-lock #premium-btn,
         html.rf-badge-lock #premium-badge,
-        html.rf-badge-lock [data-premium-badge] {
+        html.rf-badge-lock [data-premium-badge],
+        [data-rf-badge-container-lock="true"] {
           visibility: hidden !important;
           opacity: 0 !important;
           pointer-events: none !important;
@@ -272,9 +273,80 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
 
     window.__rfBootLoader = loader;
 
+
+    const badgeLockController = {
+      container: null,
+      observer: null,
+      resolved: false,
+      findCommonContainer() {
+        const credits = document.getElementById('credits-badge');
+        const btn = document.getElementById('premium-btn');
+        const premiumBadge = document.getElementById('premium-badge') || document.querySelector('[data-premium-badge]') || document.querySelector('.premium-badge');
+        const nodes = [credits, btn, premiumBadge].filter(Boolean);
+        if (!nodes.length) return null;
+        const chain = (node) => {
+          const arr = [];
+          let cur = node;
+          while (cur && cur !== document.body && cur !== document.documentElement) {
+            arr.push(cur);
+            cur = cur.parentElement;
+          }
+          if (document.body) arr.push(document.body);
+          return arr;
+        };
+        let candidates = chain(nodes[0]);
+        for (const node of nodes.slice(1)) {
+          const set = new Set(chain(node));
+          candidates = candidates.filter(el => set.has(el));
+        }
+        for (const el of candidates) {
+          if (!el || el === document.body) continue;
+          const rect = typeof el.getBoundingClientRect === 'function' ? el.getBoundingClientRect() : {height:0};
+          const hasRelevant = !!el.querySelector('#credits-badge, #premium-btn, #premium-badge, [data-premium-badge], .premium-badge');
+          if (hasRelevant && rect.height > 0 && rect.height < 180) return el;
+        }
+        return nodes[0] && nodes[0].parentElement ? nodes[0].parentElement : null;
+      },
+      apply() {
+        const next = this.findCommonContainer();
+        if (!next) return false;
+        if (this.container && this.container !== next) {
+          this.container.removeAttribute('data-rf-badge-container-lock');
+        }
+        this.container = next;
+        this.container.setAttribute('data-rf-badge-container-lock', 'true');
+        return true;
+      },
+      start() {
+        if (this.resolved) return;
+        this.apply();
+        if (this.observer) return;
+        this.observer = new MutationObserver(() => {
+          if (this.resolved) return;
+          this.apply();
+        });
+        const root = document.body || document.documentElement;
+        if (root) {
+          this.observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
+        }
+      },
+      release() {
+        this.resolved = true;
+        if (this.observer) {
+          try { this.observer.disconnect(); } catch (_) {}
+          this.observer = null;
+        }
+        if (this.container) {
+          this.container.removeAttribute('data-rf-badge-container-lock');
+        }
+      }
+    };
+    window.__rfBadgeContainerLock = badgeLockController;
+
     if (!window.__rfBadgeBoot) {
       const startedAt = Date.now();
       document.documentElement.classList.add('rf-badge-lock');
+      try { window.__rfBadgeContainerLock && window.__rfBadgeContainerLock.start(); } catch (_) {}
       window.__rfBadgeBoot = {
         unlocked: false,
         startedAt,
@@ -287,6 +359,7 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
             if (this.unlocked) return;
             this.unlocked = true;
             document.documentElement.classList.remove('rf-badge-lock');
+            try { window.__rfBadgeContainerLock && window.__rfBadgeContainerLock.release(); } catch (_) {}
             try {
               const btn = document.getElementById('premium-btn');
               const badge = document.getElementById('credits-badge');
