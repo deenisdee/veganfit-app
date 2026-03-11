@@ -1012,6 +1012,7 @@ html { scrollbar-gutter: stable; }
 }
 
 #premium-btn {
+  display: var(--show-premium-btn);
   background: #16a34a;
   color: #fff;
   border: none;
@@ -1023,7 +1024,6 @@ html { scrollbar-gutter: stable; }
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
-
 }
 
 /* Ícone estrela para premium */
@@ -2267,13 +2267,7 @@ body .hamburger-btn,
   .header-tools { display: none !important; }
 }
 
-@media (max-width: 768px) {
-  .premium-btn {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    z-index: 10 !important;
-  }
-}
+
 
 /* Oculta botões de ferramentas no mobile (aparecem na tab bar) */
 @media (max-width: 768px) {
@@ -2285,8 +2279,7 @@ body .hamburger-btn,
     display: none !important;
   }
 
-  #credits-badge,
-  #premium-btn { display: flex !important; }
+  #credits-badge { display: flex !important; }
 }
 
 /* =========================================================
