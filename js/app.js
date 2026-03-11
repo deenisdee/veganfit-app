@@ -193,7 +193,7 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
           transform: scaleX(0);
           background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 45%, #93c5fd 100%);
           box-shadow: 0 0 10px rgba(59,130,246,.45);
-          transition: transform 5.5s ease-out;
+          transition: transform 10.5s ease-out;
           will-change: transform;
         }
       `;
