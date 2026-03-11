@@ -5826,21 +5826,3 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
 
 
-
-.greeting-box{
-  text-align:center;
-  margin-top:8px;
-  margin-bottom:10px;
-}
-
-.greeting-box h2{
-  font-size:18px;
-  font-weight:600;
-  color:#111827;
-}
-
-.greeting-sub{
-  font-size:14px;
-  color:#6b7280;
-  margin-top:2px;
-}
