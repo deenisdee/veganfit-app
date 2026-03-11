@@ -178,7 +178,7 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
           z-index: 99999;
           pointer-events: none;
           opacity: 1;
-          transition: opacity .22s ease;
+          transition: transform 10.5s ease-out;
           background: transparent;
         }
 
