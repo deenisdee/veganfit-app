@@ -1198,11 +1198,16 @@ function sanitizeSuspiciousPaidPremium(reason) {
   }
 }
 
+
+
 async function syncPremiumFromBackend(email, opts) {
   const options = opts || {};
   const normalized = normalizeEmailForLookup(email);
 
-  if (!normalized || !normalized.includes('@')) return { ok: false, error: 'email inválido' };
+  if (!normalized || !normalized.includes('@')) {
+    document.documentElement.style.setProperty('--show-premium-btn', 'inline-flex');
+    return { ok: false, error: 'email inválido' };
+  }
 
   try {
     const res = await fetch('/api/premium-status', {
@@ -1214,6 +1219,9 @@ async function syncPremiumFromBackend(email, opts) {
     const data = await res.json();
 
     if (data?.ok && data?.premium === true) {
+      // Premium ativo -> esconder botão verde
+      document.documentElement.style.setProperty('--show-premium-btn', 'none');
+
       setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
       clearCheckoutPendingState();
 
@@ -1235,7 +1243,9 @@ async function syncPremiumFromBackend(email, opts) {
       return { ok: true, premium: true, expiresAt: data.expiresAt, plan: data.plan };
     }
 
-    // não premium / expirado
+    // não premium / expirado -> mostrar botão verde
+    document.documentElement.style.setProperty('--show-premium-btn', 'inline-flex');
+
     clearPremiumLocalState();
 
     if (options.failToast) {
@@ -1245,12 +1255,17 @@ async function syncPremiumFromBackend(email, opts) {
     return { ok: true, premium: false };
   } catch (err) {
     console.warn('[PREMIUM] Falha ao sincronizar backend:', err);
+
+    // em caso de erro, mantém comportamento de usuário não premium
+    document.documentElement.style.setProperty('--show-premium-btn', 'inline-flex');
+
     if (options.errorToast) {
       showNotification('Erro', 'Falha ao validar Premium. Tente novamente.');
     }
     return { ok: false, error: String(err?.message || err) };
   }
 }
+
 
 
 async function autoRecoverPremiumAfterCheckout(opts) {
