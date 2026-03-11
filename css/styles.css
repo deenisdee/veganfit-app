@@ -1045,26 +1045,6 @@ body.premium-active #premium-btn {
   display: none !important;
 }
 
-/* Lock de hidratação inicial: impede flash dos badges/botões no boot */
-body.rf-badge-lock .header-actions {
-  visibility: hidden !important;
-}
-
-body.rf-badge-lock #credits-badge,
-body.rf-badge-lock #premium-btn,
-body.rf-badge-lock #premium-badge,
-body.rf-badge-lock .premium-btn,
-body.rf-badge-lock .btn-premium {
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-body:not(.rf-badge-lock) #credits-badge,
-body:not(.rf-badge-lock) #premium-badge {
-  visibility: visible !important;
-}
-
 /* ================================
    FIX: Centralização Mobile/iPhone
    ================================ */
@@ -2288,15 +2268,10 @@ body .hamburger-btn,
 }
 
 @media (max-width: 768px) {
-  body:not(.rf-badge-lock):not(.premium-active) .premium-btn {
+  .premium-btn {
     opacity: 1 !important;
     pointer-events: auto !important;
     z-index: 10 !important;
-  }
-
-  body.rf-badge-lock .premium-btn {
-    opacity: 0 !important;
-    pointer-events: none !important;
   }
 }
 
@@ -2310,18 +2285,8 @@ body .hamburger-btn,
     display: none !important;
   }
 
-  #credits-badge {
-    display: flex !important;
-  }
-
-  body:not(.rf-badge-lock):not(.premium-active) #premium-btn {
-    display: flex !important;
-  }
-
-  body.rf-badge-lock #premium-btn,
-  body.premium-active #premium-btn {
-    display: none !important;
-  }
+  #credits-badge,
+  #premium-btn { display: flex !important; }
 }
 
 /* =========================================================
@@ -2907,12 +2872,13 @@ html {
     flex: 0 0 44px !important;
   }
 
-  /* 5) Em Premium ativo, o botão verde não pode reaparecer no mobile */
+  /* 5) Evita “pulo” quando Premium some/aparece (display troca causa reflow).
+        Em vez de display:none, mantém espaço com visibility/opacity quando possível */
   body.premium-active #premium-btn{
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
-    display: none !important;
+    display: inline-flex !important; /* mantém espaço */
   }
 }
 
@@ -5858,18 +5824,73 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
 }
 
-/* Segurança final contra flash do badge verde durante a hidratação */
-body.rf-badge-lock #premium-btn,
-body.rf-badge-lock .premium-btn,
-body.rf-badge-lock .btn-premium {
+
+/* =========================================================
+   FINAL HARD LOCK — sincronizado com app.js
+   O app aplica rf-badge-lock / rf-ui-booting no <html>, não no <body>
+   ========================================================= */
+html.rf-ui-booting .header-actions,
+html.rf-badge-lock .header-actions {
+  visibility: hidden !important;
+}
+
+html.rf-ui-booting #credits-badge,
+html.rf-ui-booting #premium-btn,
+html.rf-ui-booting #premium-badge,
+html.rf-ui-booting .premium-btn,
+html.rf-ui-booting .btn-premium,
+html.rf-badge-lock #credits-badge,
+html.rf-badge-lock #premium-btn,
+html.rf-badge-lock #premium-badge,
+html.rf-badge-lock .premium-btn,
+html.rf-badge-lock .btn-premium {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: none !important;
+}
+
+html:not(.rf-ui-booting):not(.rf-badge-lock) #credits-badge,
+html:not(.rf-ui-booting):not(.rf-badge-lock) #premium-badge {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+html:not(.rf-ui-booting):not(.rf-badge-lock):not(.premium-active) #premium-btn,
+body:not(.premium-active) html:not(.rf-ui-booting):not(.rf-badge-lock) #premium-btn {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+body.premium-active #premium-btn,
+html.rf-ui-booting body #premium-btn,
+html.rf-badge-lock body #premium-btn {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 @media (max-width: 768px) {
-  body.rf-badge-lock #credits-badge,
-  body.rf-badge-lock #premium-badge,
-  body.rf-badge-lock #premium-btn {
+  html.rf-ui-booting #credits-badge,
+  html.rf-ui-booting #premium-btn,
+  html.rf-ui-booting #premium-badge,
+  html.rf-badge-lock #credits-badge,
+  html.rf-badge-lock #premium-btn,
+  html.rf-badge-lock #premium-badge {
+    display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
+  }
+
+  html:not(.rf-ui-booting):not(.rf-badge-lock):not(.premium-active) #premium-btn {
+    display: flex !important;
+  }
+
+  body.premium-active #premium-btn {
+    display: none !important;
   }
 }
