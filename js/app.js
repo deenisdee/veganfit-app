@@ -144,6 +144,142 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
 
 
 
+
+// ==============================
+// BOOT LOADER (barra fina estilo YouTube)
+// - evita flicker dos badges na inicialização
+// ==============================
+(function bootLoaderInit() {
+  try {
+    document.documentElement.classList.add('rf-ui-booting');
+
+    if (!document.getElementById('rf-boot-loader-style')) {
+      const style = document.createElement('style');
+      style.id = 'rf-boot-loader-style';
+      style.textContent = `
+        html.rf-ui-booting #credits-badge,
+        html.rf-ui-booting #premium-btn {
+          visibility: hidden !important;
+        }
+
+        #rf-boot-loader {
+          position: fixed;
+          inset: 0 auto auto 0;
+          width: 100%;
+          height: 3px;
+          z-index: 99999;
+          pointer-events: none;
+          opacity: 1;
+          transition: opacity .22s ease;
+          background: transparent;
+        }
+
+        #rf-boot-loader.hidden {
+          opacity: 0;
+        }
+
+        #rf-boot-loader .rf-boot-bar {
+          width: 100%;
+          height: 100%;
+          transform-origin: left center;
+          transform: scaleX(0);
+          background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 45%, #93c5fd 100%);
+          box-shadow: 0 0 10px rgba(59,130,246,.45);
+          transition: transform .22s ease-out;
+          will-change: transform;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const loader = {
+      el: null,
+      bar: null,
+      progress: 0,
+      done: false,
+      timer: null,
+      ensure() {
+        if (this.el) return;
+        if (!document.body) return;
+        const wrap = document.createElement('div');
+        wrap.id = 'rf-boot-loader';
+        wrap.setAttribute('aria-hidden', 'true');
+
+        const bar = document.createElement('div');
+        bar.className = 'rf-boot-bar';
+        wrap.appendChild(bar);
+
+        document.body.appendChild(wrap);
+        this.el = wrap;
+        this.bar = bar;
+        this.set(0.08);
+      },
+      set(value) {
+        this.ensure();
+        if (!this.bar || this.done) return;
+        const next = Math.max(this.progress, Math.min(value, 0.94));
+        this.progress = next;
+        this.bar.style.transform = `scaleX(${next})`;
+      },
+      trickle() {
+        if (this.done) return;
+        this.ensure();
+        const tick = () => {
+          if (this.done) return;
+          const p = this.progress;
+          let inc = 0.0;
+          if (p < 0.25) inc = 0.12;
+          else if (p < 0.55) inc = 0.08;
+          else if (p < 0.8) inc = 0.04;
+          else if (p < 0.9) inc = 0.015;
+          else inc = 0.006;
+          this.set(p + inc);
+          this.timer = window.setTimeout(tick, 180 + Math.round(Math.random() * 140));
+        };
+        tick();
+      },
+      finish() {
+        if (this.done) return;
+        this.done = true;
+        if (this.timer) {
+          clearTimeout(this.timer);
+          this.timer = null;
+        }
+        this.ensure();
+        if (this.bar) {
+          this.bar.style.transition = 'transform .18s ease-out';
+          this.bar.style.transform = 'scaleX(1)';
+        }
+        window.setTimeout(() => {
+          try { document.documentElement.classList.remove('rf-ui-booting'); } catch (_) {}
+          if (this.el) this.el.classList.add('hidden');
+        }, 170);
+        window.setTimeout(() => {
+          if (this.el && this.el.parentNode) this.el.parentNode.removeChild(this.el);
+          this.el = null;
+          this.bar = null;
+        }, 460);
+      }
+    };
+
+    window.__rfBootLoader = loader;
+
+    const begin = () => {
+      try {
+        loader.ensure();
+        loader.trickle();
+      } catch (_) {}
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', begin, { once: true });
+    } else {
+      begin();
+    }
+  } catch (_) {}
+})();
+
+
 // ===================================
 // DETECÇÃO DE RETORNO DO MERCADO PAGO
 // ===================================
@@ -1674,6 +1810,15 @@ async function loadUserData() {
   try {
     if (typeof lucide !== 'undefined') {
       lucide.createIcons();
+    }
+  } catch (_) {}
+
+  // ✅ 9) Libera os badges só depois de montar o estado real da interface
+  try {
+    if (window.__rfBootLoader && typeof window.__rfBootLoader.finish === 'function') {
+      window.__rfBootLoader.finish();
+    } else {
+      document.documentElement.classList.remove('rf-ui-booting');
     }
   } catch (_) {}
 }
@@ -5104,6 +5249,15 @@ function clearPremiumState() {
 // ==============================
 // START
 // ==============================
+window.addEventListener('load', function () {
+  try {
+    if (window.__rfBootLoader && !window.__rfBootLoader.done) {
+      window.__rfBootLoader.set(0.92);
+    }
+  } catch (_) {}
+});
+
+
 loadUserData();
 
 
