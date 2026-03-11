@@ -6432,18 +6432,19 @@ function setupAdvancedFiltersAutoApply() {
 
 
 function updateGreeting() {
-  let name = "Denis";
+  const el = document.getElementById("user-greeting");
+  if (!el) return;
+
+  let name = null;
 
   try {
-    const stored = localStorage.getItem("vf_user_name");
-    if (stored && stored.length > 1) {
-      name = stored;
-    }
-  } catch(e){}
+    name = localStorage.getItem("vf_user_name");
+  } catch (e) {}
 
-  const el = document.getElementById("user-greeting");
-  if (el) {
+  if (name && name.trim().length > 1) {
     el.textContent = `Olá, ${name} 👋`;
+  } else {
+    el.textContent = "Olá 👋";
   }
 }
 
