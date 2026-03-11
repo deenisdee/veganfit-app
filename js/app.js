@@ -158,17 +158,8 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
       style.id = 'rf-boot-loader-style';
       style.textContent = `
         html.rf-ui-booting #credits-badge,
-        html.rf-ui-booting #premium-btn,
-        html.rf-ui-booting #premium-badge,
-        html.rf-ui-booting [data-premium-badge],
-        html.rf-badge-lock #credits-badge,
-        html.rf-badge-lock #premium-btn,
-        html.rf-badge-lock #premium-badge,
-        html.rf-badge-lock [data-premium-badge],
-        [data-rf-badge-container-lock="true"] {
+        html.rf-ui-booting #premium-btn {
           visibility: hidden !important;
-          opacity: 0 !important;
-          pointer-events: none !important;
         }
 
         #rf-boot-loader {
@@ -273,109 +264,6 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
 
     window.__rfBootLoader = loader;
 
-
-    const badgeLockController = {
-      container: null,
-      observer: null,
-      resolved: false,
-      findCommonContainer() {
-        const credits = document.getElementById('credits-badge');
-        const btn = document.getElementById('premium-btn');
-        const premiumBadge = document.getElementById('premium-badge') || document.querySelector('[data-premium-badge]') || document.querySelector('.premium-badge');
-        const nodes = [credits, btn, premiumBadge].filter(Boolean);
-        if (!nodes.length) return null;
-        const chain = (node) => {
-          const arr = [];
-          let cur = node;
-          while (cur && cur !== document.body && cur !== document.documentElement) {
-            arr.push(cur);
-            cur = cur.parentElement;
-          }
-          if (document.body) arr.push(document.body);
-          return arr;
-        };
-        let candidates = chain(nodes[0]);
-        for (const node of nodes.slice(1)) {
-          const set = new Set(chain(node));
-          candidates = candidates.filter(el => set.has(el));
-        }
-        for (const el of candidates) {
-          if (!el || el === document.body) continue;
-          const rect = typeof el.getBoundingClientRect === 'function' ? el.getBoundingClientRect() : {height:0};
-          const hasRelevant = !!el.querySelector('#credits-badge, #premium-btn, #premium-badge, [data-premium-badge], .premium-badge');
-          if (hasRelevant && rect.height > 0 && rect.height < 180) return el;
-        }
-        return nodes[0] && nodes[0].parentElement ? nodes[0].parentElement : null;
-      },
-      apply() {
-        const next = this.findCommonContainer();
-        if (!next) return false;
-        if (this.container && this.container !== next) {
-          this.container.removeAttribute('data-rf-badge-container-lock');
-        }
-        this.container = next;
-        this.container.setAttribute('data-rf-badge-container-lock', 'true');
-        return true;
-      },
-      start() {
-        if (this.resolved) return;
-        this.apply();
-        if (this.observer) return;
-        this.observer = new MutationObserver(() => {
-          if (this.resolved) return;
-          this.apply();
-        });
-        const root = document.body || document.documentElement;
-        if (root) {
-          this.observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
-        }
-      },
-      release() {
-        this.resolved = true;
-        if (this.observer) {
-          try { this.observer.disconnect(); } catch (_) {}
-          this.observer = null;
-        }
-        if (this.container) {
-          this.container.removeAttribute('data-rf-badge-container-lock');
-        }
-      }
-    };
-    window.__rfBadgeContainerLock = badgeLockController;
-
-    if (!window.__rfBadgeBoot) {
-      const startedAt = Date.now();
-      document.documentElement.classList.add('rf-badge-lock');
-      try { window.__rfBadgeContainerLock && window.__rfBadgeContainerLock.start(); } catch (_) {}
-      window.__rfBadgeBoot = {
-        unlocked: false,
-        startedAt,
-        unlock: function(forceDelayMs) {
-          if (this.unlocked) return;
-          const delayMs = Math.max(0, Number.isFinite(forceDelayMs) ? forceDelayMs : 0);
-          const elapsed = Date.now() - this.startedAt;
-          const waitMs = Math.max(delayMs, 1200 - elapsed);
-          setTimeout(() => {
-            if (this.unlocked) return;
-            this.unlocked = true;
-            document.documentElement.classList.remove('rf-badge-lock');
-            try { window.__rfBadgeContainerLock && window.__rfBadgeContainerLock.release(); } catch (_) {}
-            try {
-              const btn = document.getElementById('premium-btn');
-              const badge = document.getElementById('credits-badge');
-              const pbadge = document.getElementById('premium-badge') || document.querySelector('[data-premium-badge]');
-              if (badge) badge.style.opacity = '';
-              if (btn) btn.style.opacity = '';
-              if (pbadge) pbadge.style.opacity = '';
-            } catch (_) {}
-          }, waitMs);
-        }
-      };
-      window.__rfUnlockBadgesNow = function(forceDelayMs) {
-        try { window.__rfBadgeBoot && window.__rfBadgeBoot.unlock(forceDelayMs); } catch (_) {}
-      };
-    }
-
     const begin = () => {
       try {
         loader.ensure();
@@ -469,9 +357,6 @@ window.addEventListener('DOMContentLoaded', function() {
         sanitizeSuspiciousPaidPremium('mp-return-failure');
         showNotification('❌ Pagamento não aprovado', 'Tente novamente ou use outro método de pagamento.');
       }
-      // Não libera os badges aqui.
-      // A liberação visual precisa esperar o loadUserData() terminar,
-      // senão o botão verde pode aparecer por um frame antes do badge premium.
     }, 500);
   }
 
@@ -486,8 +371,6 @@ window.addEventListener('DOMContentLoaded', function() {
         reloadOnSuccess: true,
         closeModal: false
       });
-      // Não libera os badges aqui.
-      // O unlock fica centralizado no final do boot inicial.
     }, 900);
   }
 
@@ -1449,10 +1332,7 @@ RF.premium = {
         headerBtn.style.display = '';
         headerBtn.disabled = false;
         headerBtn.style.pointerEvents = 'auto';
-        // Durante o boot, mantém invisível mesmo que o display seja recalculado.
-        const bootLocked = document.documentElement.classList.contains('rf-ui-booting') ||
-          document.documentElement.classList.contains('rf-badge-lock');
-        headerBtn.style.opacity = bootLocked ? '0' : '1';
+        headerBtn.style.opacity = '1';
         headerBtn.setAttribute('aria-disabled', 'false');
       }
     }
@@ -1933,18 +1813,12 @@ async function loadUserData() {
     }
   } catch (_) {}
 
-  // ✅ 9) Libera a UI só depois do estado inicial ter assentado
+  // ✅ 9) Libera os badges só depois de montar o estado real da interface
   try {
     if (window.__rfBootLoader && typeof window.__rfBootLoader.finish === 'function') {
       window.__rfBootLoader.finish();
     } else {
       document.documentElement.classList.remove('rf-ui-booting');
-    }
-    if (typeof window.__rfUnlockBadgesNow === 'function') {
-      // segura um pouco mais os badges para absorver syncs tardios em celulares lentos
-      window.__rfUnlockBadgesNow(650);
-    } else {
-      document.documentElement.classList.remove('rf-badge-lock');
     }
   } catch (_) {}
 }
