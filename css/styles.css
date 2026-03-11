@@ -1002,7 +1002,7 @@ html { scrollbar-gutter: stable; }
    ================================ */
 :root {
   --badge-bg: #3b82f6;
-  --show-premium-btn: block;
+  --show-premium-btn: none;
 }
 
 .badge {
