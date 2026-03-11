@@ -396,7 +396,9 @@ window.addEventListener('DOMContentLoaded', function() {
         sanitizeSuspiciousPaidPremium('mp-return-failure');
         showNotification('❌ Pagamento não aprovado', 'Tente novamente ou use outro método de pagamento.');
       }
-      try { if (typeof window.__rfUnlockBadgesNow === 'function') window.__rfUnlockBadgesNow(0); } catch (_) {}
+      // Não libera os badges aqui.
+      // A liberação visual precisa esperar o loadUserData() terminar,
+      // senão o botão verde pode aparecer por um frame antes do badge premium.
     }, 500);
   }
 
@@ -411,10 +413,9 @@ window.addEventListener('DOMContentLoaded', function() {
         reloadOnSuccess: true,
         closeModal: false
       });
-      try { if (typeof window.__rfUnlockBadgesNow === 'function') window.__rfUnlockBadgesNow(0); } catch (_) {}
+      // Não libera os badges aqui.
+      // O unlock fica centralizado no final do boot inicial.
     }, 900);
-  } else {
-    try { if (typeof window.__rfUnlockBadgesNow === 'function') window.__rfUnlockBadgesNow(0); } catch (_) {}
   }
 
   // 2) Link do e-mail / ativação: abre o modal na aba 3.
@@ -1375,7 +1376,10 @@ RF.premium = {
         headerBtn.style.display = '';
         headerBtn.disabled = false;
         headerBtn.style.pointerEvents = 'auto';
-        headerBtn.style.opacity = '1';
+        // Durante o boot, mantém invisível mesmo que o display seja recalculado.
+        const bootLocked = document.documentElement.classList.contains('rf-ui-booting') ||
+          document.documentElement.classList.contains('rf-badge-lock');
+        headerBtn.style.opacity = bootLocked ? '0' : '1';
         headerBtn.setAttribute('aria-disabled', 'false');
       }
     }
@@ -1864,8 +1868,8 @@ async function loadUserData() {
       document.documentElement.classList.remove('rf-ui-booting');
     }
     if (typeof window.__rfUnlockBadgesNow === 'function') {
-      // segura um pouco os badges para evitar flicker causado por syncs tardios
-      window.__rfUnlockBadgesNow(350);
+      // segura um pouco mais os badges para absorver syncs tardios em celulares lentos
+      window.__rfUnlockBadgesNow(650);
     } else {
       document.documentElement.classList.remove('rf-badge-lock');
     }
