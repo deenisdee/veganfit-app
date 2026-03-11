@@ -6430,7 +6430,6 @@ function setupAdvancedFiltersAutoApply() {
 
 
 
-
 function updateGreeting() {
   const el = document.getElementById("user-greeting");
   if (!el) return;
@@ -6442,7 +6441,8 @@ function updateGreeting() {
   } catch (e) {}
 
   if (name && name.trim().length > 1) {
-    el.textContent = `Olá, ${name} 👋`;
+    const firstName = name.trim().split(" ")[0];
+    el.textContent = `Olá, ${firstName} 👋`;
   } else {
     el.textContent = "Olá 👋";
   }
