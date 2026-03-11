@@ -158,8 +158,16 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
       style.id = 'rf-boot-loader-style';
       style.textContent = `
         html.rf-ui-booting #credits-badge,
-        html.rf-ui-booting #premium-btn {
+        html.rf-ui-booting #premium-btn,
+        html.rf-ui-booting #premium-badge,
+        html.rf-ui-booting [data-premium-badge],
+        html.rf-badge-lock #credits-badge,
+        html.rf-badge-lock #premium-btn,
+        html.rf-badge-lock #premium-badge,
+        html.rf-badge-lock [data-premium-badge] {
           visibility: hidden !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
         }
 
         #rf-boot-loader {
@@ -264,6 +272,37 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
 
     window.__rfBootLoader = loader;
 
+    if (!window.__rfBadgeBoot) {
+      const startedAt = Date.now();
+      document.documentElement.classList.add('rf-badge-lock');
+      window.__rfBadgeBoot = {
+        unlocked: false,
+        startedAt,
+        unlock: function(forceDelayMs) {
+          if (this.unlocked) return;
+          const delayMs = Math.max(0, Number.isFinite(forceDelayMs) ? forceDelayMs : 0);
+          const elapsed = Date.now() - this.startedAt;
+          const waitMs = Math.max(delayMs, 1200 - elapsed);
+          setTimeout(() => {
+            if (this.unlocked) return;
+            this.unlocked = true;
+            document.documentElement.classList.remove('rf-badge-lock');
+            try {
+              const btn = document.getElementById('premium-btn');
+              const badge = document.getElementById('credits-badge');
+              const pbadge = document.getElementById('premium-badge') || document.querySelector('[data-premium-badge]');
+              if (badge) badge.style.opacity = '';
+              if (btn) btn.style.opacity = '';
+              if (pbadge) pbadge.style.opacity = '';
+            } catch (_) {}
+          }, waitMs);
+        }
+      };
+      window.__rfUnlockBadgesNow = function(forceDelayMs) {
+        try { window.__rfBadgeBoot && window.__rfBadgeBoot.unlock(forceDelayMs); } catch (_) {}
+      };
+    }
+
     const begin = () => {
       try {
         loader.ensure();
@@ -357,6 +396,7 @@ window.addEventListener('DOMContentLoaded', function() {
         sanitizeSuspiciousPaidPremium('mp-return-failure');
         showNotification('❌ Pagamento não aprovado', 'Tente novamente ou use outro método de pagamento.');
       }
+      try { if (typeof window.__rfUnlockBadgesNow === 'function') window.__rfUnlockBadgesNow(0); } catch (_) {}
     }, 500);
   }
 
@@ -371,7 +411,10 @@ window.addEventListener('DOMContentLoaded', function() {
         reloadOnSuccess: true,
         closeModal: false
       });
+      try { if (typeof window.__rfUnlockBadgesNow === 'function') window.__rfUnlockBadgesNow(0); } catch (_) {}
     }, 900);
+  } else {
+    try { if (typeof window.__rfUnlockBadgesNow === 'function') window.__rfUnlockBadgesNow(0); } catch (_) {}
   }
 
   // 2) Link do e-mail / ativação: abre o modal na aba 3.
@@ -1813,12 +1856,18 @@ async function loadUserData() {
     }
   } catch (_) {}
 
-  // ✅ 9) Libera os badges só depois de montar o estado real da interface
+  // ✅ 9) Libera a UI só depois do estado inicial ter assentado
   try {
     if (window.__rfBootLoader && typeof window.__rfBootLoader.finish === 'function') {
       window.__rfBootLoader.finish();
     } else {
       document.documentElement.classList.remove('rf-ui-booting');
+    }
+    if (typeof window.__rfUnlockBadgesNow === 'function') {
+      // segura um pouco os badges para evitar flicker causado por syncs tardios
+      window.__rfUnlockBadgesNow(350);
+    } else {
+      document.documentElement.classList.remove('rf-badge-lock');
     }
   } catch (_) {}
 }
