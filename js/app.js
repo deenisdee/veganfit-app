@@ -24,6 +24,57 @@ function ensureMercadoPagoInstance() {
 }
 
 
+function getStoredCheckoutEmail() {
+  try {
+    return normalizeEmailForLookup(
+      localStorage.getItem('vf_checkout_email') ||
+      localStorage.getItem('vf_user_email') ||
+      localStorage.getItem('premium_email') ||
+      ''
+    );
+  } catch (_) {
+    return '';
+  }
+}
+
+function persistCheckoutEmail(email) {
+  const normalized = normalizeEmailForLookup(email);
+  if (!normalized || !normalized.includes('@')) return '';
+
+  try { localStorage.setItem('vf_checkout_email', normalized); } catch (_) {}
+  try { localStorage.setItem('vf_user_email', normalized); } catch (_) {}
+  try { localStorage.setItem('premium_email', normalized); } catch (_) {}
+  return normalized;
+}
+
+function getCheckoutStartedAt() {
+  try {
+    return parseInt(localStorage.getItem('vf_checkout_started_at') || '0', 10) || 0;
+  } catch (_) {
+    return 0;
+  }
+}
+
+function isCheckoutPendingRecent(maxAgeMs) {
+  const startedAt = getCheckoutStartedAt();
+  if (!startedAt) return false;
+  return (Date.now() - startedAt) <= (maxAgeMs || (45 * 60 * 1000));
+}
+
+function isPremiumAccessActive() {
+  try {
+    if (typeof isPremiumValidNow === 'function') return !!isPremiumValidNow();
+  } catch (_) {}
+
+  try {
+    if (window.RF && RF.premium && typeof RF.premium.isActive === 'function') {
+      return !!RF.premium.isActive();
+    }
+  } catch (_) {}
+
+  return isPremium === true;
+}
+
 function openMpCheckoutWithFallback(preferenceId, initPoint) {
   // ✅ Mobile: SEM modal. Vai direto pro redirect (fluxo mais estável)
   const isMobile = /Android|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -93,6 +144,181 @@ function openMpCheckoutWithFallback(preferenceId, initPoint) {
 
 
 
+
+// ==============================
+// BOOT LOADER (barra fina estilo YouTube)
+// - evita flicker dos badges na inicialização
+// ==============================
+(function bootLoaderInit() {
+  try {
+    document.documentElement.classList.add('rf-ui-booting');
+
+    if (!document.getElementById('rf-boot-loader-style')) {
+      const style = document.createElement('style');
+      style.id = 'rf-boot-loader-style';
+      style.textContent = `
+        html.rf-ui-booting #credits-badge,
+        html.rf-ui-booting #premium-btn,
+        html.rf-ui-booting #premium-badge,
+        html.rf-ui-booting [data-premium-badge],
+        html.rf-badge-lock #credits-badge,
+        html.rf-badge-lock #premium-btn,
+        html.rf-badge-lock #premium-badge,
+        html.rf-badge-lock [data-premium-badge] {
+          visibility: hidden !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+
+        #rf-boot-loader {
+          position: fixed;
+          inset: 0 auto auto 0;
+          width: 100%;
+          height: 4px;
+          z-index: 99999;
+          pointer-events: none;
+          opacity: 1;
+          transition: transform 10.5s ease-out;
+          background: transparent;
+        }
+
+        #rf-boot-loader.hidden {
+          opacity: 0;
+        }
+
+        #rf-boot-loader .rf-boot-bar {
+          width: 100%;
+          height: 100%;
+          transform-origin: left center;
+          transform: scaleX(0);
+          background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 45%, #93c5fd 100%);
+          box-shadow: 0 0 10px rgba(59,130,246,.45);
+          transition: transform 10.5s ease-out;
+          will-change: transform;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    const loader = {
+      el: null,
+      bar: null,
+      progress: 0,
+      done: false,
+      timer: null,
+      ensure() {
+        if (this.el) return;
+        if (!document.body) return;
+        const wrap = document.createElement('div');
+        wrap.id = 'rf-boot-loader';
+        wrap.setAttribute('aria-hidden', 'true');
+
+        const bar = document.createElement('div');
+        bar.className = 'rf-boot-bar';
+        wrap.appendChild(bar);
+
+        document.body.appendChild(wrap);
+        this.el = wrap;
+        this.bar = bar;
+        this.set(0.08);
+      },
+      set(value) {
+        this.ensure();
+        if (!this.bar || this.done) return;
+        const next = Math.max(this.progress, Math.min(value, 0.94));
+        this.progress = next;
+        this.bar.style.transform = `scaleX(${next})`;
+      },
+      trickle() {
+        if (this.done) return;
+        this.ensure();
+        const tick = () => {
+          if (this.done) return;
+          const p = this.progress;
+          let inc = 0.0;
+          if (p < 0.25) inc = 0.12;
+          else if (p < 0.55) inc = 0.08;
+          else if (p < 0.8) inc = 0.04;
+          else if (p < 0.9) inc = 0.015;
+          else inc = 0.006;
+          this.set(p + inc);
+          this.timer = window.setTimeout(tick, 180 + Math.round(Math.random() * 140));
+        };
+        tick();
+      },
+      finish() {
+        if (this.done) return;
+        this.done = true;
+        if (this.timer) {
+          clearTimeout(this.timer);
+          this.timer = null;
+        }
+        this.ensure();
+        if (this.bar) {
+          this.bar.style.transition = 'transform .18s ease-out';
+          this.bar.style.transform = 'scaleX(1)';
+        }
+        window.setTimeout(() => {
+          try { document.documentElement.classList.remove('rf-ui-booting'); } catch (_) {}
+          if (this.el) this.el.classList.add('hidden');
+        }, 170);
+        window.setTimeout(() => {
+          if (this.el && this.el.parentNode) this.el.parentNode.removeChild(this.el);
+          this.el = null;
+          this.bar = null;
+        }, 460);
+      }
+    };
+
+    window.__rfBootLoader = loader;
+
+    if (!window.__rfBadgeBoot) {
+      const startedAt = Date.now();
+      document.documentElement.classList.add('rf-badge-lock');
+      window.__rfBadgeBoot = {
+        unlocked: false,
+        startedAt,
+        unlock: function(forceDelayMs) {
+          if (this.unlocked) return;
+          const delayMs = Math.max(0, Number.isFinite(forceDelayMs) ? forceDelayMs : 0);
+          const elapsed = Date.now() - this.startedAt;
+          const waitMs = Math.max(delayMs, 1200 - elapsed);
+          setTimeout(() => {
+            if (this.unlocked) return;
+            this.unlocked = true;
+            document.documentElement.classList.remove('rf-badge-lock');
+            try {
+              const btn = document.getElementById('premium-btn');
+              const badge = document.getElementById('credits-badge');
+              const pbadge = document.getElementById('premium-badge') || document.querySelector('[data-premium-badge]');
+              if (badge) badge.style.opacity = '';
+              if (btn) btn.style.opacity = '';
+              if (pbadge) pbadge.style.opacity = '';
+            } catch (_) {}
+          }, waitMs);
+        }
+      };
+      window.__rfUnlockBadgesNow = function(forceDelayMs) {
+        try { window.__rfBadgeBoot && window.__rfBadgeBoot.unlock(forceDelayMs); } catch (_) {}
+      };
+    }
+
+    const begin = () => {
+      try {
+        loader.ensure();
+        loader.trickle();
+      } catch (_) {}
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', begin, { once: true });
+    } else {
+      begin();
+    }
+  } catch (_) {}
+})();
+
+
 // ===================================
 // DETECÇÃO DE RETORNO DO MERCADO PAGO
 // ===================================
@@ -103,8 +329,10 @@ window.addEventListener('DOMContentLoaded', function() {
   const returnType = urlParams.get('return'); // success | pending | failure
   const openPremium = urlParams.get('openPremium'); // 1
   const tabParam = urlParams.get('tab'); // 1|2|3
-  const emailParam = (urlParams.get('email') || '').trim().toLowerCase();
+  const emailParam = normalizeEmailForLookup(urlParams.get('email') || '');
   const autoValidate = urlParams.get('autovalidate'); // 1
+  const shouldOpenValidationTab = (openPremium === '1' || tabParam === '3');
+  const shouldAutoValidate = (returnType === 'success' && autoValidate === '1' && !!emailParam);
 
   // Sempre tenta limpar a URL (evita reprocessar ao dar refresh)
   if (returnType || openPremium || tabParam || emailParam || autoValidate) {
@@ -112,55 +340,105 @@ window.addEventListener('DOMContentLoaded', function() {
     window.history.replaceState({}, document.title, cleanUrl);
   }
 
-  // 1) Retorno do Mercado Pago: NÃO abre modal (apenas popup + auto validação)
+  // Guarda o e-mail usado no checkout para o retorno conseguir validar corretamente
+  if (emailParam) {
+    persistCheckoutEmail(emailParam);
+  }
+
+  // 1) Retorno do Mercado Pago: só valida automaticamente em SUCCESS.
   if (returnType) {
     setTimeout(async () => {
       if (returnType === 'success') {
         showNotification('✅ Pagamento aprovado!', 'Validando seu Premium automaticamente…');
 
-        // tenta achar o email pelo link, pelo storage ou pelo userData
         const email =
           emailParam ||
-          (function () { try { return (localStorage.getItem('vf_user_email') || '').trim().toLowerCase(); } catch (_) { return ''; } })() ||
-          (typeof userData === 'object' ? String(userData.email || '').trim().toLowerCase() : '') ||
+          getStoredCheckoutEmail() ||
+          (typeof userData === 'object' ? normalizeEmailForLookup(userData.email || '') : '') ||
           '';
 
         if (email && email.includes('@')) {
-          await syncPremiumFromBackend(email, { closeModal: false, successToast: true, reloadOnSuccess: true });
+          persistCheckoutEmail(email);
+          const result = await syncPremiumFromBackend(email, {
+            closeModal: false,
+            successToast: true,
+            failToast: false,
+            errorToast: false,
+            reloadOnSuccess: true
+          });
+
+          if (!result || !result.premium) {
+            await autoRecoverPremiumAfterCheckout({
+              email: email,
+              retries: 10,
+              intervalMs: 2500,
+              successToast: true,
+              reloadOnSuccess: true,
+              closeModal: false
+            });
+          }
         } else {
           showNotification('✅ Pagamento aprovado!', 'Abra o Premium e digite o e-mail usado no pagamento para validar.');
         }
       } else if (returnType === 'pending') {
-        showNotification('⏳ Pagamento em análise', 'Assim que for aprovado, o Premium ativa automaticamente.');
+        sanitizeSuspiciousPaidPremium('mp-return-pending');
+        showNotification('⏳ Pagamento em análise', 'Assim que o pagamento for aprovado, o Premium será ativado automaticamente.');
+        await autoRecoverPremiumAfterCheckout({
+          email: emailParam || getStoredCheckoutEmail(),
+          retries: 12,
+          intervalMs: 2500,
+          successToast: true,
+          reloadOnSuccess: true,
+          closeModal: false
+        });
       } else {
+        clearCheckoutPendingState();
+        sanitizeSuspiciousPaidPremium('mp-return-failure');
         showNotification('❌ Pagamento não aprovado', 'Tente novamente ou use outro método de pagamento.');
       }
+      // Não libera os badges aqui.
+      // A liberação visual precisa esperar o loadUserData() terminar,
+      // senão o botão verde pode aparecer por um frame antes do badge premium.
     }, 500);
   }
 
+  // 1.1) Se voltou do pending.html para a home sem query, tenta recuperar automaticamente.
+  if (!returnType && !isPremiumAccessActive()) {
+    setTimeout(async () => {
+      await autoRecoverPremiumAfterCheckout({
+        email: emailParam || getStoredCheckoutEmail(),
+        retries: 8,
+        intervalMs: 2500,
+        successToast: true,
+        reloadOnSuccess: true,
+        closeModal: false
+      });
+      // Não libera os badges aqui.
+      // O unlock fica centralizado no final do boot inicial.
+    }, 900);
+  }
 
-
-  // 2) Link do e-mail / ativação: abre o modal já na aba 3 (validação por e-mail)
-  if (openPremium === '1' || tabParam === '3') {
+  // 2) Link do e-mail / ativação: abre o modal na aba 3.
+  // 🔒 Importante: NÃO autoativa Premium fora do retorno SUCCESS.
+  if (shouldOpenValidationTab) {
     setTimeout(async () => {
       openPremiumModal('email-link');
       switchTab(3);
 
-      // garante UI da aba 3 (validação por email)
       ensurePremiumEmailValidationUI();
 
-      if (emailParam) {
+      const fallbackEmail = emailParam || getStoredCheckoutEmail();
+      if (fallbackEmail) {
         const inp = document.getElementById('premium-email-input');
-        if (inp) inp.value = emailParam;
+        if (inp) inp.value = fallbackEmail;
       }
 
-      if (autoValidate === '1' && emailParam) {
-        await activatePremium(); // agora valida por email
+      if (shouldAutoValidate) {
+        await activatePremium();
       }
     }, 350);
   }
 });
-
 
 
 
@@ -785,12 +1063,13 @@ function ensurePremiumEmailValidationUI() {
   }
 }
 
-function setPremiumLocalState(expiresAt, plan) {
+function setPremiumLocalState(expiresAt, plan, source) {
   isPremium = true;
   premiumExpires = Number(expiresAt || 0) || null;
   premiumToken = null; // token não é mais fonte da verdade
 
   try {
+    setPremiumSource(source || 'backend');
     localStorage.setItem('fit_premium', 'true');
     localStorage.setItem('fit_premium_expires', premiumExpires ? String(premiumExpires) : '');
     localStorage.setItem('fit_premium_token', '');
@@ -824,6 +1103,7 @@ function clearPremiumLocalState() {
     localStorage.setItem('fit_premium', 'false');
     localStorage.setItem('fit_premium_expires', '');
     localStorage.setItem('fit_premium_token', '');
+    localStorage.removeItem('fit_premium_source');
   } catch (_) {}
 
   isPremium = false;
@@ -851,6 +1131,73 @@ function normalizeEmailForLookup(email) {
   return e;
 }
 
+
+function getPremiumSource() {
+  try {
+    return String(localStorage.getItem('fit_premium_source') || '').trim().toLowerCase();
+  } catch (_) {
+    return '';
+  }
+}
+
+function setPremiumSource(source) {
+  try {
+    if (source) localStorage.setItem('fit_premium_source', String(source).trim().toLowerCase());
+    else localStorage.removeItem('fit_premium_source');
+  } catch (_) {}
+}
+
+function clearCheckoutPendingState() {
+  try {
+    localStorage.removeItem('vf_checkout_pending');
+    localStorage.removeItem('vf_checkout_plan');
+    localStorage.removeItem('vf_checkout_started_at');
+    localStorage.removeItem('vf_checkout_email');
+  } catch (_) {}
+}
+
+function markCheckoutPending(plan) {
+  try {
+    localStorage.setItem('vf_checkout_pending', '1');
+    localStorage.setItem('vf_checkout_plan', String(plan || '').trim().toLowerCase());
+    localStorage.setItem('vf_checkout_started_at', String(Date.now()));
+    if (userData && userData.email) persistCheckoutEmail(userData.email);
+  } catch (_) {}
+}
+
+function hasPendingCheckout() {
+  try {
+    return localStorage.getItem('vf_checkout_pending') === '1';
+  } catch (_) {
+    return false;
+  }
+}
+
+function sanitizeSuspiciousPaidPremium(reason) {
+  try {
+    const source = getPremiumSource();
+    const flag = localStorage.getItem('fit_premium') === 'true';
+    const token = String(localStorage.getItem('fit_premium_token') || '').trim();
+    const exp = parseInt(localStorage.getItem('fit_premium_expires') || '0', 10);
+
+    const isValidByTime = !!(flag && exp > 0 && Date.now() < exp);
+    const isTrialLike = source === 'trial' || /^TRIAL-/i.test(token);
+    const isCodeLike = source === 'code' && token.length > 0;
+    const isBackendPaid = source === 'backend';
+
+    // trial válido ou premium pago já confirmado pelo backend podem permanecer
+    if ((isTrialLike || isCodeLike || isBackendPaid) && isValidByTime) return;
+
+    // estado suspeito: flag premium ligada sem origem confiável / sem token / sem expiração válida
+    if (flag) {
+      console.warn('[PREMIUM] Limpando estado local suspeito:', reason || 'unknown');
+      clearPremiumLocalState();
+    }
+  } catch (err) {
+    console.warn('[PREMIUM] Falha ao sanitizar estado local:', err);
+  }
+}
+
 async function syncPremiumFromBackend(email, opts) {
   const options = opts || {};
   const normalized = normalizeEmailForLookup(email);
@@ -867,7 +1214,8 @@ async function syncPremiumFromBackend(email, opts) {
     const data = await res.json();
 
     if (data?.ok && data?.premium === true) {
-      setPremiumLocalState(data.expiresAt, data.plan || 'monthly');
+      setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
+      clearCheckoutPendingState();
 
       // ✅ opcional: força refresh para atualizar badge/estado instantaneamente (sem reprocessar URL)
       if (options.reloadOnSuccess) {
@@ -902,6 +1250,51 @@ async function syncPremiumFromBackend(email, opts) {
     }
     return { ok: false, error: String(err?.message || err) };
   }
+}
+
+
+async function autoRecoverPremiumAfterCheckout(opts) {
+  const options = opts || {};
+  const email = normalizeEmailForLookup(options.email || getStoredCheckoutEmail() || '');
+  const shouldTry = !!email && email.includes('@') && (hasPendingCheckout() || isCheckoutPendingRecent(options.maxAgeMs || (45 * 60 * 1000)));
+
+  if (!shouldTry) return { ok: false, skipped: true };
+  if (isPremiumAccessActive()) {
+    clearCheckoutPendingState();
+    return { ok: true, premium: true, alreadyActive: true };
+  }
+
+  const tries = Math.max(1, parseInt(options.retries || 8, 10));
+  const intervalMs = Math.max(800, parseInt(options.intervalMs || 2500, 10));
+
+  for (let attempt = 1; attempt <= tries; attempt++) {
+    const result = await syncPremiumFromBackend(email, {
+      closeModal: options.closeModal,
+      successToast: attempt === 1 ? !!options.successToast : false,
+      failToast: false,
+      errorToast: false,
+      reloadOnSuccess: !!options.reloadOnSuccess
+    });
+
+    if (result && result.premium) {
+      if (options.openModalOnSuccess) {
+        try {
+          openPremiumModal('auto-recovery');
+          switchTab(3);
+          ensurePremiumEmailValidationUI();
+          const inp = document.getElementById('premium-email-input');
+          if (inp) inp.value = email;
+        } catch (_) {}
+      }
+      return { ok: true, premium: true, attempt: attempt };
+    }
+
+    if (attempt < tries) {
+      await new Promise(function(resolve) { setTimeout(resolve, intervalMs); });
+    }
+  }
+
+  return { ok: true, premium: false };
 }
 
 RF.premium = {
@@ -983,7 +1376,10 @@ RF.premium = {
         headerBtn.style.display = '';
         headerBtn.disabled = false;
         headerBtn.style.pointerEvents = 'auto';
-        headerBtn.style.opacity = '1';
+        // Durante o boot, mantém invisível mesmo que o display seja recalculado.
+        const bootLocked = document.documentElement.classList.contains('rf-ui-booting') ||
+          document.documentElement.classList.contains('rf-badge-lock');
+        headerBtn.style.opacity = bootLocked ? '0' : '1';
         headerBtn.setAttribute('aria-disabled', 'false');
       }
     }
@@ -1354,7 +1750,16 @@ window.confirmUnlockRecipe = function () {
 // - Tem um “guard” no começo que limpa premium inválido antes de qualquer UI renderizar
 async function loadUserData() {
   try {
-    // ✅ 0) Guard: se alguém deixou fit_premium = true mas expirou, limpa ANTES de qualquer coisa
+    // ✅ 0) Se havia checkout pendente e sobrou premium local suspeito, limpa o premium local suspeito,
+    // mas preserva o marcador do checkout por um tempo para permitir a autoativação após o pending.
+    if (hasPendingCheckout()) {
+      sanitizeSuspiciousPaidPremium('startup-with-pending-checkout');
+      if (!isCheckoutPendingRecent(45 * 60 * 1000)) {
+        clearCheckoutPendingState();
+      }
+    }
+
+    // ✅ 0.1) Guard: se alguém deixou fit_premium = true mas expirou, limpa ANTES de qualquer coisa
     const flaggedAsPremium =
       (window.RF && RF.premium && typeof RF.premium.isActive === 'function')
         ? RF.premium.isActive()
@@ -1454,6 +1859,21 @@ async function loadUserData() {
       lucide.createIcons();
     }
   } catch (_) {}
+
+  // ✅ 9) Libera a UI só depois do estado inicial ter assentado
+  try {
+    if (window.__rfBootLoader && typeof window.__rfBootLoader.finish === 'function') {
+      window.__rfBootLoader.finish();
+    } else {
+      document.documentElement.classList.remove('rf-ui-booting');
+    }
+    if (typeof window.__rfUnlockBadgesNow === 'function') {
+      // segura um pouco mais os badges para absorver syncs tardios em celulares lentos
+      window.__rfUnlockBadgesNow(650);
+    } else {
+      document.documentElement.classList.remove('rf-badge-lock');
+    }
+  } catch (_) {}
 }
 
 
@@ -1474,6 +1894,7 @@ async function saveUserData() {
       await storage.set('fit_credits', credits.toString());
       await storage.set('fit_unlocked', JSON.stringify(unlockedRecipes));
       await storage.set('fit_premium', 'false');
+      try { localStorage.removeItem('fit_premium_source'); } catch (_) {}
     }
   } catch (e) {
     console.error('Erro ao salvar dados:', e);
@@ -3561,7 +3982,7 @@ async function activatePremium() {
     document.getElementById('user-email') ||
     null;
 
-  const email = emailInput ? String(emailInput.value || '').trim().toLowerCase() : '';
+  const email = emailInput ? normalizeEmailForLookup(emailInput.value || '') : '';
 
   if (email && email.includes('@')) {
     const result = await syncPremiumFromBackend(email, {
@@ -3573,7 +3994,7 @@ async function activatePremium() {
 
     if (result?.premium) {
       // salva para facilitar próxima sessão
-      try { localStorage.setItem('vf_user_email', email); } catch (_) {}
+      persistCheckoutEmail(email);
     }
 
     return;
@@ -4208,6 +4629,14 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
     } catch(_) { return false; }
   }
 
+  function hasFreeTrialActive() {
+    try {
+      return getPremiumSource() === 'trial' && typeof isPremiumValidNow === 'function' && !!isPremiumValidNow();
+    } catch (_) {
+      return false;
+    }
+  }
+
   function isPremiumActive() {
     try { if (typeof isPremium !== 'undefined' && isPremium === true) return true; } catch(_) {}
     try {
@@ -4217,7 +4646,9 @@ function showConfirmWithLabels(title, message, yesLabel, noLabel, onConfirm) {
   }
 
   function isTasting() {
-    return !isPremiumActive() && !hasRegisteredUser();
+    // Cadastro salvo no localStorage NÃO libera recurso premium.
+    // Só libera se houver trial ativo ou premium realmente válido.
+    return !isPremiumActive() && !hasFreeTrialActive();
   }
 
   function openPremium(origin) {
@@ -4553,9 +4984,7 @@ window.openCalorieCalculator = function() {
   closePlannerDropdown();
 
   // ✅ Só no clique do ITEM: mostra popup premium (não abre cadastro direto)
-  const premiumActive =
-    (isPremium === true) ||
-    (window.RF?.premium?.isActive && window.RF.premium.isActive());
+  const premiumActive = isPremiumAccessActive();
 
   if (!premiumActive) {
     showConfirmWithLabels(
@@ -4581,9 +5010,7 @@ window.openShoppingList = function() {
 
   closePlannerDropdown();
 
-  const premiumActive =
-    (isPremium === true) ||
-    (window.RF?.premium?.isActive && window.RF.premium.isActive());
+  const premiumActive = isPremiumAccessActive();
 
   if (!premiumActive) {
     showConfirmWithLabels(
@@ -4609,9 +5036,7 @@ window.openWeekPlanner = function() {
 
   closePlannerDropdown();
 
-  const premiumActive =
-    (isPremium === true) ||
-    (window.RF?.premium?.isActive && window.RF.premium.isActive());
+  const premiumActive = isPremiumAccessActive();
 
   if (!premiumActive) {
     showConfirmWithLabels(
@@ -4782,13 +5207,16 @@ window.openPremiumModal = function(origin) {
 // Função para processar pagamento via Mercado Pago
 window.openPremiumCheckout = async function(plan = 'premium-monthly') {
   try {
-    const email = prompt('Digite seu email para continuar:');
-    if (!email) return;
+    const typedEmail = prompt('Digite seu email para continuar:');
+    const email = normalizeEmailForLookup(typedEmail);
+    if (!email || !email.includes('@')) return;
+
+    persistCheckoutEmail(email);
 
     const response = await fetch('/api/create-preference', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan: plan, email: email })
+      body: JSON.stringify({ plan, email })
     });
 
     const data = await response.json().catch(() => ({}));
@@ -4810,7 +5238,7 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
   } catch (error) {
     console.error('Erro ao abrir checkout:', error);
     alert('Erro ao processar pagamento. Tente novamente.');
-}
+  }
 };
 
 
@@ -4829,6 +5257,7 @@ function forceFreeCleanup() {
     localStorage.setItem('fit_premium', 'false');
     localStorage.setItem('fit_premium_expires', '');
     localStorage.setItem('fit_premium_token', '');
+    localStorage.removeItem('fit_premium_source');
   } catch (_) {}
   isPremium = false;
   premiumToken = null;
@@ -4861,6 +5290,7 @@ function clearPremiumState() {
   localStorage.setItem('fit_premium', 'false');
   localStorage.setItem('fit_premium_expires', '');
   localStorage.setItem('fit_premium_token', '');
+  localStorage.removeItem('fit_premium_source');
   isPremium = false;
   premiumToken = null;
   premiumExpires = null;
@@ -4872,6 +5302,15 @@ function clearPremiumState() {
 // ==============================
 // START
 // ==============================
+window.addEventListener('load', function () {
+  try {
+    if (window.__rfBootLoader && !window.__rfBootLoader.done) {
+      window.__rfBootLoader.set(0.92);
+    }
+  } catch (_) {}
+});
+
+
 loadUserData();
 
 
@@ -5213,7 +5652,7 @@ window.addEventListener('DOMContentLoaded', function() {
   // CONTROLE DE PLANO
   // ===============================
   function isPremium(){
-    return localStorage.getItem('fit_premium') === 'true';
+    return isPremiumAccessActive();
   }
 
   function syncPremiumUI(){
@@ -5553,11 +5992,11 @@ document.addEventListener('DOMContentLoaded', function(){
 // Função para abrir checkout do Mercado Pago
 window.openPremiumCheckout = async function(plan = 'premium-monthly') {
   try {
-    const email = prompt('Digite seu email para continuar:');
-    if (!email) return;
+    const typedEmail = prompt('Digite seu email para continuar:');
+    const email = normalizeEmailForLookup(typedEmail);
+    if (!email || !email.includes('@')) return;
 
-    // 🔐 salva para pending.html conseguir recuperar
-    localStorage.setItem('premium_email', email.toLowerCase());
+    persistCheckoutEmail(email);
 
     const response = await fetch('/api/create-preference', {
       method: 'POST',
@@ -5565,21 +6004,25 @@ window.openPremiumCheckout = async function(plan = 'premium-monthly') {
       body: JSON.stringify({ plan, email })
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
 
-    if (!response.ok || !data.preferenceId) {
-      throw new Error('Falha ao criar preferência');
+    if (!response.ok || data?.ok === false) {
+      console.error('[openPremiumCheckout] Erro ao criar preferência:', data);
+      alert('Erro ao iniciar pagamento. Tente novamente.');
+      return;
     }
 
-    const preferenceId = data.preferenceId;
-    const initPoint = data.initPoint;
+    const preferenceId = data.preferenceId || data.id;
+    const initPoint = data.initPoint || data.init_point;
 
-    // ✅ AQUI ESTÁ A CORREÇÃO
-    openMpCheckoutWithFallback(preferenceId, initPoint);
+    const opened = openMpCheckoutWithFallback(preferenceId, initPoint);
 
+    if (!opened) {
+      alert('Não foi possível abrir o checkout. Tente novamente.');
+    }
   } catch (error) {
-    alert('Erro ao iniciar pagamento. Tente novamente.');
-    console.error(error);
+    console.error('Erro ao abrir checkout:', error);
+    alert('Erro ao processar pagamento. Tente novamente.');
   }
 };
 
@@ -5829,6 +6272,7 @@ async function activateTrial() {
     localStorage.setItem('fit_premium', 'true');
     localStorage.setItem('fit_premium_token', trialCode);
     localStorage.setItem('fit_premium_expires', expiresAt.toString());
+    localStorage.setItem('fit_premium_source', 'trial');
     
     // ✅ DISPARA PIPELINE DE UI (IGUAL AO CÓDIGO)
     if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
@@ -5885,6 +6329,8 @@ async function processPayment(plan) {
 
     const data = await response.json();
     const preferenceId = data?.preferenceId;
+
+    markCheckoutPending(plan);
 
     if (!preferenceId) {
       console.error('[PAY] Resposta inesperada:', data);
@@ -5953,6 +6399,7 @@ async function activatePremiumWithCode() {
     localStorage.setItem('fit_premium', 'true');
     localStorage.setItem('fit_premium_token', data.token);
     localStorage.setItem('fit_premium_expires', data.expiresAt.toString());
+    localStorage.setItem('fit_premium_source', 'code');
 
     if (window.RF && RF.premium && typeof RF.premium.setActive === 'function') {
       RF.premium.setActive(true);
@@ -6427,6 +6874,3 @@ function setupAdvancedFiltersAutoApply() {
   document.addEventListener('DOMContentLoaded', apply);
   apply();
 })();
-
-
-
