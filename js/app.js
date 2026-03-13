@@ -1940,6 +1940,13 @@ function updateUI() {
 
       creditsBadge.classList.add('premium');
 
+      // Centraliza o overlay via inline style (garante em todos os devices)
+      const overlay = creditsBadge.closest('.slider-badges-overlay');
+      if (overlay) {
+        overlay.style.cssText = 'position:absolute!important;top:12px!important;left:0!important;right:0!important;width:100%!important;display:flex!important;justify-content:center!important;align-items:center!important;z-index:12!important;pointer-events:auto!important;';
+        creditsBadge.style.cssText = 'position:static!important;left:auto!important;transform:none!important;';
+      }
+
       let badgeText = 'Premium';
       if (premiumExpires) {
         const daysLeft = Math.ceil((premiumExpires - Date.now()) / (1000 * 60 * 60 * 24));
@@ -1979,6 +1986,8 @@ function updateUI() {
     }
 
     creditsBadge.classList.add('ready');
+
+    try { if (typeof updateGreeting === 'function') updateGreeting(); } catch (_) {}
 
     // ✅ Mantém Tab/Hamburger sempre sincronizados com o estado atual
     if (typeof updatePremiumButtons === 'function') {
@@ -6118,6 +6127,42 @@ let userData = {
   registered: false
 };
 
+
+
+function updateGreeting() {
+  try {
+    const greetingEl = document.getElementById('userGreeting');
+    if (!greetingEl) return;
+
+    const premiumActive = (() => {
+      try {
+        if (typeof isPremiumValidNow === 'function') return !!isPremiumValidNow();
+      } catch (_) {}
+      try {
+        if (window.RF && RF.premium && typeof RF.premium.isActive === 'function') {
+          return !!RF.premium.isActive();
+        }
+      } catch (_) {}
+      return isPremium === true;
+    })();
+
+    let savedName = '';
+    try {
+      savedName = String(
+        (typeof userData === 'object' && userData && userData.name) ||
+        localStorage.getItem('vf_user_name') ||
+        ''
+      ).trim();
+    } catch (_) {
+      savedName = '';
+    }
+
+    greetingEl.textContent = (premiumActive && savedName)
+      ? `Olá, ${savedName} 👋`
+      : 'Olá 👋';
+  } catch (_) {}
+}
+
 // Trocar de aba (navegação livre)
 function switchTab(tabNumber) {
   // Remove active de todas as abas
@@ -6188,6 +6233,8 @@ function autoFillForm() {
       userData.email = savedEmail;
       userData.phone = savedPhone;
       userData.registered = true;
+      
+      try { if (typeof updateGreeting === 'function') updateGreeting(); } catch (_) {}
       
       console.log('[AUTO-FILL] Dados carregados do localStorage');
     }
@@ -6874,3 +6921,5 @@ function setupAdvancedFiltersAutoApply() {
   document.addEventListener('DOMContentLoaded', apply);
   apply();
 })();
+
+
