@@ -91,7 +91,7 @@ function generateCode(plan) {
 function computeExpiresAtMs(plan) {
   let days = 30;
   if (plan === 'trial') days = 5;
-  else if (plan === 'monthly') days = Mensal;
+  else if (plan === 'monthly') days = 30;
   else if (plan === 'annual') days = 365;
 
   return Date.now() + days * 24 * 60 * 60 * 1000;
