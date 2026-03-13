@@ -6380,7 +6380,7 @@ async function activateTrial() {
     
     showNotification(
       'Trial Ativado!',
-      'Você tem 5 dias de acesso premium grátis!'
+      'Você tem 2 dias de acesso premium grátis!'
     );
     
     console.log('[TRIAL] Ativado:', { code: trialCode, expires: new Date(expiresAt) });
