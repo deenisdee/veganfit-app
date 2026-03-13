@@ -1940,12 +1940,25 @@ function updateUI() {
 
       creditsBadge.classList.add('premium');
 
-      // Centraliza o overlay via inline style (garante em todos os devices)
+      // Centraliza o overlay sem sobrescrever outros estilos
       const overlay = creditsBadge.closest('.slider-badges-overlay');
       if (overlay) {
-        overlay.style.cssText = 'position:absolute!important;top:12px!important;left:0!important;right:0!important;width:100%!important;display:flex!important;justify-content:center!important;align-items:center!important;z-index:12!important;pointer-events:auto!important;';
-        creditsBadge.style.cssText = 'position:static!important;left:auto!important;transform:none!important;';
+        overlay.style.position = 'absolute';
+        overlay.style.top = '12px';
+        overlay.style.left = '0';
+        overlay.style.right = '0';
+        overlay.style.width = '100%';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.transform = 'none';
+        overlay.style.zIndex = '12';
       }
+      // Reseta posição do badge para não conflitar com o flex do pai
+      creditsBadge.style.position = 'static';
+      creditsBadge.style.left = 'auto';
+      creditsBadge.style.top = 'auto';
+      creditsBadge.style.transform = 'none';
 
       let badgeText = 'Premium';
       if (premiumExpires) {
@@ -1977,6 +1990,25 @@ function updateUI() {
         
         <span id="credits-text">&nbsp &nbsp &nbsp${credits} Créditos</span>
       `;
+
+      // Reseta o overlay para o estado padrão (dois badges lado a lado)
+      const overlay = creditsBadge.closest('.slider-badges-overlay');
+      if (overlay) {
+        overlay.style.position = '';
+        overlay.style.top = '';
+        overlay.style.left = '';
+        overlay.style.right = '';
+        overlay.style.width = '';
+        overlay.style.display = '';
+        overlay.style.justifyContent = '';
+        overlay.style.alignItems = '';
+        overlay.style.transform = '';
+        overlay.style.zIndex = '';
+      }
+      creditsBadge.style.position = '';
+      creditsBadge.style.left = '';
+      creditsBadge.style.top = '';
+      creditsBadge.style.transform = '';
 
       if (premiumBtn) {
         premiumBtn.style.display = 'block';
