@@ -5939,3 +5939,20 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     transform: none !important;
   }
 }
+
+
+
+/* Centraliza badge no slider em todos os devices */
+.slider-badges-overlay {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 12;
+  white-space: nowrap;
+  pointer-events: auto;
+}
