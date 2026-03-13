@@ -138,30 +138,7 @@
                         </svg>
                      </button>
                   </div>
-				  
-
-
-					<div class="header-actions">
-					<div id="credits-badge" class="badge">
-					<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-					<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-					<circle cx="12" cy="12" r="3"></circle>
-					</svg>
-					<span>3 Créditos</span>
-					</div>
-
-					<button id="premium-btn" class="btn-premium tap"
-					onclick="window.openPremium ? window.openPremium('header') : (window.openPremiumModal && window.openPremiumModal('header'))">
-					Ativar Premium
-					</button>
-					</div>	  
-				  
-				  
-
-				  
-				  
-				  
-				   <button class="hamburger-btn" type="button" aria-label="Menu" onclick="openHamburgerMenu()">
+<button class="hamburger-btn" type="button" aria-label="Menu" onclick="openHamburgerMenu()">
   <i data-lucide="menu"></i>
 </button>
 
@@ -172,6 +149,20 @@
 		 
          <!-- SLIDER HERO FULL-WIDTH -->
          <div class="hero-slider-fullwidth" id="heroSlider">
+            <div class="slider-badges-overlay">
+               <div id="credits-badge" class="badge slider-badge">
+                  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                     <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <span>3 Créditos</span>
+               </div>
+
+               <button id="premium-btn" class="btn-premium slider-premium tap"
+                  onclick="window.openPremium ? window.openPremium('slider') : (window.openPremiumModal && window.openPremiumModal('slider'))">
+                  Ativar Premium
+               </button>
+            </div>
 		 
 		 
 
