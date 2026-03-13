@@ -2976,14 +2976,10 @@ body.modal-open .bottom-tab-bar {
 @media (max-width: 768px) {
   /* O botão amarelo é SEMPRE o credits-badge em Premium */
   body.premium-active #credits-badge {
-    position: relative !important;
-
-    /* força centralização visual */
-    left: 41% !important;
-    top: 0px !important;
-    transform: translateX(-50%) !important;
-
-    /* evita heranças estranhas */
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
     margin: 0 !important;
     display: inline-flex !important;
     justify-content: center !important;
@@ -5810,10 +5806,10 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 }
 
     body.premium-active #credits-badge {
-        position: relative !important;
-        left: 55% !important;
-        top: 0px !important;
-        transform: translateX(-50%) !important;
+        position: static !important;
+        left: auto !important;
+        top: auto !important;
+        transform: none !important;
         margin: 0 !important;
         display: inline-flex !important;
         justify-content: center !important;
@@ -5848,18 +5844,16 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   .slider-badges-overlay{
     position: absolute !important;
     top: 14px !important;
-    left: 0 !important;
-    right: 0 !important;
-    transform: none !important;
-    display: flex !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 18px !important;
-    width: 100% !important;
+    width: auto !important;
+    max-width: calc(100% - 40px) !important;
     z-index: 12 !important;
     pointer-events: auto !important;
-    padding: 0 20px !important;
-    box-sizing: border-box !important;
   }
 
   #credits-badge.badge,
@@ -5921,17 +5915,15 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   .slider-badges-overlay{
     position: absolute !important;
     top: 8px !important;
-    left: 0 !important;
-    right: 0 !important;
-    transform: none !important;
-    display: flex !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 8px !important;
-    width: 100% !important;
+    width: auto !important;
+    max-width: calc(100% - 20px) !important;
     z-index: 12 !important;
-    padding: 0 16px !important;
-    box-sizing: border-box !important;
   }
 
   #credits-badge.badge,
