@@ -14,7 +14,7 @@ html {
 
 html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background:#f9fafb;
+  background:#fff;
   min-height:100vh;
   font-weight:400;
   color:#111827;
@@ -30,7 +30,7 @@ a { color:inherit; text-decoration:none; }
    ============================================ */
 #header{
   background:#fff;
-  box-shadow:0 1px 3px rgba(0,0,0,.1);
+
   position:sticky; top:0; z-index:50;
   height:105px;
 }
@@ -1557,7 +1557,7 @@ body.premium-active #premium-btn {
 }
 
 .modal-content-small .modal-title {
-  font-size: 1.rem !important;
+  font-size: 1rem !important;
   font-weight: 600;
   color: #1f2937;
   margin-bottom: 1rem;
@@ -5623,7 +5623,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   .logo,
   header .logo img,
   .rf-logo img {
-    max-height:40x !important;
+    max-height:40px !important;
     height: 40px !important;
     width: auto !important;
   }
@@ -5675,25 +5675,14 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   #recipeGrid {
     margin-top: 10px !important;
   }
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+} /* fecha @media (max-width: 768px) do MOBILE SPACE PATCH */
 
 /* ============================================
    MOBILE: esconder badge "por trás" da busca ao rolar
    ============================================ */
 
 @media (max-width: 768px) {
-	
-	
-	
 
   /* Garanta um contexto de posição no topo */
   header, .site-header, .rf-header, .topbar {
@@ -5708,11 +5697,10 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     position: absolute !important;
     top: calc(6px + env(safe-area-inset-top)) !important;
     right: 10px !important;
-    z-index: 1 !important;   /* menor que a busca */
-    pointer-events: none !important; /* não atrapalha toques */
-
-	opacity: 0 !important;
-	visibility: hidden !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
   }
 
   /* A busca fica na frente */
@@ -5731,33 +5719,8 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   }
 }
 
-
-
-.badge {
-    background: #3b82f6;
-    color: #fff;
-    padding: .75rem 1.5rem;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    font-weight: 600;
-    font-size: 0.95rem;
-    white-space: nowrap;
-    height: 38px !important;
-    flex-shrink: 0;
-}
-
-.search-input {
-    width: 100%;
-    height: 40px !important;
-    padding: .875rem 3rem .875rem 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 9999px;
-    font-size: 1rem;
-    transition: border-color .2s;
-    font-weight: 400;
-}
+/* REMOVIDO: redefinições soltas de .badge e .search-input que sobrescreviam desktop
+   Os valores corretos já estão definidos no topo do arquivo (height:48px) */
 
 
 
@@ -5826,3 +5789,153 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
 
 
+
+
+/* =========================================
+   PATCH FINAL — badges desktop sem esticar,
+   mantendo mobile correto e slider arredondado
+   ========================================= */
+
+/* desktop / tablet */
+@media (min-width: 769px){
+  .hero-slider-fullwidth{
+    position: relative !important;
+    width: min(1280px, calc(100% - 64px)) !important;
+    max-width: 1280px !important;
+    margin: 12px auto 0 !important;
+    border-radius: 26px !important;
+    overflow: hidden !important;
+    background: #ccc !important;
+  }
+
+  .slider-badges-overlay{
+    position: absolute !important;
+    top: 14px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 18px !important;
+    width: auto !important;
+    max-width: calc(100% - 40px) !important;
+    z-index: 12 !important;
+    pointer-events: auto !important;
+  }
+
+  #credits-badge.badge,
+  #premium-btn{
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    border-radius: 9999px !important;
+  }
+
+  #credits-badge.badge{
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 28px !important;
+    height: 42px !important;
+    background: #3b82f6 !important;
+    color: #fff !important;
+    opacity: 1 !important;
+  }
+
+  #premium-btn{
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 24px !important;
+    height: 42px !important;
+    background: #16a34a !important;
+    color: #fff !important;
+    border: none !important;
+  }
+
+  body.premium-active #credits-badge{
+    position: static !important;
+    left: auto !important;
+    transform: none !important;
+  }
+}
+
+/* mobile — mantém o que já estava funcionando, com leve proteção */
+@media (max-width: 768px){
+  .hero-slider-fullwidth{
+    position: relative !important;
+    width: calc(100% - 28px) !important;
+    max-width: calc(100% - 28px) !important;
+    margin: 8px auto 14px !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+  }
+
+  .slider-badges-overlay{
+    position: absolute !important;
+    top: 8px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: auto !important;
+    max-width: calc(100% - 20px) !important;
+    z-index: 12 !important;
+  }
+
+  #credits-badge.badge,
+  #premium-btn{
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+
+  #credits-badge.badge{
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 14px !important;
+    height: 34px !important;
+    font-size: 13px !important;
+    opacity: 1 !important;
+  }
+
+  #premium-btn{
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 14px !important;
+    height: 34px !important;
+    font-size: 13px !important;
+  }
+
+  #header .logo{
+    margin: 10px auto 5px !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  body.premium-active #credits-badge{
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    transform: none !important;
+  }
+}
