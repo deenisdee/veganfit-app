@@ -90,7 +90,7 @@ function generateCode(plan) {
  */
 function computeExpiresAtMs(plan) {
   let days = 30;
-  if (plan === 'trial') days = 5;
+  if (plan === 'trial') days = 2;
   else if (plan === 'monthly') days = 30;
   else if (plan === 'annual') days = 365;
 
