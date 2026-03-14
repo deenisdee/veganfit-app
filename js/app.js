@@ -6189,8 +6189,10 @@ function updateGreeting() {
       savedName = '';
     }
 
-    greetingEl.textContent = (premiumActive && savedName)
-      ? `Olá, ${savedName} 👋`
+    const safeName = String(savedName || '').trim();
+
+    greetingEl.textContent = (premiumActive && safeName)
+      ? `Olá, ${safeName} 👋`
       : 'Olá 👋';
   } catch (_) {}
 }
@@ -6953,5 +6955,3 @@ function setupAdvancedFiltersAutoApply() {
   document.addEventListener('DOMContentLoaded', apply);
   apply();
 })();
-
-
