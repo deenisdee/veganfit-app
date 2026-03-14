@@ -112,6 +112,28 @@ a { color:inherit; text-decoration:none; }
 
 .header-actions{ display:flex; align-items:center; gap:.75rem; }
 
+.header-greeting{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-width:240px;
+  flex-shrink:0;
+  line-height:1.15;
+}
+.header-greeting-title{
+  font-size:1rem;
+  font-weight:600;
+  color:#111827;
+  white-space:nowrap;
+}
+.header-greeting-subtitle{
+  font-size:.9rem;
+  font-weight:400;
+  color:#6b7280;
+  margin-top:.15rem;
+  white-space:nowrap;
+}
+
 .badge{
   background:#3b82f6;
   color:#fff;
@@ -2252,6 +2274,28 @@ body .hamburger-btn,
   }
 
   .logo { grid-column: 1 !important; grid-row: 1 !important; }
+
+  .header-greeting {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    align-self: center !important;
+  }
+
+  .header-greeting-title,
+  .header-greeting-subtitle {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .header-greeting-title {
+    font-size: .98rem !important;
+  }
+
+  .header-greeting-subtitle {
+    font-size: .82rem !important;
+  }
 
   .hamburger-btn {
     grid-column: 3 !important;
