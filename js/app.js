@@ -1989,7 +1989,7 @@ function updateUI() {
       creditsBadge.classList.remove('premium');
       creditsBadge.innerHTML = `
         
-        <span id="credits-text">&nbsp &nbsp &nbsp${credits} Créditos</span>
+        <span id="credits-text">&nbsp${credits} Créditos &nbsp</span>
       `;
 
       // Reseta o overlay para o estado padrão (dois badges lado a lado)
@@ -6362,7 +6362,7 @@ async function selectPlanWithValidation(plan) {
 async function activateTrial() {
   try {
     const trialCode = 'TRIAL-' + Math.random().toString(36).substr(2, 8).toUpperCase();
-    const expiresAt = Date.now() + (5 * 24 * 60 * 60 * 1000);
+    const expiresAt = Date.now() + (2 * 24 * 60 * 60 * 1000);
     
     // Salva usuário no Firestore
     const response = await fetch('/api/create-user', {
