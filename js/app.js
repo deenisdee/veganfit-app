@@ -1216,6 +1216,7 @@ async function syncPremiumFromBackend(email, opts) {
     if (data?.ok && data?.premium === true) {
       setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
       clearCheckoutPendingState();
+      try { updateGreeting(); } catch (_) {}
 
       // ✅ opcional: força refresh para atualizar badge/estado instantaneamente (sem reprocessar URL)
       if (options.reloadOnSuccess) {
@@ -4036,6 +4037,16 @@ async function activatePremium() {
     if (result?.premium) {
       // salva para facilitar próxima sessão
       persistCheckoutEmail(email);
+      try {
+        if ((!userData || !userData.name) && !localStorage.getItem('vf_user_name')) {
+          const inferredName = getFirstNameForGreeting();
+          if (inferredName) {
+            localStorage.setItem('vf_user_name', inferredName);
+            if (typeof userData === 'object' && userData) userData.name = inferredName;
+          }
+        }
+      } catch (_) {}
+      try { updateGreeting(); } catch (_) {}
     }
 
     return;
@@ -6161,6 +6172,45 @@ let userData = {
 
 
 
+function capitalizeFirstLetter(value) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
+function getFirstNameForGreeting() {
+  try {
+    const rawName = String(
+      (typeof userData === 'object' && userData && userData.name) ||
+      localStorage.getItem('vf_user_name') ||
+      ''
+    ).trim();
+
+    if (rawName) {
+      const firstName = rawName.split(/\s+/).filter(Boolean)[0] || '';
+      if (firstName) return capitalizeFirstLetter(firstName);
+    }
+  } catch (_) {}
+
+  try {
+    const rawEmail = normalizeEmailForLookup(
+      (typeof userData === 'object' && userData && userData.email) ||
+      localStorage.getItem('vf_user_email') ||
+      localStorage.getItem('vf_checkout_email') ||
+      localStorage.getItem('premium_email') ||
+      ''
+    );
+
+    if (rawEmail && rawEmail.includes('@')) {
+      const localPart = rawEmail.split('@')[0] || '';
+      const firstChunk = localPart.split(/[._\-+]+/).filter(Boolean)[0] || '';
+      if (firstChunk) return capitalizeFirstLetter(firstChunk);
+    }
+  } catch (_) {}
+
+  return '';
+}
+
 function updateGreeting() {
   try {
     const greetingEl = document.getElementById('userGreeting');
@@ -6178,21 +6228,10 @@ function updateGreeting() {
       return isPremium === true;
     })();
 
-    let savedName = '';
-    try {
-      savedName = String(
-        (typeof userData === 'object' && userData && userData.name) ||
-        localStorage.getItem('vf_user_name') ||
-        ''
-      ).trim();
-    } catch (_) {
-      savedName = '';
-    }
+    const firstName = getFirstNameForGreeting();
 
-    const safeName = String(savedName || '').trim();
-
-    greetingEl.textContent = (premiumActive && safeName)
-      ? `Olá, ${safeName} 👋`
+    greetingEl.textContent = (premiumActive && firstName)
+      ? `Olá, ${firstName} 👋`
       : 'Olá 👋';
   } catch (_) {}
 }
