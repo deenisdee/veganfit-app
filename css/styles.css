@@ -6012,3 +6012,18 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   padding: 0 16px !important;
   box-sizing: border-box !important;
 }
+
+
+.header-subtitle-mobile{
+  display: none;
+}
+
+@media (max-width: 768px){
+  .header-subtitle-desktop{
+    display: none;
+  }
+
+  .header-subtitle-mobile{
+    display: block;
+  }
+}
