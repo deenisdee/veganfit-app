@@ -6019,11 +6019,18 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 }
 
 @media (max-width: 768px){
+	
+  .header-greeting-title {
+	  margin-left: 10px;
+	  margin-top: -5px;
+  }
   .header-subtitle-desktop{
     display: none;
   }
 
   .header-subtitle-mobile{
+	 margin-top: -4px;
+	margin-left: 10px;
     display: block;
   }
 }
