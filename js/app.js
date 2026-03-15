@@ -1965,7 +1965,7 @@ function updateUI() {
       if (premiumExpires) {
         const daysLeft = Math.ceil((premiumExpires - Date.now()) / (1000 * 60 * 60 * 24));
         if (daysLeft > 0) {
-          badgeText = `PREMIUM (${daysLeft}D)`;
+          badgeText = `PREMIUM (${daysLeft}Dias)`;
         }
       }
 
@@ -6994,3 +6994,33 @@ function setupAdvancedFiltersAutoApply() {
   document.addEventListener('DOMContentLoaded', apply);
   apply();
 })();
+
+
+
+
+
+
+
+const userPlan = premiumData.plan;
+
+let badgeText = '';
+
+if (userPlan === 'monthly') {
+  badgeText = 'Premium Mensal';
+} else if (userPlan === 'annual') {
+  badgeText = 'Premium Anual';
+} else {
+  badgeText = `Premium (${daysLeft}Dias)`;
+}
+
+
+
+function getPremiumLabel(plan, daysLeft) {
+  const p = String(plan || '').toLowerCase();
+
+  if (p === 'monthly') return 'Premium Mensal';
+  if (p === 'annual') return 'Premium Anual';
+  if (p === 'trial') return `Premium (${daysLeft}D)`;
+
+  return `Premium (${daysLeft}D)`;
+}
