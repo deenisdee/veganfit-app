@@ -1960,14 +1960,30 @@ function updateUI() {
       creditsBadge.style.left = 'auto';
       creditsBadge.style.top = 'auto';
       creditsBadge.style.transform = 'none';
+	  
+	  
+	  
+	  
 
-      let badgeText = 'Premium';
-      if (premiumExpires) {
-        const daysLeft = Math.ceil((premiumExpires - Date.now()) / (1000 * 60 * 60 * 24));
-        if (daysLeft > 0) {
-          badgeText = `PREMIUM (${daysLeft}Dias)`;
-        }
-      }
+let badgeText = 'Premium';
+
+if (premiumExpires) {
+  const daysLeft = Math.ceil((premiumExpires - Date.now()) / (1000 * 60 * 60 * 24));
+
+  const userPlan = premiumData?.plan || '';
+
+  if (userPlan === 'monthly') {
+    badgeText = 'Premium Mensal';
+  } else if (userPlan === 'annual') {
+    badgeText = 'Premium Anual';
+  } else if (daysLeft > 0) {
+    badgeText = `Premium (${daysLeft} Dias)`;
+  }
+}
+
+
+
+
 
       creditsBadge.innerHTML = `
         <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -7001,26 +7017,3 @@ function setupAdvancedFiltersAutoApply() {
 
 
 
-const userPlan = premiumData.plan;
-
-let badgeText = '';
-
-if (userPlan === 'monthly') {
-  badgeText = 'Premium Mensal';
-} else if (userPlan === 'annual') {
-  badgeText = 'Premium Anual';
-} else {
-  badgeText = `Premium (${daysLeft}Dias)`;
-}
-
-
-
-function getPremiumLabel(plan, daysLeft) {
-  const p = String(plan || '').toLowerCase();
-
-  if (p === 'monthly') return 'Premium Mensal';
-  if (p === 'annual') return 'Premium Anual';
-  if (p === 'trial') return `Premium (${daysLeft}D)`;
-
-  return `Premium (${daysLeft}D)`;
-}
