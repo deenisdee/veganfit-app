@@ -1972,7 +1972,7 @@ function updateUI() {
         } else if (userPlan === 'annual' || userPlan === 'anual' || userPlan === 'yearly') {
           badgeText = 'Premium Anual';
         } else if (daysLeft > 0) {
-          badgeText = `Premium (${daysLeft}D)`;
+          badgeText = `Premium (${daysLeft} Dias)`;
         }
       }
 
