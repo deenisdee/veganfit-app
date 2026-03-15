@@ -1073,6 +1073,7 @@ function setPremiumLocalState(expiresAt, plan, source) {
     localStorage.setItem('fit_premium', 'true');
     localStorage.setItem('fit_premium_expires', premiumExpires ? String(premiumExpires) : '');
     localStorage.setItem('fit_premium_token', '');
+    localStorage.setItem('fit_premium_plan', String(plan || '').trim().toLowerCase());
   } catch (_) {}
 
   // Compatibilidade
@@ -1960,30 +1961,20 @@ function updateUI() {
       creditsBadge.style.left = 'auto';
       creditsBadge.style.top = 'auto';
       creditsBadge.style.transform = 'none';
-	  
-	  
-	  
-	  
 
-let badgeText = 'Premium';
+      let badgeText = 'Premium';
+      if (premiumExpires) {
+        const daysLeft = Math.ceil((premiumExpires - Date.now()) / (1000 * 60 * 60 * 24));
+        const userPlan = String(localStorage.getItem('fit_premium_plan') || '').trim().toLowerCase();
 
-if (premiumExpires) {
-  const daysLeft = Math.ceil((premiumExpires - Date.now()) / (1000 * 60 * 60 * 24));
-
-  const userPlan = premiumData?.plan || '';
-
-  if (userPlan === 'monthly') {
-    badgeText = 'Premium Mensal';
-  } else if (userPlan === 'annual') {
-    badgeText = 'Premium Anual';
-  } else if (daysLeft > 0) {
-    badgeText = `Premium (${daysLeft} Dias)`;
-  }
-}
-
-
-
-
+        if (userPlan === 'monthly' || userPlan === 'mensal') {
+          badgeText = 'Premium Mensal';
+        } else if (userPlan === 'annual' || userPlan === 'anual' || userPlan === 'yearly') {
+          badgeText = 'Premium Anual';
+        } else if (daysLeft > 0) {
+          badgeText = `Premium (${daysLeft}D)`;
+        }
+      }
 
       creditsBadge.innerHTML = `
         <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -7010,10 +7001,3 @@ function setupAdvancedFiltersAutoApply() {
   document.addEventListener('DOMContentLoaded', apply);
   apply();
 })();
-
-
-
-
-
-
-
