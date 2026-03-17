@@ -6024,6 +6024,19 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   }
 }
 
+
+/* Tablet 820 – 1180px */
+@media (min-width: 820px) and (max-width: 1180px) {
+  .slider-badges-overlay {
+	  
+	  left: 0px !important;
+    top: 10px !important;
+    gap: 10px !important;
+    padding: 0 14px !important;
+  }
+}
+
+
 /* Desktop acima 1024px */
 @media (min-width: 1025px) {
   .slider-badges-overlay {
