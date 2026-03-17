@@ -5914,8 +5914,6 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   }
 
   .slider-badges-overlay{
-	  
-	  left: 0px !important;
     /* removido — controlado pelo bloco final */
   }
 
@@ -5999,9 +5997,8 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 /* Garante que filhos não quebrem o flex */
 #credits-badge.badge,
 #premium-btn {
-	left: 0px !important;
   position: static !important;
-
+  left: auto !important;
   top: auto !important;
   right: auto !important;
   transform: none !important;
@@ -6011,9 +6008,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
 /* Mobile pequeno até 480px */
 @media (max-width: 480px) {
-	
   .slider-badges-overlay {
-	  left: 0px !important;
     top: 8px !important;
     gap: 8px !important;
     padding: 0 12px !important;
@@ -6023,8 +6018,6 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 /* Tablet 481–1024px */
 @media (min-width: 481px) and (max-width: 1024px) {
   .slider-badges-overlay {
-	  
-	  left: 0px !important;
     top: 10px !important;
     gap: 10px !important;
     padding: 0 14px !important;
@@ -6033,9 +6026,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
 /* Desktop acima 1024px */
 @media (min-width: 1025px) {
-	
   .slider-badges-overlay {
-	  left: 0px !important;
     top: 14px !important;
     gap: 18px !important;
     padding: 0 20px !important;
