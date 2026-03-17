@@ -5914,6 +5914,8 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   }
 
   .slider-badges-overlay{
+	  
+	  left: 0px !important;
     /* removido — controlado pelo bloco final */
   }
 
@@ -5986,7 +5988,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   pointer-events: auto !important;
   box-sizing: border-box !important;
   /* centralização universal */
-  left: 0 !important;
+  left: 55px !important;
   right: 0 !important;
   width: 100% !important;
   transform: none !important;
@@ -6018,6 +6020,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 /* Tablet 481–1024px */
 @media (min-width: 481px) and (max-width: 1024px) {
   .slider-badges-overlay {
+	  left: 0px !important;
     top: 10px !important;
     gap: 10px !important;
     padding: 0 14px !important;
@@ -6026,7 +6029,9 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
 /* Desktop acima 1024px */
 @media (min-width: 1025px) {
+	
   .slider-badges-overlay {
+	  left: 0px !important;
     top: 14px !important;
     gap: 18px !important;
     padding: 0 20px !important;
