@@ -3020,12 +3020,16 @@ body.modal-open .bottom-tab-bar {
    independe de grid/flex/estrutura
    ========================================= */
 @media (max-width: 768px) {
-  /* badge premium: deixa o overlay flex centralizar */
+  /* O botão amarelo é SEMPRE o credits-badge em Premium */
   body.premium-active #credits-badge {
-    position: static !important;
-    left: auto !important;
-    top: auto !important;
-    transform: none !important;
+    position: relative !important;
+
+    /* força centralização visual */
+    left: 41% !important;
+    top: 0px !important;
+    transform: translateX(-50%) !important;
+
+    /* evita heranças estranhas */
     margin: 0 !important;
     display: inline-flex !important;
     justify-content: center !important;
@@ -5815,10 +5819,10 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 }
 
     body.premium-active #credits-badge {
-        position: static !important;
-        left: auto !important;
-        top: auto !important;
-        transform: none !important;
+        position: relative !important;
+        left: 55% !important;
+        top: 0px !important;
+        transform: translateX(-50%) !important;
         margin: 0 !important;
         display: inline-flex !important;
         justify-content: center !important;
@@ -5913,10 +5917,13 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 /* mobile — mantém o que já estava funcionando, com leve proteção */
 @media (max-width: 768px){
   .hero-slider-fullwidth{
+    display: block !important;
     position: relative !important;
     width: calc(100% - 28px) !important;
     max-width: calc(100% - 28px) !important;
-    margin: 8px auto 14px !important;
+    margin: 8px auto 14px auto !important;
+    margin-left: 14px !important;
+    margin-right: 14px !important;
     border-radius: 20px !important;
     overflow: hidden !important;
   }
@@ -5986,16 +5993,11 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 
 
 
-/* =========================================
-   BADGE SLIDER — centralizado em todos os devices
-   ========================================= */
-
-/* Garante contexto de posicionamento no slider */
+/* FIX DEFINITIVO: centraliza badge no slider em todos os devices e estados */
 .hero-slider-fullwidth {
   position: relative !important;
 }
 
-/* Regra base: cobre todos os devices */
 .slider-badges-overlay {
   position: absolute !important;
   top: 12px !important;
@@ -6004,6 +6006,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   width: 100% !important;
   transform: none !important;
   display: flex !important;
+  flex-direction: row !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 12px !important;
@@ -6011,73 +6014,6 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   pointer-events: auto !important;
   padding: 0 16px !important;
   box-sizing: border-box !important;
-}
-
-/* Garante que os filhos não quebrem o flex */
-.slider-badges-overlay > *,
-#credits-badge.badge,
-#premium-btn {
-  position: static !important;
-  left: auto !important;
-  top: auto !important;
-  right: auto !important;
-  transform: none !important;
-  flex-shrink: 0 !important;
-  margin: 0 !important;
-}
-
-/* Mobile pequeno (até 480px) — badge um pouco menor */
-@media (max-width: 480px) {
-  .slider-badges-overlay {
-    top: 8px !important;
-    gap: 8px !important;
-  }
-  #credits-badge.badge {
-    height: 32px !important;
-    font-size: 12px !important;
-    padding: 0 12px !important;
-  }
-  #premium-btn {
-    height: 32px !important;
-    font-size: 12px !important;
-    padding: 0 12px !important;
-  }
-}
-
-/* Tablet (481px–1024px) */
-@media (min-width: 481px) and (max-width: 1024px) {
-  .slider-badges-overlay {
-    top: 10px !important;
-    gap: 10px !important;
-  }
-  #credits-badge.badge {
-    height: 36px !important;
-    font-size: 13px !important;
-    padding: 0 16px !important;
-  }
-  #premium-btn {
-    height: 36px !important;
-    font-size: 13px !important;
-    padding: 0 16px !important;
-  }
-}
-
-/* Desktop (acima de 1024px) */
-@media (min-width: 1025px) {
-  .slider-badges-overlay {
-    top: 14px !important;
-    gap: 18px !important;
-  }
-  #credits-badge.badge {
-    height: 42px !important;
-    font-size: 15px !important;
-    padding: 0 24px !important;
-  }
-  #premium-btn {
-    height: 42px !important;
-    font-size: 15px !important;
-    padding: 0 24px !important;
-  }
 }
 
 
