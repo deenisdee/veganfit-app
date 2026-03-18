@@ -6074,15 +6074,18 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   }
 }
 
-
-
-
 /* =========================================
-   PATCH — Busca abaixo do logo/saudação
-   para resoluções entre 769px e 900px
-   (ex: Asus Zenbook Fold ~853px)
+   PATCH 2 — Header 2 linhas
+   Linha 1: Logo | Botões | Saudação
+   Linha 2: Busca 100%
+   Cobre: 769px até 1024px
+   (Surface Pro 7 ~912px, Zenbook Fold ~853px)
    ========================================= */
-@media (min-width: 769px) and (max-width: 900px) {
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  #header {
+    height: auto !important;
+  }
 
   #header .header-content {
     display: grid !important;
@@ -6094,43 +6097,49 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     height: auto !important;
   }
 
-  /* Linha 1: Logo | Saudação | Hamburger/Ferramentas */
-  .logo {
+  /* ── LINHA 1, coluna 1: Logo ── */
+  #header .logo {
     grid-column: 1 !important;
     grid-row: 1 !important;
     margin: 0 !important;
+    justify-content: flex-start !important;
   }
 
-  .header-greeting {
+  /* ── LINHA 1, coluna 2: Botões de ferramentas (centro) ── */
+  #header .header-tools {
     grid-column: 2 !important;
     grid-row: 1 !important;
-    min-width: 0 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
     width: 100% !important;
   }
 
-  .header-actions {
+  /* ── LINHA 1, coluna 3: Saudação (direita) ── */
+  #header .header-greeting {
     grid-column: 3 !important;
     grid-row: 1 !important;
+    min-width: 0 !important;
     width: auto !important;
-    justify-content: flex-end !important;
+    text-align: right !important;
   }
 
-  /* Linha 2: Busca ocupa as 3 colunas */
-  .search-container {
+  /* ── Esconde header-actions (badge/btn premium)
+        neste breakpoint — aparecem via header-tools ── */
+  #header .header-actions {
+    display: none !important;
+  }
+
+  /* ── LINHA 2: Busca ocupa as 3 colunas ── */
+  #header .search-container {
     grid-column: 1 / -1 !important;
     grid-row: 2 !important;
     max-width: 100% !important;
     width: 100% !important;
-  }
-
-  /* Esconde ferramentas da linha 1 (ficam na header-actions) */
-  .header-tools {
-    display: flex !important;
-  }
-
-  /* Ajusta altura do header para não ficar fixo em 105px */
-  #header {
-    height: auto !important;
+    flex: unset !important;
   }
 }
+
+
 
