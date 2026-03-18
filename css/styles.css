@@ -5995,7 +5995,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   pointer-events: auto !important;
   box-sizing: border-box !important;
   /* centralização universal */
-  left: 55px !important;
+  left: 0px !important;
   right: 0 !important;
   width: 100% !important;
   transform: none !important;
