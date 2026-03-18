@@ -6074,8 +6074,9 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   }
 }
 
+
 /* =========================================
-   PATCH 2 — Header 2 linhas
+   PATCH — Header 2 linhas
    Linha 1: Logo | Botões | Saudação
    Linha 2: Busca 100%
    Cobre: 769px até 1024px
@@ -6088,6 +6089,9 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   }
 
   #header .header-content {
+	  
+	margin: 0 0 0 15px;
+    width: 96%;  
     display: grid !important;
     grid-template-columns: auto 1fr auto !important;
     grid-template-rows: auto auto !important;
@@ -6140,6 +6144,3 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     flex: unset !important;
   }
 }
-
-
-
