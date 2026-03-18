@@ -1983,11 +1983,24 @@ function updateUI() {
         <span>${badgeText}</span>
       `;
 
+
+
+
+
+
       if (premiumBtn) {
-        premiumBtn.style.display = 'none';
+        premiumBtn.style.setProperty('display', 'none', 'important');
+        premiumBtn.style.visibility = 'visible';
+        premiumBtn.style.opacity = '1';
+		
         // ✅ Força reflow para aplicar mudança imediatamente
         premiumBtn.offsetHeight;
       }
+
+
+
+
+
 
     } else {
       document.body.classList.add('free-user');
