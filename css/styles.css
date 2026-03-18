@@ -2334,8 +2334,6 @@ body .hamburger-btn,
   }
 
   #credits-badge { display: flex !important; }
-
-  /* premium-btn: visível só quando NÃO é premium */
   body:not(.premium-active) #premium-btn { display: flex !important; }
   body.premium-active #premium-btn { display: none !important; }
 }
@@ -2929,7 +2927,7 @@ html {
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
-    display: inline-flex !important; /* mantém espaço */
+    display: none !important;
   }
 }
 
@@ -5886,7 +5884,7 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     opacity: 1 !important;
   }
 
-  #premium-btn{
+  body:not(.premium-active) #premium-btn{
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -5895,6 +5893,9 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     background: #16a34a !important;
     color: #fff !important;
     border: none !important;
+  }
+  body.premium-active #premium-btn{
+    display: none !important;
   }
 
   body.premium-active #credits-badge{
@@ -5946,13 +5947,16 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     opacity: 1 !important;
   }
 
-  #premium-btn{
+  body:not(.premium-active) #premium-btn{
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 0 14px !important;
     height: 34px !important;
     font-size: 13px !important;
+  }
+  body.premium-active #premium-btn{
+    display: none !important;
   }
 
   #header .logo{
@@ -5984,18 +5988,19 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 .slider-badges-overlay {
   position: absolute !important;
   top: 12px !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  transform: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 12px !important;
   z-index: 12 !important;
   pointer-events: auto !important;
-  padding: 0 16px !important;
   box-sizing: border-box !important;
+  /* centralização universal */
+  left: 55px !important;
+  right: 0 !important;
+  width: 100% !important;
+  transform: none !important;
+  padding: 0 16px !important;
+  gap: 12px !important;
 }
 
 /* Garante que filhos não quebrem o flex */
