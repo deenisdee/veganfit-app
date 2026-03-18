@@ -6073,3 +6073,64 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     display: block;
   }
 }
+
+
+
+
+/* =========================================
+   PATCH — Busca abaixo do logo/saudação
+   para resoluções entre 769px e 900px
+   (ex: Asus Zenbook Fold ~853px)
+   ========================================= */
+@media (min-width: 769px) and (max-width: 900px) {
+
+  #header .header-content {
+    display: grid !important;
+    grid-template-columns: auto 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 0.75rem 1rem !important;
+    align-items: center !important;
+    padding: 0.75rem 0 !important;
+    height: auto !important;
+  }
+
+  /* Linha 1: Logo | Saudação | Hamburger/Ferramentas */
+  .logo {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    margin: 0 !important;
+  }
+
+  .header-greeting {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .header-actions {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    width: auto !important;
+    justify-content: flex-end !important;
+  }
+
+  /* Linha 2: Busca ocupa as 3 colunas */
+  .search-container {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Esconde ferramentas da linha 1 (ficam na header-actions) */
+  .header-tools {
+    display: flex !important;
+  }
+
+  /* Ajusta altura do header para não ficar fixo em 105px */
+  #header {
+    height: auto !important;
+  }
+}
+
