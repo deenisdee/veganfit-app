@@ -1783,6 +1783,8 @@ body.premium-active #premium-btn {
 
 @media (max-width: 768px) {
   .breadcrumbs-wrapper {
+	  
+	  top:10px;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.10rem;
@@ -5975,26 +5977,23 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   position: relative !important;
 }
 
-/* BASE: só o essencial sem left/right/width */
 .slider-badges-overlay {
   position: absolute !important;
   top: 12px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 12 !important;
-  pointer-events: auto !important;
-  box-sizing: border-box !important;
-  /* centralização universal */
-  left: 55px !important;
+  left: 0 !important;
   right: 0 !important;
   width: 100% !important;
   transform: none !important;
-  padding: 0 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   gap: 12px !important;
+  z-index: 12 !important;
+  pointer-events: auto !important;
+  padding: 0 16px !important;
+  box-sizing: border-box !important;
 }
 
-/* Garante que filhos não quebrem o flex */
 #credits-badge.badge,
 #premium-btn {
   position: static !important;
@@ -6006,7 +6005,6 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   flex-shrink: 0 !important;
 }
 
-/* Mobile pequeno até 480px */
 @media (max-width: 480px) {
   .slider-badges-overlay {
     top: 8px !important;
@@ -6015,7 +6013,6 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   }
 }
 
-/* Tablet 481–1024px */
 @media (min-width: 481px) and (max-width: 1024px) {
   .slider-badges-overlay {
     top: 10px !important;
@@ -6024,20 +6021,6 @@ background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
   }
 }
 
-
-/* Tablet 820 – 1180px */
-@media (min-width: 820px) and (max-width: 1180px) {
-  .slider-badges-overlay {
-	  
-	  left: 0px !important;
-    top: 10px !important;
-    gap: 10px !important;
-    padding: 0 14px !important;
-  }
-}
-
-
-/* Desktop acima 1024px */
 @media (min-width: 1025px) {
   .slider-badges-overlay {
     top: 14px !important;
