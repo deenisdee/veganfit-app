@@ -1133,6 +1133,60 @@ function normalizeEmailForLookup(email) {
 }
 
 
+function extractFirstName(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+
+  const first = raw.split(/\s+/).filter(Boolean)[0] || '';
+  if (!first) return '';
+
+  return capitalizeFirstLetter(first);
+}
+
+function applyRecoveredUserProfile(profile, fallbackEmail) {
+  try {
+    const safeProfile = (profile && typeof profile === 'object') ? profile : {};
+    const normalizedEmail = normalizeEmailForLookup(
+      safeProfile.email ||
+      fallbackEmail ||
+      (typeof userData === 'object' && userData ? userData.email : '') ||
+      localStorage.getItem('vf_user_email') ||
+      ''
+    );
+
+    const resolvedName =
+      String(safeProfile.firstName || '').trim() ||
+      extractFirstName(safeProfile.name) ||
+      extractFirstName(localStorage.getItem('vf_user_name') || '') ||
+      extractFirstName(typeof userData === 'object' && userData ? userData.name : '');
+
+    const resolvedPhone = String(safeProfile.phone || '').trim();
+
+    if (typeof userData === 'object' && userData) {
+      if (resolvedName) userData.name = resolvedName;
+      if (normalizedEmail) userData.email = normalizedEmail;
+      if (resolvedPhone) userData.phone = resolvedPhone;
+      if (normalizedEmail) userData.registered = true;
+    }
+
+    if (resolvedName) localStorage.setItem('vf_user_name', resolvedName);
+    if (normalizedEmail) {
+      localStorage.setItem('vf_user_email', normalizedEmail);
+      persistCheckoutEmail(normalizedEmail);
+    }
+    if (resolvedPhone) localStorage.setItem('vf_user_phone', resolvedPhone);
+
+    return {
+      name: resolvedName || '',
+      email: normalizedEmail || '',
+      phone: resolvedPhone || ''
+    };
+  } catch (_) {
+    return { name: '', email: '', phone: '' };
+  }
+}
+
+
 function getPremiumSource() {
   try {
     return String(localStorage.getItem('fit_premium_source') || '').trim().toLowerCase();
@@ -1214,44 +1268,56 @@ async function syncPremiumFromBackend(email, opts) {
 
     const data = await res.json();
 
-    if (data?.ok && data?.premium === true) {
-      setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
-      clearCheckoutPendingState();
-      try { updateGreeting(); } catch (_) {}
 
-      // ✅ opcional: força refresh para atualizar badge/estado instantaneamente (sem reprocessar URL)
-      if (options.reloadOnSuccess) {
-        setTimeout(() => {
-          try { window.location.reload(); } catch (_) {}
-        }, 600);
-      }
 
-      if (options.successToast) {
-        showNotification('✅ Premium ativado!', 'Seu acesso já está liberado.');
-      }
 
-      if (options.closeModal !== false) {
-        try { closePremiumModal(); } catch (_) {}
-      }
 
-      return { ok: true, premium: true, expiresAt: data.expiresAt, plan: data.plan };
+ if (data?.ok && data?.premium === true) {
+  setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
+  clearCheckoutPendingState();
+
+  // 🔥 NOVO: recupera nome/email/telefone do backend
+  const recoveredProfile = applyRecoveredUserProfile({
+    firstName: data?.firstName,
+    name: data?.name,
+    email: data?.email || normalized,
+    phone: data?.phone
+  }, normalized);
+
+  try { updateGreeting(); } catch (_) {}
+
+  // 🔥 preenche o campo automaticamente (se existir)
+  try {
+    const emailField = document.getElementById('premium-email-input');
+    if (emailField && recoveredProfile.email) {
+      emailField.value = recoveredProfile.email;
     }
+  } catch (_) {}
 
-    // não premium / expirado
-    clearPremiumLocalState();
-
-    if (options.failToast) {
-      showNotification('⚠️ Não encontrado', 'Não localizamos um Premium ativo para este e-mail.');
-    }
-
-    return { ok: true, premium: false };
-  } catch (err) {
-    console.warn('[PREMIUM] Falha ao sincronizar backend:', err);
-    if (options.errorToast) {
-      showNotification('Erro', 'Falha ao validar Premium. Tente novamente.');
-    }
-    return { ok: false, error: String(err?.message || err) };
+  // ✅ opcional: força refresh para atualizar badge/estado instantaneamente
+  if (options.reloadOnSuccess) {
+    setTimeout(() => {
+      try { window.location.reload(); } catch (_) {}
+    }, 600);
   }
+
+  if (options.successToast) {
+    showNotification('✅ Premium ativado!', 'Seu acesso já está liberado.');
+  }
+
+  if (options.closeModal !== false) {
+    try { closePremiumModal(); } catch (_) {}
+  }
+
+  return {
+    ok: true,
+    premium: true,
+    expiresAt: data.expiresAt,
+    plan: data.plan,
+    name: recoveredProfile.name,
+    email: recoveredProfile.email,
+    phone: recoveredProfile.phone
+  };
 }
 
 
