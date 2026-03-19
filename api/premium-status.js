@@ -99,7 +99,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({
         ok: true,
         premium: false,
-      });
+      }); 
     }
     const data = snap.data() || {};
 
