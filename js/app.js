@@ -4047,18 +4047,14 @@ async function redeemPremiumCode(code) {
 
 
 
-
 async function activatePremium() {
   // ✅ Novo fluxo principal: valida Premium por e-mail (fonte da verdade = Firestore premium_users)
   ensurePremiumEmailValidationUI();
-
   const emailInput =
     document.getElementById('premium-email-input') ||
     document.getElementById('user-email') ||
     null;
-
   const email = emailInput ? normalizeEmailForLookup(emailInput.value || '') : '';
-
   if (email && email.includes('@')) {
     const result = await syncPremiumFromBackend(email, {
       closeModal: true,
@@ -4066,48 +4062,30 @@ async function activatePremium() {
       failToast: true,
       errorToast: true
     });
-
     if (result?.premium) {
-      // salva para facilitar próxima sessão
       persistCheckoutEmail(email);
-      try {
-        if ((!userData || !userData.name) && !localStorage.getItem('vf_user_name')) {
-          const inferredName = getFirstNameForGreeting();
-          if (inferredName) {
-            localStorage.setItem('vf_user_name', inferredName);
-            if (typeof userData === 'object' && userData) userData.name = inferredName;
-          }
-        }
-      } catch (_) {}
       try { updateGreeting(); } catch (_) {}
     }
-
     return;
   }
-
   // (fallback) Se ainda existir um input de código e alguém quiser usar, mantém compatibilidade
   const input = document.getElementById('premium-code-input');
   const code = input ? input.value.trim().toUpperCase() : '';
-
   if (!code) {
     showNotification('Aviso', 'Digite o e-mail usado no pagamento para validar.');
     return;
   }
-
   try {
     const response = await fetch('/api/validate-code', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: code, email: email || undefined })
     });
-
     const data = await response.json();
-
     if (!data.ok) {
       showNotification('Código inválido', data.error || 'Código inválido ou expirado');
       return;
     }
-
     setPremiumLocalState(data.expiresAt, data.plan || 'monthly');
     showNotification('✅ Premium ativado!', 'Seu acesso já está liberado.');
     closePremiumModal();
