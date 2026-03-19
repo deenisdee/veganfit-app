@@ -1215,21 +1215,18 @@ async function syncPremiumFromBackend(email, opts) {
     });
 
     const data = await res.json();
-	
-	
-	console.log('premium-status data:', data);
-	
 
     if (data?.ok && data?.premium === true) {
-      // ✅ salva nome real vindo do backend
       if (data.name) {
+        const cleanName = String(data.name).trim();
+
         try {
-          localStorage.setItem('vf_user_name', String(data.name).trim());
+          localStorage.setItem('vf_user_name', cleanName);
         } catch (_) {}
 
         try {
           if (typeof userData === 'object' && userData) {
-            userData.name = String(data.name).trim();
+            userData.name = cleanName;
           }
         } catch (_) {}
       }
@@ -1238,7 +1235,6 @@ async function syncPremiumFromBackend(email, opts) {
       clearCheckoutPendingState();
       try { updateGreeting(); } catch (_) {}
 
-      // ✅ opcional: força refresh para atualizar badge/estado instantaneamente (sem reprocessar URL)
       if (options.reloadOnSuccess) {
         setTimeout(() => {
           try { window.location.reload(); } catch (_) {}
@@ -1262,7 +1258,6 @@ async function syncPremiumFromBackend(email, opts) {
       };
     }
 
-    // não premium / expirado
     clearPremiumLocalState();
 
     if (options.failToast) {
@@ -6226,9 +6221,6 @@ function capitalizeFirstLetter(value) {
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 }
 
-
-
-
 function getFirstNameForGreeting() {
   try {
     const rawName = String(
@@ -6243,8 +6235,27 @@ function getFirstNameForGreeting() {
     }
   } catch (_) {}
 
+  try {
+    const rawEmail = normalizeEmailForLookup(
+      (typeof userData === 'object' && userData && userData.email) ||
+      localStorage.getItem('vf_user_email') ||
+      localStorage.getItem('vf_checkout_email') ||
+      localStorage.getItem('premium_email') ||
+      ''
+    );
+
+    if (rawEmail && rawEmail.includes('@')) {
+      const localPart = rawEmail.split('@')[0] || '';
+      const firstChunk = localPart.split(/[._\-+]+/).filter(Boolean)[0] || '';
+      if (firstChunk) return capitalizeFirstLetter(firstChunk);
+    }
+  } catch (_) {}
+
   return '';
 }
+
+
+
 
 
 function updateGreeting() {
@@ -6271,6 +6282,50 @@ function updateGreeting() {
       : 'Olá 👋';
   } catch (_) {}
 }
+
+
+
+
+function updateGreeting() {
+  try {
+    const greetingEl = document.getElementById('userGreeting');
+    if (!greetingEl) return;
+
+    const premiumActive = (() => {
+      try {
+        if (typeof isPremiumValidNow === 'function') return !!isPremiumValidNow();
+      } catch (_) {}
+      try {
+        if (window.RF && RF.premium && typeof RF.premium.isActive === 'function') {
+          return !!RF.premium.isActive();
+        }
+      } catch (_) {}
+      return isPremium === true;
+    })();
+
+    let savedName = '';
+    try {
+      savedName = String(
+        (typeof userData === 'object' && userData && userData.name) ||
+        localStorage.getItem('vf_user_name') ||
+        ''
+      ).trim();
+    } catch (_) {
+      savedName = '';
+    }
+
+    let firstName = '';
+    if (savedName) {
+      firstName = savedName.split(/\s+/).filter(Boolean)[0] || '';
+      firstName = firstName ? capitalizeFirstLetter(firstName) : '';
+    }
+
+    greetingEl.textContent = (premiumActive && firstName)
+      ? `Olá, ${firstName} 👋`
+      : 'Olá 👋';
+  } catch (_) {}
+}
+
 
 
 
