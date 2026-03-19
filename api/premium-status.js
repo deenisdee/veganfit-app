@@ -85,6 +85,9 @@ module.exports = async (req, res) => {
         : (typeof req.body === 'string' ? JSON.parse(req.body) : {});
     const rawEmail = body.email || req.query?.email || '';
     const email = normalizeEmailForDocId(decodeURIComponent(String(rawEmail || '')));
+
+console.log('[DEBUG email]', { rawEmail, email });
+    
     if (!email || !email.includes('@')) {
       return res.status(400).json({
         ok: false,
