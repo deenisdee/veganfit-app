@@ -1269,10 +1269,7 @@ async function syncPremiumFromBackend(email, opts) {
     const data = await res.json();
 
 
-
-
-
- if (data?.ok && data?.premium === true) {
+if (data?.ok && data?.premium === true) {
   setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
   clearCheckoutPendingState();
 
@@ -1319,6 +1316,8 @@ async function syncPremiumFromBackend(email, opts) {
     phone: recoveredProfile.phone
   };
 }
+
+
 
 
 async function autoRecoverPremiumAfterCheckout(opts) {
