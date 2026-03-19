@@ -119,14 +119,22 @@ module.exports = async (req, res) => {
         expired: true,
       });
     }
+	
+	
+	
 
-    return res.status(200).json({
-      ok: true,
-      premium: true,
-      email,
-      plan: data.plan || 'premium',
-      expiresAt,
-    });
+return res.status(200).json({
+  ok: true,
+  premium: true,
+  email,
+  name: data.name || '', // ✅ ADICIONADO
+  plan: data.plan || 'premium',
+  expiresAt,
+});
+	
+	
+	
+	
   } catch (err) {
     console.error('premium-status error:', err);
     return res.status(500).json({
