@@ -1,4 +1,3 @@
-
 // ============================================
 // ARQUIVO: js/app.js 
 // ============================================
@@ -332,7 +331,7 @@ window.addEventListener('DOMContentLoaded', function() {
   const emailParam = normalizeEmailForLookup(urlParams.get('email') || '');
   const autoValidate = urlParams.get('autovalidate'); // 1
   const shouldOpenValidationTab = (openPremium === '1' || tabParam === '3');
-  const shouldAutoValidate = (returnType === 'success' && autoValidate === '1' && !!emailParam);
+  const shouldAutoValidate = (autoValidate === '1' && !!emailParam);
 
   // Sempre tenta limpar a URL (evita reprocessar ao dar refresh)
   if (returnType || openPremium || tabParam || emailParam || autoValidate) {
@@ -1217,6 +1216,33 @@ async function syncPremiumFromBackend(email, opts) {
     if (data?.ok && data?.premium === true) {
       setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
       clearCheckoutPendingState();
+
+      // ✅ FIX: salva nome vindo do backend (se existir) ou infere do e-mail de forma inteligente
+      try {
+        const existingName = localStorage.getItem('vf_user_name');
+        if (!existingName || !existingName.trim()) {
+          // Tenta nome vindo do backend primeiro
+          const backendName = (data.name || data.fullName || '').trim();
+          if (backendName) {
+            localStorage.setItem('vf_user_name', backendName);
+            if (typeof userData === 'object' && userData) userData.name = backendName;
+          } else {
+            // Fallback: infere nome do e-mail — remove alias +... e pega parte antes do @
+            // ex: denis.carvalho+12@gmail.com → "Denis"
+            const rawEmail = normalizeEmailForLookup(normalized || '');
+            if (rawEmail && rawEmail.includes('@')) {
+              const localPart = rawEmail.split('@')[0].replace(/\+[^@]*$/, ''); // remove alias
+              const chunks = localPart.split(/[._\-]+/).filter(Boolean);
+              const inferredName = chunks[0] ? capitalizeFirstLetter(chunks[0]) : '';
+              if (inferredName && inferredName.length >= 2) {
+                localStorage.setItem('vf_user_name', inferredName);
+                if (typeof userData === 'object' && userData) userData.name = inferredName;
+              }
+            }
+          }
+        }
+      } catch (_) {}
+
       try { updateGreeting(); } catch (_) {}
 
       // ✅ opcional: força refresh para atualizar badge/estado instantaneamente (sem reprocessar URL)
@@ -6250,7 +6276,7 @@ function updateGreeting() {
 
     const firstName = getFirstNameForGreeting();
 
-    greetingEl.textContent = (premiumActive && firstName)
+    greetingEl.textContent = firstName
       ? `Olá, ${firstName} 👋`
       : 'Olá 👋';
   } catch (_) {}
