@@ -5,6 +5,11 @@
 
 const admin = require('firebase-admin');
 
+/**
+ * getFirebaseServiceAccount()
+ * - Aceita JSON puro
+ * - Aceita Base64 de JSON
+ */
 function getFirebaseServiceAccount() {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   if (!raw) return null;
@@ -20,6 +25,10 @@ function getFirebaseServiceAccount() {
   return JSON.parse(decoded);
 }
 
+/**
+ * initFirebase()
+ * - Inicializa Firebase Admin uma única vez
+ */
 function initFirebase() {
   if (admin.apps.length) return;
 
@@ -31,6 +40,7 @@ function initFirebase() {
     return;
   }
 
+  // fallback (envs antigas)
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
@@ -40,6 +50,15 @@ function initFirebase() {
   });
 }
 
+/**
+ * normalizeEmailForDocId()
+ * - Garante que o email usado como docId
+ *   seja exatamente o mesmo salvo pelo webhook
+ * - Corrige:
+ *   • espaço virando "+"
+ *   • "%2B" literal
+ *   • trim / lowercase
+ */
 function normalizeEmailForDocId(email) {
   return String(email || '')
     .trim()
@@ -47,6 +66,7 @@ function normalizeEmailForDocId(email) {
     .replace(/\s+/g, '+')
     .replace(/%2b/gi, '+');
 }
+
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -65,7 +85,6 @@ module.exports = async (req, res) => {
         : (typeof req.body === 'string' ? JSON.parse(req.body) : {});
     const rawEmail = body.email || req.query?.email || '';
     const email = normalizeEmailForDocId(decodeURIComponent(String(rawEmail || '')));
-
     if (!email || !email.includes('@')) {
       return res.status(400).json({
         ok: false,
@@ -73,7 +92,7 @@ module.exports = async (req, res) => {
         error: 'Email inválido',
       });
     }
-
+    // 🔎 Fonte da verdade: premium_users/{email}
     const ref = db.collection('premium_users').doc(email);
     const snap = await ref.get();
     if (!snap.exists) {
@@ -82,7 +101,6 @@ module.exports = async (req, res) => {
         premium: false,
       });
     }
-
     const data = snap.data() || {};
     const expiresAt = Number(data.expiresAt);
     // ✅ FIX: detecta se expiresAt está em segundos (10 dígitos) e converte para ms
@@ -94,14 +112,12 @@ module.exports = async (req, res) => {
         expired: true,
       });
     }
-
     // ✅ Opção C: se name não existe em premium_users, busca em premium_codes pelo email
     let resolvedName = (data.name || '').trim();
     if (!resolvedName) {
       try {
         const codesSnap = await db.collection('premium_codes')
           .where('email', '==', email)
-          .orderBy('createdAt', 'desc')
           .limit(1)
           .get();
         if (!codesSnap.empty) {
@@ -109,7 +125,6 @@ module.exports = async (req, res) => {
         }
       } catch (_) {}
     }
-
     return res.status(200).json({
       ok: true,
       premium: true,
@@ -118,7 +133,6 @@ module.exports = async (req, res) => {
       plan: data.plan || 'premium',
       expiresAt: expiresAtMs, // ✅ FIX: retorna como expiresAt mas com valor em ms
     });
-
   } catch (err) {
     console.error('premium-status error:', err);
     return res.status(500).json({
