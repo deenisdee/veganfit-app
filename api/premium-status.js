@@ -102,6 +102,9 @@ module.exports = async (req, res) => {
       });
     }
     const data = snap.data() || {};
+
+    console.log('[DEBUG]', { email, expiresAt: data?.expiresAt, now: Date.now() });
+    
     const expiresAt = Number(data.expiresAt);
     // ✅ FIX: detecta se expiresAt está em segundos (10 dígitos) e converte para ms
     const expiresAtMs = expiresAt < 1e12 ? expiresAt * 1000 : expiresAt;
