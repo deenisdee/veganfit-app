@@ -6235,27 +6235,8 @@ function getFirstNameForGreeting() {
     }
   } catch (_) {}
 
-  try {
-    const rawEmail = normalizeEmailForLookup(
-      (typeof userData === 'object' && userData && userData.email) ||
-      localStorage.getItem('vf_user_email') ||
-      localStorage.getItem('vf_checkout_email') ||
-      localStorage.getItem('premium_email') ||
-      ''
-    );
-
-    if (rawEmail && rawEmail.includes('@')) {
-      const localPart = rawEmail.split('@')[0] || '';
-      const firstChunk = localPart.split(/[._\-+]+/).filter(Boolean)[0] || '';
-      if (firstChunk) return capitalizeFirstLetter(firstChunk);
-    }
-  } catch (_) {}
-
   return '';
 }
-
-
-
 
 
 function updateGreeting() {
@@ -6282,50 +6263,6 @@ function updateGreeting() {
       : 'Olá 👋';
   } catch (_) {}
 }
-
-
-
-
-function updateGreeting() {
-  try {
-    const greetingEl = document.getElementById('userGreeting');
-    if (!greetingEl) return;
-
-    const premiumActive = (() => {
-      try {
-        if (typeof isPremiumValidNow === 'function') return !!isPremiumValidNow();
-      } catch (_) {}
-      try {
-        if (window.RF && RF.premium && typeof RF.premium.isActive === 'function') {
-          return !!RF.premium.isActive();
-        }
-      } catch (_) {}
-      return isPremium === true;
-    })();
-
-    let savedName = '';
-    try {
-      savedName = String(
-        (typeof userData === 'object' && userData && userData.name) ||
-        localStorage.getItem('vf_user_name') ||
-        ''
-      ).trim();
-    } catch (_) {
-      savedName = '';
-    }
-
-    let firstName = '';
-    if (savedName) {
-      firstName = savedName.split(/\s+/).filter(Boolean)[0] || '';
-      firstName = firstName ? capitalizeFirstLetter(firstName) : '';
-    }
-
-    greetingEl.textContent = (premiumActive && firstName)
-      ? `Olá, ${firstName} 👋`
-      : 'Olá 👋';
-  } catch (_) {}
-}
-
 
 
 
