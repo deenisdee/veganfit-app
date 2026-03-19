@@ -4,12 +4,7 @@
 // - Retorna { ok:true, premium:true/false, expiresAt, plan }
 
 const admin = require('firebase-admin');
- 
-/**
- * getFirebaseServiceAccount()
- * - Aceita JSON puro
- * - Aceita Base64 de JSON
- */
+
 function getFirebaseServiceAccount() {
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   if (!raw) return null;
@@ -25,10 +20,6 @@ function getFirebaseServiceAccount() {
   return JSON.parse(decoded);
 }
 
-/**
- * initFirebase()
- * - Inicializa Firebase Admin uma única vez
- */
 function initFirebase() {
   if (admin.apps.length) return;
 
@@ -40,7 +31,6 @@ function initFirebase() {
     return;
   }
 
-  // fallback (envs antigas)
   admin.initializeApp({
     credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
@@ -50,15 +40,6 @@ function initFirebase() {
   });
 }
 
-/**
- * normalizeEmailForDocId()
- * - Garante que o email usado como docId
- *   seja exatamente o mesmo salvo pelo webhook
- * - Corrige:
- *   • espaço virando "+"
- *   • "%2B" literal
- *   • trim / lowercase
- */
 function normalizeEmailForDocId(email) {
   return String(email || '')
     .trim()
@@ -68,7 +49,6 @@ function normalizeEmailForDocId(email) {
 }
 
 module.exports = async (req, res) => {
-  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -86,8 +66,6 @@ module.exports = async (req, res) => {
     const rawEmail = body.email || req.query?.email || '';
     const email = normalizeEmailForDocId(decodeURIComponent(String(rawEmail || '')));
 
-console.log('[DEBUG email]', { rawEmail, email });
-    
     if (!email || !email.includes('@')) {
       return res.status(400).json({
         ok: false,
@@ -95,19 +73,17 @@ console.log('[DEBUG email]', { rawEmail, email });
         error: 'Email inválido',
       });
     }
-    // 🔎 Fonte da verdade: premium_users/{email}
+
     const ref = db.collection('premium_users').doc(email);
     const snap = await ref.get();
     if (!snap.exists) {
       return res.status(200).json({
         ok: true,
         premium: false,
-      }); 
+      });
     }
-    const data = snap.data() || {};
 
-    console.log('[DEBUG]', { email, expiresAt: data?.expiresAt, now: Date.now() });
-    
+    const data = snap.data() || {};
     const expiresAt = Number(data.expiresAt);
     // ✅ FIX: detecta se expiresAt está em segundos (10 dígitos) e converte para ms
     const expiresAtMs = expiresAt < 1e12 ? expiresAt * 1000 : expiresAt;
@@ -118,6 +94,7 @@ console.log('[DEBUG email]', { rawEmail, email });
         expired: true,
       });
     }
+
     // ✅ Opção C: se name não existe em premium_users, busca em premium_codes pelo email
     let resolvedName = (data.name || '').trim();
     if (!resolvedName) {
@@ -132,14 +109,16 @@ console.log('[DEBUG email]', { rawEmail, email });
         }
       } catch (_) {}
     }
+
     return res.status(200).json({
       ok: true,
       premium: true,
       email,
       name: resolvedName,
       plan: data.plan || 'premium',
-      expiresAtMs,
+      expiresAt: expiresAtMs, // ✅ FIX: retorna como expiresAt mas com valor em ms
     });
+
   } catch (err) {
     console.error('premium-status error:', err);
     return res.status(500).json({
