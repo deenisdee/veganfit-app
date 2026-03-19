@@ -67,7 +67,6 @@ function normalizeEmailForDocId(email) {
     .replace(/%2b/gi, '+');
 }
 
-
 module.exports = async (req, res) => {
   // CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -104,14 +103,15 @@ module.exports = async (req, res) => {
     }
     const data = snap.data() || {};
     const expiresAt = Number(data.expiresAt);
-    if (!Number.isFinite(expiresAt) || Date.now() > expiresAt) {
+    // ✅ FIX: detecta se expiresAt está em segundos (10 dígitos) e converte para ms
+    const expiresAtMs = expiresAt < 1e12 ? expiresAt * 1000 : expiresAt;
+    if (!Number.isFinite(expiresAtMs) || Date.now() > expiresAtMs) {
       return res.status(200).json({
         ok: true,
         premium: false,
         expired: true,
       });
     }
-
     // ✅ Opção C: se name não existe em premium_users, busca em premium_codes pelo email
     let resolvedName = (data.name || '').trim();
     if (!resolvedName) {
@@ -126,16 +126,14 @@ module.exports = async (req, res) => {
         }
       } catch (_) {}
     }
-
     return res.status(200).json({
       ok: true,
       premium: true,
       email,
       name: resolvedName,
       plan: data.plan || 'premium',
-      expiresAt,
+      expiresAtMs,
     });
-
   } catch (err) {
     console.error('premium-status error:', err);
     return res.status(500).json({
