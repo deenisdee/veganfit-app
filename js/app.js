@@ -1,3 +1,4 @@
+
 // ============================================
 // ARQUIVO: js/app.js 
 // ============================================
@@ -331,7 +332,7 @@ window.addEventListener('DOMContentLoaded', function() {
   const emailParam = normalizeEmailForLookup(urlParams.get('email') || '');
   const autoValidate = urlParams.get('autovalidate'); // 1
   const shouldOpenValidationTab = (openPremium === '1' || tabParam === '3');
-  const shouldAutoValidate = (autoValidate === '1' && !!emailParam);
+  const shouldAutoValidate = (returnType === 'success' && autoValidate === '1' && !!emailParam);
 
   // Sempre tenta limpar a URL (evita reprocessar ao dar refresh)
   if (returnType || openPremium || tabParam || emailParam || autoValidate) {
@@ -1198,78 +1199,64 @@ function sanitizeSuspiciousPaidPremium(reason) {
   }
 }
 
+
+
 async function syncPremiumFromBackend(email, opts) {
   const options = opts || {};
   const normalized = normalizeEmailForLookup(email);
-
   if (!normalized || !normalized.includes('@')) return { ok: false, error: 'email inválido' };
-
   try {
     const res = await fetch('/api/premium-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: normalized })
     });
-
     const data = await res.json();
-
     if (data?.ok && data?.premium === true) {
       setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
       clearCheckoutPendingState();
 
-      // ✅ FIX: salva nome vindo do backend (se existir) ou infere do e-mail de forma inteligente
+      // ✅ FIX: salva nome do Firebase no localStorage (sempre sobrescreve se backend trouxer)
       try {
+        const backendName = (data.name || data.fullName || '').trim();
         const existingName = localStorage.getItem('vf_user_name');
-        if (!existingName || !existingName.trim()) {
-          // Tenta nome vindo do backend primeiro
-          const backendName = (data.name || data.fullName || '').trim();
+        if (backendName || !existingName || !existingName.trim()) {
           if (backendName) {
             localStorage.setItem('vf_user_name', backendName);
             if (typeof userData === 'object' && userData) userData.name = backendName;
           } else {
-            // Fallback: infere nome do e-mail — remove alias +... e pega parte antes do @
-            // ex: denis.carvalho+12@gmail.com → "Denis"
-            const rawEmail = normalizeEmailForLookup(normalized || '');
-            if (rawEmail && rawEmail.includes('@')) {
-              const localPart = rawEmail.split('@')[0].replace(/\+[^@]*$/, ''); // remove alias
-              const chunks = localPart.split(/[._\-]+/).filter(Boolean);
-              const inferredName = chunks[0] ? capitalizeFirstLetter(chunks[0]) : '';
-              if (inferredName && inferredName.length >= 2) {
-                localStorage.setItem('vf_user_name', inferredName);
-                if (typeof userData === 'object' && userData) userData.name = inferredName;
-              }
+            // fallback: infere do e-mail removendo alias +...
+            const localPart = normalized.split('@')[0].replace(/\+[^@]*$/, '');
+            const chunk = localPart.split(/[._\-]+/).filter(Boolean)[0] || '';
+            if (chunk.length >= 2) {
+              const inferred = capitalizeFirstLetter(chunk);
+              localStorage.setItem('vf_user_name', inferred);
+              if (typeof userData === 'object' && userData) userData.name = inferred;
             }
           }
         }
       } catch (_) {}
 
       try { updateGreeting(); } catch (_) {}
-
       // ✅ opcional: força refresh para atualizar badge/estado instantaneamente (sem reprocessar URL)
       if (options.reloadOnSuccess) {
         setTimeout(() => {
           try { window.location.reload(); } catch (_) {}
         }, 600);
       }
-
       if (options.successToast) {
         showNotification('✅ Premium ativado!', 'Seu acesso já está liberado.');
       }
-
       if (options.closeModal !== false) {
         try { closePremiumModal(); } catch (_) {}
       }
-
       return { ok: true, premium: true, expiresAt: data.expiresAt, plan: data.plan };
     }
-
     // não premium / expirado
     clearPremiumLocalState();
-
     if (options.failToast) {
       showNotification('⚠️ Não encontrado', 'Não localizamos um Premium ativo para este e-mail.');
     }
-
     return { ok: true, premium: false };
   } catch (err) {
     console.warn('[PREMIUM] Falha ao sincronizar backend:', err);
@@ -6276,7 +6263,7 @@ function updateGreeting() {
 
     const firstName = getFirstNameForGreeting();
 
-    greetingEl.textContent = firstName
+    greetingEl.textContent = (premiumActive && firstName)
       ? `Olá, ${firstName} 👋`
       : 'Olá 👋';
   } catch (_) {}
