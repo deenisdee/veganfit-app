@@ -4,7 +4,7 @@
 // - Retorna { ok:true, premium:true/false, expiresAt, plan }
 
 const admin = require('firebase-admin');
-
+ 
 /**
  * getFirebaseServiceAccount()
  * - Aceita JSON puro
