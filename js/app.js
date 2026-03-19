@@ -1199,6 +1199,8 @@ function sanitizeSuspiciousPaidPremium(reason) {
   }
 }
 
+
+
 async function syncPremiumFromBackend(email, opts) {
   const options = opts || {};
   const normalized = normalizeEmailForLookup(email);
@@ -1213,8 +1215,25 @@ async function syncPremiumFromBackend(email, opts) {
     });
 
     const data = await res.json();
+	
+	
+	console.log('premium-status data:', data);
+	
 
     if (data?.ok && data?.premium === true) {
+      // ✅ salva nome real vindo do backend
+      if (data.name) {
+        try {
+          localStorage.setItem('vf_user_name', String(data.name).trim());
+        } catch (_) {}
+
+        try {
+          if (typeof userData === 'object' && userData) {
+            userData.name = String(data.name).trim();
+          }
+        } catch (_) {}
+      }
+
       setPremiumLocalState(data.expiresAt, data.plan || 'monthly', 'backend');
       clearCheckoutPendingState();
       try { updateGreeting(); } catch (_) {}
@@ -1234,7 +1253,13 @@ async function syncPremiumFromBackend(email, opts) {
         try { closePremiumModal(); } catch (_) {}
       }
 
-      return { ok: true, premium: true, expiresAt: data.expiresAt, plan: data.plan };
+      return {
+        ok: true,
+        premium: true,
+        expiresAt: data.expiresAt,
+        plan: data.plan,
+        name: data.name || ''
+      };
     }
 
     // não premium / expirado
@@ -1253,6 +1278,9 @@ async function syncPremiumFromBackend(email, opts) {
     return { ok: false, error: String(err?.message || err) };
   }
 }
+
+
+
 
 
 async function autoRecoverPremiumAfterCheckout(opts) {
@@ -6198,6 +6226,9 @@ function capitalizeFirstLetter(value) {
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 }
 
+
+
+
 function getFirstNameForGreeting() {
   try {
     const rawName = String(
@@ -6212,24 +6243,9 @@ function getFirstNameForGreeting() {
     }
   } catch (_) {}
 
-  try {
-    const rawEmail = normalizeEmailForLookup(
-      (typeof userData === 'object' && userData && userData.email) ||
-      localStorage.getItem('vf_user_email') ||
-      localStorage.getItem('vf_checkout_email') ||
-      localStorage.getItem('premium_email') ||
-      ''
-    );
-
-    if (rawEmail && rawEmail.includes('@')) {
-      const localPart = rawEmail.split('@')[0] || '';
-      const firstChunk = localPart.split(/[._\-+]+/).filter(Boolean)[0] || '';
-      if (firstChunk) return capitalizeFirstLetter(firstChunk);
-    }
-  } catch (_) {}
-
   return '';
 }
+
 
 function updateGreeting() {
   try {
@@ -6255,6 +6271,8 @@ function updateGreeting() {
       : 'Olá 👋';
   } catch (_) {}
 }
+
+
 
 // Trocar de aba (navegação livre)
 function switchTab(tabNumber) {
