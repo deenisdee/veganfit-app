@@ -13,7 +13,8 @@ const MP_PUBLIC_KEY = 'APP_USR-9a3547c8-2f6d-4cde-b502-027d0e817746';
 
 function ensureMercadoPagoInstance() {
   try {
-    if (window.mp && typeof window.mp.checkout === 'function') return true;
+    if 
+(window.mp && typeof window.mp.checkout === 'function') return true;
     if (typeof MercadoPago === 'undefined') return false;
     window.mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
     return !!(window.mp && typeof window.mp.checkout === 'function');
@@ -4227,7 +4228,7 @@ function updatePremiumButtons() {
 
     if (hamburgerPremiumText) {
       hamburgerPremiumText.textContent =
-        daysLeft === null ? 'Premium' : `Premium (${daysLeft}D)`;
+        daysLeft === null ? 'Premium' : `Faltam (${daysLeft}Dias)`;
     }
   } else {
     // ❌ SEM PREMIUM - Volta ao normal
