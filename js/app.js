@@ -4228,7 +4228,7 @@ function updatePremiumButtons() {
 
     if (hamburgerPremiumText) {
       hamburgerPremiumText.textContent =
-        daysLeft === null ? 'Premium' : `Faltam (${daysLeft}Dias)`;
+        daysLeft === null ? 'Premium' : `Faltam (${daysLeft} Dias)`;
     }
   } else {
     // ❌ SEM PREMIUM - Volta ao normal
