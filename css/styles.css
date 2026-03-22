@@ -2936,7 +2936,7 @@ html {
 @media (max-width: 768px) {
   #header .header-content{
     gap: 8px !important;          /* era 1rem em alguns trechos */
-    padding: 10px 0 !important;   /* reduz altura */
+    padding: 0px 0 !important;  /* reduz altura */
   }
 
   /* reduz padding interno da busca pra subir um pouco */
@@ -3048,7 +3048,7 @@ body.modal-open .bottom-tab-bar {
 
 @media (max-width: 768px) {
   .container {
-    margin: -10px auto !important;
+    margin: 0px auto !important;
   }
    
 }
